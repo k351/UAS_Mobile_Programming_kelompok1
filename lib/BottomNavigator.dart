@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/HomePage.dart';
 import 'package:uas_flutter/Search/SearchPage.dart';
+import 'package:uas_flutter/settings/SettingsPage.dart';
 
 class NavigationUtils {
   static void navigateToPage(BuildContext context, int index) {
@@ -12,6 +13,9 @@ class NavigationUtils {
         break;
       case 1:
         page = Searchpage();
+        break;
+      case 3:
+        page = SettingsPage();
         break;
       default:
         page = Myhomepage();

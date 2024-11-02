@@ -102,6 +102,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         'Set shopping delivery address',),
                     _buildSettingsItem(Icons.shopping_cart, 'My Cart',
                         'Add, remove products and move to checkout'),
+                    _buildSettingsItem(Icons.favorite, 'Wishlist',
+                         'Things That I Want to Buy'),
                     _buildSettingsItem(Icons.shopping_bag, 'My Orders',
                         'In-progress and Completed Orders'),
                     _buildSettingsItem(Icons.account_balance, 'Bank Account',

@@ -64,6 +64,7 @@ flutter:
   assets:
     - assets/fonts/
     - assets/logo.svg
+    - assets/logo.png
     - assets/google.svg
     - assets/facebook.svg
     - assets/shinjuku.png

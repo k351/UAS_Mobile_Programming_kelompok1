@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/login/signup.dart';
 import 'package:uas_flutter/size_config.dart';
-import 'package:uas_flutter/textField.dart';
+import 'package:uas_flutter/usage/loginsocialfield.dart';
+import 'package:uas_flutter/usage/textfield.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -109,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   width: getProportionateScreenWidth(350),
                   padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppConstants.mainColor,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
@@ -157,19 +158,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: getProportionateScreenHeight(20),
                 ),
                 // Add Google login button
-                _buildSocialLoginButton(
-                    AppConstants.imgGoogle, AppConstants.googleLogin),
+                const SocialLoginButton(
+                    image: AppConstants.imgGoogle, text: AppConstants.googleLogin),
                 SizedBox(height: getProportionateScreenHeight(20)),
                 // Add Facebook login button
-                _buildSocialLoginButton(
-                    AppConstants.imgFacebook, AppConstants.facebookLogin),
+                const SocialLoginButton(
+                    image: AppConstants.imgFacebook, text: AppConstants.facebookLogin),
                 SizedBox(height: getProportionateScreenHeight(20)),
                 GestureDetector(
                   onTap: () =>
                       Navigator.pushNamed(context, SignUpScreen.routeName),
                   child: Center(
                     child: RichText(
-                      text: TextSpan(
+                      text: const TextSpan(
                         text: AppConstants.dontHaveAccount,
                         style: TextStyle(color: AppConstants.clrBlack),
                         children: [
@@ -187,35 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSocialLoginButton(String image, String text) {
-    return Container(
-      width: getProportionateScreenWidth(350),
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        border: Border.all(
-          width: 1,
-          color: AppConstants.greyColor1,
-        ),
-      ),
-      child: Row(
-        children: [
-          SizedBox(width: getProportionateScreenWidth(15)),
-          SvgPicture.asset(image, width: getProportionateScreenWidth(25)),
-          SizedBox(width: getProportionateScreenWidth(15)),
-          Text(
-            text,
-            style: TextStyle(
-              fontFamily: AppConstants.fontInterMedium,
-              color: AppConstants.clrBlack,
-              fontSize: getProportionateScreenWidth(16),
-            ),
-          ),
-        ],
       ),
     );
   }

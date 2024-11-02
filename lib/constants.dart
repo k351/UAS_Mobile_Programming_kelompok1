@@ -16,7 +16,7 @@ class AppConstants {
   static const Color clrLightGreyColor = Color(0xffD4D4D4);
   static const Color clrBlackFont = Color(0xff383737);
   static const Color clrBlack = Color(0xff000000);
-  static const Color clrTransparent= Color(0x00000000);
+  static const Color clrTransparent = Color(0x00000000);
   static const Color clrRed = Color.fromARGB(255, 255, 0, 0);
   static const Color clrBlue = Color(0xff5598FF);
   static const Color clrGreyBg = Color(0xffF6F6F6);
@@ -33,17 +33,17 @@ class AppConstants {
   static const String signUp = "Sign Up";
   static const String or = "Or";
   static const String createAccountText = "Create an account to continue!";
-  static const String fullName = "Full Name";
+  static const String username = "Username";
   static const String dateOfBirth = "Date of Birth";
   static const String phoneNumber = "Phone Number";
   static const String setPassword = "Set Password";
   static const String register = "Register";
   static const String alreadyHaveAccount = "Already have an account?";
 
-  static const String fontInterBold= "Inter-Bold";
-  static const String fontInterMedium= "Inter-Medium";
-  static const String fontInterRegular= "Inter-Regular";
-  static const String fontInterSemiBold= "Inter-SemiBold";
+  static const String fontInterBold = "Inter-Bold";
+  static const String fontInterMedium = "Inter-Medium";
+  static const String fontInterRegular = "Inter-Regular";
+  static const String fontInterSemiBold = "Inter-SemiBold";
 
   static const String rootImage = "assets/";
 

@@ -15,7 +15,7 @@ class IsiTabs extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 3,
-        childAspectRatio: getProportionateScreenHeight(0.74),
+        childAspectRatio: getProportionateScreenHeight(0.55),
       ),
       itemCount: list.length,
       itemBuilder: (context, index) {

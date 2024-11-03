@@ -4,7 +4,8 @@ import 'package:uas_flutter/size_config.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
-
+  static const String routeName = 'settings';
+  
   @override
   SettingsPageState createState() => SettingsPageState();
 }

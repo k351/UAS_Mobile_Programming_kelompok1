@@ -1,43 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Home/HomePage.dart';
-import 'package:uas_flutter/Search/SearchPage.dart';
-import 'package:uas_flutter/settings/SettingsPage.dart';
+import 'package:uas_flutter/Home/home_page.dart';
+import 'package:uas_flutter/Search/search_page.dart';
+import 'package:uas_flutter/settings/settings_page.dart';
+import 'package:uas_flutter/routes.dart';
 
 class NavigationUtils {
   static void navigateToPage(BuildContext context, int index) {
-    Widget page;
+    String routeName;
 
     switch (index) {
       case 0:
-        page = Myhomepage();
+        routeName = Myhomepage.routeName;
         break;
       case 1:
-        page = Searchpage();
+        routeName = Searchpage.routeName;
         break;
       case 3:
-        page = SettingsPage();
+        routeName = SettingsPage.routeName;
         break;
       default:
-        page = Myhomepage();
+        routeName = Myhomepage.routeName;
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
+    Navigator.pushNamed(context, routeName);
   }
 }
 
 class NavigasiBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onTap;
-
   const NavigasiBar({
     Key? key,
     required this.selectedIndex,
     required this.onTap,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(

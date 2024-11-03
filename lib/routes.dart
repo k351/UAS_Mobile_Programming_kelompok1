@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/login/login.dart';
 import 'package:uas_flutter/login/signup.dart';
-import 'package:uas_flutter/Home/HomePage.dart';
-import 'package:uas_flutter/Search/SearchPage.dart';
-import 'package:uas_flutter/settings/SettingsPage.dart';
+import 'package:uas_flutter/Search/search_page.dart';
+import 'package:uas_flutter/settings/settings_page.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LoginScreen.routeName: (context) => LoginScreen(),

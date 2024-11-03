@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/HomePage.dart';
+import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/login/login.dart';
+import 'package:uas_flutter/routes.dart';
 
 void main() {
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Audio Reading',
       debugShowCheckedModeBanner: false,
-
       theme: ThemeData(
+        scaffoldBackgroundColor: AppConstants.clrBackground,
+        fontFamily: "Inter",
+        textTheme: const TextTheme(
+          bodySmall: TextStyle(color: AppConstants.clrBlack),
+          bodyLarge: TextStyle(color: AppConstants.clrBlack),
+          bodyMedium: TextStyle(color: AppConstants.clrBlack),
+        ),
         primarySwatch: Colors.blue,
       ),
-      home: Myhomepage(),
+      initialRoute: LoginScreen.routeName,
+      routes: routes,
     );
   }
 }

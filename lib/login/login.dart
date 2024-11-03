@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Container(
                   width: getProportionateScreenWidth(350),
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   decoration: const BoxDecoration(
                     color: AppConstants.mainColor,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 150,
                       height: 0.5,
                       color: Colors.grey[400],
-                      margin: EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.only(right: 10),
                     ),
                     Text(
                       AppConstants.or,
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 150,
                       height: 0.5,
                       color: Colors.grey[400],
-                      margin: EdgeInsets.only(left: 10),
+                      margin: const EdgeInsets.only(left: 10),
                     )
                   ],
                 ),

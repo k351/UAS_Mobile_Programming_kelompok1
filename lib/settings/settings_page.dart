@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/bottom_navigator.dart';
+import 'package:uas_flutter/size_config.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
-
+  const SettingsPage({super.key});
+  static const String routeName = 'settings';
+  
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  SettingsPageState createState() => SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class SettingsPageState extends State<SettingsPage> {
   bool isGeolocationEnabled = false;
   bool isSafeModeEnabled = false;
   bool isHDImageQualityEnabled = false;
+  int _selectedIndex = 3;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    NavigationUtils.navigateToPage(context, index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             color: Colors.blue,
             padding:
-                const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
+                const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
             child: Column(
               children: [
                 Row(
@@ -41,9 +52,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 20),
-
+                SizedBox(height: getProportionateScreenHeight(20)),
                 Row(
                   children: [
                     CircleAvatar(
@@ -82,7 +91,6 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
           ),
-
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -91,15 +99,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 10),
-
                     const Text(
                       'Account Settings',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
-                    _buildSettingsItem(Icons.location_on, 'My Addresses',
-                        'Set shopping delivery address',),
+                    _buildSettingsItem(
+                      Icons.location_on,
+                      'My Addresses',
+                      'Set shopping delivery address',
+                    ),
                     _buildSettingsItem(Icons.shopping_cart, 'My Cart',
                         'Add, remove products and move to checkout'),
                     _buildSettingsItem(Icons.shopping_bag, 'My Orders',
@@ -112,9 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         'Set any kind of notification message'),
                     _buildSettingsItem(Icons.privacy_tip, 'Account Privacy',
                         'Manage data usage and connected accounts'),
-
                     const SizedBox(height: 20),
-
                     const Text(
                       'App Settings',
                       style:
@@ -123,7 +131,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 10),
                     _buildSettingsItem(Icons.cloud, 'Load Data',
                         'Upload Data to your Cloud Firebase'),
-
                     const SizedBox(height: 10),
                     _buildSwitchItem(
                         Icons.location_on,
@@ -152,9 +159,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         isHDImageQualityEnabled = value;
                       });
                     }),
-
                     const SizedBox(height: 20),
-
                     Center(
                       child: OutlinedButton(
                         onPressed: () {
@@ -181,13 +186,17 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ],
       ),
+      bottomNavigationBar: NavigasiBar(
+        selectedIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
     );
   }
 
   Widget _buildSettingsItem(IconData icon, String title, String subtitle) {
     return ListTile(
       leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text(subtitle),
       trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: () {
@@ -200,7 +209,7 @@ class _SettingsPageState extends State<SettingsPage> {
       bool value, ValueChanged<bool> onChanged) {
     return ListTile(
       leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text(subtitle),
       trailing: Switch(
         value: value,
@@ -220,15 +229,14 @@ class _SettingsPageState extends State<SettingsPage> {
         return AlertDialog(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20), 
+            borderRadius: BorderRadius.circular(20),
           ),
-          elevation: 5, 
-          title: Row(
+          elevation: 5,
+          title: const Row(
             children: [
-              const Icon(Icons.logout,
-                  color: Colors.red, size: 24),
-              const SizedBox(width: 10),
-              const Text("Confirm Logout"),
+              Icon(Icons.logout, color: Colors.red, size: 24),
+              SizedBox(width: 10),
+              Text("Confirm Logout"),
             ],
           ),
           content: const Text(

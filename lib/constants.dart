@@ -6,8 +6,8 @@ class AppConstants {
   static const Color mainColor = Color(0xff1D61E7);
   static const Color textBlue = Color(0xff4D81E7);
   static const Color greyColor = Color(0xff898989);
-  static const Color greyColor3 = Color(0xff5A5A5A);
   static const Color greyColor1 = Color(0xffF1EEEE);
+  static const Color greyColor3 = Color(0xff5A5A5A);
   static const Color greyColor4 = Color(0xff868889);
   static const Color greyColor5 = Color(0xFF616161);
   static const Color greyColor6 = Color.fromARGB(255, 185, 185, 185);
@@ -20,6 +20,7 @@ class AppConstants {
   static const Color clrRed = Color.fromARGB(255, 255, 0, 0);
   static const Color clrBlue = Color(0xff5598FF);
   static const Color clrGreyBg = Color(0xffF6F6F6);
+  static const Color star = Color.fromARGB(255, 255, 235, 59);
 
   static const String signInTop = "Sign in to your \nAccount";
   static const String enterEmailPassText = "Enter your email and password";

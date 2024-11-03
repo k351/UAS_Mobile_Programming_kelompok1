@@ -3,7 +3,7 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/size_config.dart';
 
 class TextFieldWidget extends StatefulWidget {
-  TextFieldWidget({
+  const TextFieldWidget({
     this.controller,
     this.keyboardType,
     this.textInputAction,
@@ -12,8 +12,8 @@ class TextFieldWidget extends StatefulWidget {
     this.suffixIcon,
     this.obscure,
     this.validator,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final TextEditingController? controller;
   final TextInputType? keyboardType;
@@ -25,10 +25,10 @@ class TextFieldWidget extends StatefulWidget {
   final String? Function(String?)? validator;
 
   @override
-  _TextFieldWidgetState createState() => _TextFieldWidgetState();
+  TextFieldWidgetState createState() => TextFieldWidgetState();
 }
 
-class _TextFieldWidgetState extends State<TextFieldWidget> {
+class TextFieldWidgetState extends State<TextFieldWidget> {
   late FocusNode _focusNode;
   bool _isFocused = false;
 
@@ -84,7 +84,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
             focusColor: Colors.grey[100],
-            suffixIcon: widget.suffixIcon ?? SizedBox(),
+            suffixIcon: widget.suffixIcon ?? const SizedBox(),
             hintText: _isFocused ? null : widget.hintText,
             hintStyle: TextStyle(fontSize: getProportionateScreenWidth(14)),
             fillColor: AppConstants.greyColor6,

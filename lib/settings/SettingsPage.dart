@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
+  static const String routeName = '/settings';
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -223,12 +224,12 @@ class _SettingsPageState extends State<SettingsPage> {
             borderRadius: BorderRadius.circular(20), 
           ),
           elevation: 5, 
-          title: Row(
+          title: const Row(
             children: [
-              const Icon(Icons.logout,
+              Icon(Icons.logout,
                   color: Colors.red, size: 24),
-              const SizedBox(width: 10),
-              const Text("Confirm Logout"),
+              SizedBox(width: 10),
+              Text("Confirm Logout"),
             ],
           ),
           content: const Text(

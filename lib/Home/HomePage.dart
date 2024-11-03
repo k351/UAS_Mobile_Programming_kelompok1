@@ -3,17 +3,17 @@ import 'package:uas_flutter/BottomNavigator.dart';
 import 'package:uas_flutter/Home/TabBarViews.dart';
 import 'package:uas_flutter/Home/Tabs.dart';
 import 'dart:async';
-
 import 'package:uas_flutter/Utils.dart'; // Ambil Timer
 
 class Myhomepage extends StatefulWidget {
   @override
+  static const String routeName = '/home';
   State<Myhomepage> createState() => _MyhomepageState();
 }
 
 class _MyhomepageState extends State<Myhomepage>
     with SingleTickerProviderStateMixin {
-  // inisialisasi
+  // Initialization
   late ScrollController _scrollController;
   late TabController _tabController;
   late PageController _pageController;
@@ -21,7 +21,6 @@ class _MyhomepageState extends State<Myhomepage>
   int _currentPage = 0;
   int _selectedIndex = 0;
 
-  // ini untuk timer pindah pindah gambar
   @override
   void initState() {
     super.initState();
@@ -43,7 +42,6 @@ class _MyhomepageState extends State<Myhomepage>
     });
   }
 
-  // ini untuk buat gambar yang pindah-pindah biar ga error
   @override
   void dispose() {
     timer.cancel();
@@ -53,7 +51,6 @@ class _MyhomepageState extends State<Myhomepage>
     super.dispose();
   }
 
-  // ini buat navigator.push-nya buat pindah link
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -78,16 +75,17 @@ class _MyhomepageState extends State<Myhomepage>
                       height: 40,
                       padding: EdgeInsets.symmetric(horizontal: 2),
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 235, 235, 235).withOpacity(0.6),
+                        color: const Color.fromARGB(255, 235, 235, 235)
+                            .withOpacity(0.6),
                         borderRadius: BorderRadius.circular(5),
                       ),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search products...', 
-                            border: InputBorder.none, 
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                          ),
-                        style: TextStyle(fontSize: 18), 
+                      child: const TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search products...',
+                          border: InputBorder.none,
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                        ),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                   ),
@@ -113,9 +111,8 @@ class _MyhomepageState extends State<Myhomepage>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.horizontal(),
                       image: DecorationImage(
-                        image: AssetImage(books[index]['image']),
-                        fit: BoxFit.fill
-                      ),
+                          image: AssetImage(books[index]['image']),
+                          fit: BoxFit.fill),
                     ),
                   );
                 },

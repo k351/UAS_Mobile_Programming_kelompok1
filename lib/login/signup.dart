@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/login/login.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/usage/phonenumberfield.dart';
 import 'package:uas_flutter/usage/textfield.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -108,44 +109,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: getProportionateScreenHeight(10)),
 
                   // Date of Birth
-                  TextFieldWidget(
-                    controller: dobController,
-                    keyboardType: TextInputType.datetime,
-                    title: AppConstants.dateOfBirth,
-                    hintText: 'ex. 06/09/2005',
-                    textInputAction: TextInputAction.next,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Date of Birth cannot be empty';
-                      }
-                      if (!RegExp(
-                              r'^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/[0-9]{4}$')
-                          .hasMatch(value)) {
-                        return 'Enter a valid date in MM/DD/YYYY format';
-                      }
-                      return null;
+                  GestureDetector(
+                    onTap: () async {
+                      await _selectDate();
                     },
+                    child: AbsorbPointer(
+                      child: TextFieldWidget(
+                        controller: dobController,
+                        keyboardType: TextInputType.datetime,
+                        title: AppConstants.dateOfBirth,
+                        hintText: 'ex. MM/DD/YYYY',
+                        textInputAction: TextInputAction.next,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Date of Birth cannot be empty';
+                          }
+                          if (!RegExp(
+                                  r'^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/[0-9]{4}$')
+                              .hasMatch(value)) {
+                            return 'Enter a valid date in MM/DD/YYYY format';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
 
                   // Phone Number
-                  TextFieldWidget(
-                    controller: phoneNumberController,
-                    keyboardType: TextInputType.phone,
+                  PhoneNumberFieldWidget(
                     title: AppConstants.phoneNumber,
-                    hintText: 'ex. +6289623244972',
-                    textInputAction: TextInputAction.next,
+                    controller: phoneNumberController,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null || value.number.isEmpty) {
                         return 'Phone number cannot be empty';
                       }
-                      if (!RegExp(r'^\+?[0-9]{10,13}$').hasMatch(value)) {
+                      if (!RegExp(r'^\+?[0-9]{10,13}$')
+                          .hasMatch(value.number)) {
                         return 'Enter a valid phone number with 10-13 digits';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: getProportionateScreenHeight(10)),
 
                   // Password
                   TextFieldWidget(
@@ -234,5 +239,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        dobController.text = "${picked.month.toString().padLeft(2, '0')}/"
+            "${picked.day.toString().padLeft(2, '0')}/"
+            "${picked.year}";
+      });
+    }
   }
 }

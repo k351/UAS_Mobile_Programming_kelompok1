@@ -2,29 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/HomePage.dart';
 import 'package:uas_flutter/Search/SearchPage.dart';
 import 'package:uas_flutter/settings/SettingsPage.dart';
+import 'routes.dart';
 
 class NavigationUtils {
   static void navigateToPage(BuildContext context, int index) {
-    Widget page;
+    String routeName;
 
     switch (index) {
       case 0:
-        page = Myhomepage();
+        routeName = Myhomepage.routeName;
         break;
       case 1:
-        page = Searchpage();
+        routeName = Searchpage.routeName;
         break;
       case 3:
-        page = SettingsPage();
+        routeName = SettingsPage.routeName;
         break;
       default:
-        page = Myhomepage();
+        routeName = Myhomepage.routeName;
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
+    Navigator.pushNamed(context, routeName);
   }
 }
 

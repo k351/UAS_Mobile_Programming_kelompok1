@@ -10,7 +10,7 @@ class AppConstants {
   static const Color greyColor3 = Color(0xff5A5A5A);
   static const Color greyColor4 = Color(0xff868889);
   static const Color greyColor5 = Color(0xFF616161);
-  static const Color greyColor6 = Color(0xFF616161);
+  static const Color greyColor6 = Color.fromARGB(255, 185, 185, 185);
   static const Color greyColor7 = Color(0xFFD0D0De);
   static const Color greyColor8 = Color(0xFFACACAC);
   static const Color clrLightGreyColor = Color(0xffD4D4D4);

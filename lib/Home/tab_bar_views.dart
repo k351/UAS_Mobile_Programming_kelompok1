@@ -51,7 +51,7 @@ class ItemTabs extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: getProportionateScreenHeight(230),
+              height: getProportionateScreenHeight(110),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(

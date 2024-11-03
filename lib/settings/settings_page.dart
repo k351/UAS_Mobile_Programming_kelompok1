@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/bottom_navigator.dart';
+import 'package:uas_flutter/size_config.dart';
+
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  SettingsPageState createState() => SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class SettingsPageState extends State<SettingsPage> {
   bool isGeolocationEnabled = false;
   bool isSafeModeEnabled = false;
   bool isHDImageQualityEnabled = false;
+  int _selectedIndex = 3;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    NavigationUtils.navigateToPage(context, index);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +33,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             color: Colors.blue,
             padding:
-                const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
+                const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
             child: Column(
               children: [
                 Row(
@@ -42,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: getProportionateScreenHeight(20)),
 
                 Row(
                   children: [
@@ -181,13 +193,17 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ],
       ),
+        bottomNavigationBar: NavigasiBar(
+        selectedIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
     );
   }
 
   Widget _buildSettingsItem(IconData icon, String title, String subtitle) {
     return ListTile(
       leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text(subtitle),
       trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: () {
@@ -200,7 +216,7 @@ class _SettingsPageState extends State<SettingsPage> {
       bool value, ValueChanged<bool> onChanged) {
     return ListTile(
       leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text(subtitle),
       trailing: Switch(
         value: value,
@@ -223,12 +239,12 @@ class _SettingsPageState extends State<SettingsPage> {
             borderRadius: BorderRadius.circular(20), 
           ),
           elevation: 5, 
-          title: Row(
+          title: const Row(
             children: [
-              const Icon(Icons.logout,
+              Icon(Icons.logout,
                   color: Colors.red, size: 24),
-              const SizedBox(width: 10),
-              const Text("Confirm Logout"),
+              SizedBox(width: 10),
+              Text("Confirm Logout"),
             ],
           ),
           content: const Text(
@@ -258,6 +274,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         );
       },
+      
     );
   }
 }

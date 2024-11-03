@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Home/HomePage.dart';
+import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/login/login.dart';
 import 'package:uas_flutter/routes.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.blue,
       ),
-      initialRoute: LoginScreen.routeName,
+      initialRoute: Myhomepage.routeName,
       routes: routes,
     );
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Home/HomePage.dart';
-import 'package:uas_flutter/Search/SearchPage.dart';
-import 'package:uas_flutter/settings/SettingsPage.dart';
+import 'package:uas_flutter/Home/home_page.dart';
+import 'package:uas_flutter/Search/search_page.dart';
+import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/settings/settings_page.dart';
+import 'package:uas_flutter/size_config.dart';
 
 class NavigationUtils {
   static void navigateToPage(BuildContext context, int index) {
@@ -9,16 +11,19 @@ class NavigationUtils {
 
     switch (index) {
       case 0:
-        page = Myhomepage();
+        page = const Myhomepage();
         break;
       case 1:
-        page = Searchpage();
+        page = const Searchpage();
+        break;
+      case 2:
+        page = const Searchpage();
         break;
       case 3:
-        page = SettingsPage();
+        page = const SettingsPage();
         break;
       default:
-        page = Myhomepage();
+        page = const Myhomepage();
     }
 
     Navigator.pushReplacement(
@@ -33,13 +38,14 @@ class NavigasiBar extends StatelessWidget {
   final Function(int) onTap;
 
   const NavigasiBar({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig.init(context);
     return BottomNavigationBar(
       currentIndex: selectedIndex,
       onTap: onTap,
@@ -61,8 +67,8 @@ class NavigasiBar extends StatelessWidget {
           label: 'Settings',
         ),
       ],
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
+      selectedItemColor: AppConstants.mainColor,
+      unselectedItemColor: AppConstants.greyColor,
       type: BottomNavigationBarType.fixed,
     );
   }

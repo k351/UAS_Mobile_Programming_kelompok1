@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/constants.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
-  static const String routeName = 'settings';
+  const SettingsPage({Key? key}) : super(key: key);
+  static String routeName = '/settingspage';
 
   @override
   SettingsPageState createState() => SettingsPageState();
@@ -13,7 +14,7 @@ class SettingsPage extends StatefulWidget {
 class SettingsPageState extends State<SettingsPage> {
   bool isGeolocationEnabled = false;
   bool isSafeModeEnabled = false;
-  bool isDarkModeEnabled = false;
+  bool isHDImageQualityEnabled = false;
   int _selectedIndex = 3;
 
   void _onItemTapped(int index) {
@@ -25,163 +26,189 @@ class SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig.init(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            color: Colors.blue,
-            padding:
-                const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: const Text(
-                          'Account',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+      backgroundColor: AppConstants.clrBackground,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: AppConstants.mainColor,
+            expandedHeight: getProportionateScreenHeight(90),
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                'Account',
+                style: TextStyle(
+                  color: AppConstants.clrBackground,
+                  fontSize: getProportionateScreenHeight(20),
+                  fontFamily: AppConstants.fontInterBold,
                 ),
-                SizedBox(height: getProportionateScreenHeight(20)),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 30, color: Colors.blue),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Kelompok 1',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Kelompok1@example.com',
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.white),
-                      onPressed: () {
-                        //buat profil, nanti lanjut lagi
-                      },
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Account Settings',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                  child: Container(
+                    color: AppConstants.mainColor,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(16),
+                      vertical: getProportionateScreenHeight(16),
                     ),
-                    const SizedBox(height: 10),
-                    _buildSettingsItem(
-                      Icons.location_on,
-                      'My Addresses',
-                      'Set shopping delivery address',
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: getProportionateScreenWidth(30),
+                          backgroundColor: AppConstants.clrBackground,
+                          child: Icon(
+                            Icons.person,
+                            size: getProportionateScreenHeight(30),
+                            color: AppConstants.mainColor,
+                          ),
+                        ),
+                        SizedBox(width: getProportionateScreenWidth(16)),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Kelompok 1',
+                                style: TextStyle(
+                                  color: AppConstants.clrBackground,
+                                  fontSize: getProportionateScreenHeight(18),
+                                  fontFamily: AppConstants.fontInterBold,
+                                ),
+                              ),
+                              Text(
+                                'Kelompok1@example.com',
+                                style: TextStyle(
+                                  color: AppConstants.greyColor4,
+                                  fontFamily: AppConstants.fontInterRegular,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit,
+                              color: AppConstants.clrBackground),
+                          onPressed: () {
+                            // Navigasi ke halaman edit profil
+                          },
+                        ),
+                      ],
                     ),
-                    _buildSettingsItem(Icons.shopping_cart, 'My Cart',
-                        'Add, remove products and move to checkout'),
-                    _buildSettingsItem(Icons.shopping_bag, 'My Orders',
-                        'In-progress and Completed Orders'),
-                    _buildSettingsItem(Icons.account_balance, 'Bank Account',
-                        'Withdraw balance to registered bank account'),
-                    _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
-                        'List of all the discounted coupons'),
-                    _buildSettingsItem(Icons.notifications, 'Notifications',
-                        'Set any kind of notification message'),
-                    _buildSettingsItem(Icons.privacy_tip, 'Account Privacy',
-                        'Manage data usage and connected accounts'),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'App Settings',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildSettingsItem(Icons.cloud, 'Load Data',
-                        'Upload Data to your Cloud Firebase'),
-                    const SizedBox(height: 10),
-                    _buildSwitchItem(
+                  ),
+                ),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                Padding(
+                  padding: EdgeInsets.all(getProportionateScreenWidth(16.0)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Account Settings',
+                        style: TextStyle(
+                          fontSize: getProportionateScreenHeight(18),
+                          fontFamily: AppConstants.fontInterSemiBold,
+                        ),
+                      ),
+                      SizedBox(height: getProportionateScreenHeight(10)),
+                      _buildSettingsItem(Icons.location_on, 'My Addresses',
+                          'Set shopping delivery address'),
+                      _buildSettingsItem(Icons.shopping_cart, 'My Cart',
+                          'Add, remove products and move to checkout'),
+                      _buildSettingsItem(Icons.shopping_bag, 'My Orders',
+                          'In-progress and Completed Orders'),
+                      _buildSettingsItem(Icons.account_balance, 'Bank Account',
+                          'Withdraw balance to registered bank account'),
+                      _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
+                          'List of all the discounted coupons'),
+                      _buildSettingsItem(Icons.notifications, 'Notifications',
+                          'Set any kind of notification message'),
+                      _buildSettingsItem(Icons.privacy_tip, 'Account Privacy',
+                          'Manage data usage and connected accounts'),
+                      SizedBox(height: getProportionateScreenHeight(20)),
+                      Text(
+                        'App Settings',
+                        style: TextStyle(
+                          fontSize: getProportionateScreenHeight(18),
+                          fontFamily: AppConstants.fontInterSemiBold,
+                        ),
+                      ),
+                      SizedBox(height: getProportionateScreenHeight(10)),
+                      _buildSettingsItem(Icons.cloud, 'Load Data',
+                          'Upload Data to your Cloud Firebase'),
+                      SizedBox(height: getProportionateScreenHeight(10)),
+                      _buildSwitchItem(
                         Icons.location_on,
                         'Geolocation',
                         'Set recommendation based on location',
-                        isGeolocationEnabled, (value) {
-                      setState(() {
-                        isGeolocationEnabled = value;
-                      });
-                    }),
-                    _buildSwitchItem(
+                        isGeolocationEnabled,
+                        (value) {
+                          setState(() {
+                            isGeolocationEnabled = value;
+                          });
+                        },
+                      ),
+                      _buildSwitchItem(
                         Icons.shield,
                         'Safe Mode',
                         'Search result is safe for all ages',
-                        isSafeModeEnabled, (value) {
-                      setState(() {
-                        isSafeModeEnabled = value;
-                      });
-                    }),
-                    _buildSwitchItem(
+                        isSafeModeEnabled,
+                        (value) {
+                          setState(() {
+                            isSafeModeEnabled = value;
+                          });
+                        },
+                      ),
+                      _buildSwitchItem(
                         Icons.dark_mode,
                         'Dark Mode',
                         'Switch between light and dark themes for a more comfortable viewing experience in low light',
-                        isDarkModeEnabled, (value) {
-                      setState(() {
-                        isDarkModeEnabled = value;
-                      });
-                    }),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          _showLogoutDialog(context);
+                        isHDImageQualityEnabled,
+                        (value) {
+                          setState(() {
+                            isHDImageQualityEnabled = value;
+                          });
                         },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 12),
-                          side: BorderSide(color: Colors.red),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      ),
+                      SizedBox(height: getProportionateScreenHeight(20)),
+                      Center(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            _showLogoutDialog(context);
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: getProportionateScreenWidth(40),
+                              vertical: getProportionateScreenHeight(12),
+                            ),
+                            side: const BorderSide(color: Colors.red),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Logout',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontFamily: AppConstants.fontInterMedium,
+                            ),
                           ),
                         ),
-                        child: const Text(
-                          'Logout',
-                          style: TextStyle(color: Colors.red),
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -195,12 +222,21 @@ class SettingsPageState extends State<SettingsPage> {
 
   Widget _buildSettingsItem(IconData icon, String title, String subtitle) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(subtitle),
+      leading: Icon(icon, color: AppConstants.mainColor),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontFamily: AppConstants.fontInterMedium,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(fontFamily: AppConstants.fontInterRegular),
+      ),
       trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: () {
-        // buat navigasi, tujuannya nanti masukin di sized box
+        // Logic navigasi
       },
     );
   }
@@ -208,13 +244,22 @@ class SettingsPageState extends State<SettingsPage> {
   Widget _buildSwitchItem(IconData icon, String title, String subtitle,
       bool value, ValueChanged<bool> onChanged) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(subtitle),
+      leading: Icon(icon, color: AppConstants.mainColor),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontFamily: AppConstants.fontInterMedium,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(fontFamily: AppConstants.fontInterRegular),
+      ),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: Colors.blue,
+        activeColor: AppConstants.mainColor,
       ),
       onTap: () {
         onChanged(!value);
@@ -227,40 +272,86 @@ class SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: AppConstants.clrBackground,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           elevation: 5,
-          title: const Row(
+          title: Row(
             children: [
-              Icon(Icons.logout, color: Colors.red, size: 24),
-              SizedBox(width: 10),
-              Text("Confirm Logout"),
+              const Icon(Icons.logout, color: Colors.red, size: 28),
+              const SizedBox(width: 10),
+              Text(
+                "Logout Confirmation",
+                style: TextStyle(
+                  fontFamily: AppConstants.fontInterSemiBold,
+                  fontSize: 20,
+                  color: Colors.black87,
+                ),
+              ),
             ],
           ),
-          content: const Text(
-            "Are you sure you want to logout?",
-            style: TextStyle(color: Colors.black54),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Divider(color: Colors.grey.shade300, thickness: 1),
+              const SizedBox(height: 10),
+              Text(
+                "Are you sure you want to logout?",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontFamily: AppConstants.fontInterRegular,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey.shade300,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: getProportionateScreenWidth(24),
+                  vertical: getProportionateScreenHeight(12),
+                ),
+              ),
+              child: Text(
                 "Cancel",
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(
+                  fontFamily: AppConstants.fontInterMedium,
+                ),
               ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // kalau mau bisa log out logicnya disini
+                // Logic logout
               },
-              child: const Text(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: getProportionateScreenWidth(24),
+                  vertical: getProportionateScreenHeight(12),
+                ),
+              ),
+              child: Text(
                 "Confirm",
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(
+                  fontFamily: AppConstants.fontInterMedium,
+                ),
               ),
             ),
           ],

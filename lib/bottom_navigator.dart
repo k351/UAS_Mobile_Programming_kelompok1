@@ -7,28 +7,28 @@ import 'package:uas_flutter/size_config.dart';
 
 class NavigationUtils {
   static void navigateToPage(BuildContext context, int index) {
-    Widget page;
+    String routeName;
 
     switch (index) {
       case 0:
-        page = const Myhomepage();
+        routeName = Myhomepage.routeName;
         break;
       case 1:
-        page = const WishlistPage();
+        routeName = WishlistPage.routeName;
         break;
       case 2:
-        page = const WishlistPage();
+        routeName = Myhomepage.routeName;
         break;
       case 3:
-        page = const SettingsPage();
+        routeName = SettingsPage.routeName;
         break;
       default:
-        page = const Myhomepage();
+        routeName = Myhomepage.routeName;
     }
 
-    Navigator.pushReplacement(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(builder: (context) => page),
+      routeName,
     );
   }
 }

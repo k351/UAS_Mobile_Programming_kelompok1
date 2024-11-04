@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/home_page.dart';
-import 'package:uas_flutter/login/login.dart';
-import 'package:uas_flutter/login/signup.dart';
+import 'package:uas_flutter/auth/login.dart';
+import 'package:uas_flutter/auth/signup.dart';
 import 'package:uas_flutter/Search/search_page.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/login/login.dart';
+import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/usage/phonenumberfield.dart';
 import 'package:uas_flutter/usage/textfield.dart';
@@ -176,7 +176,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         return 'Password cannot be empty';
                       }
                       if (!RegExp(
-                              r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$')
+                              r'^(?=.[A-Z])(?=.[a-z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%?&]{8,20}$')
                           .hasMatch(value)) {
                         return 'Password must be 8-20 characters with uppercase, lowercase, number, and special character';
                       }

@@ -5,7 +5,7 @@ import 'package:uas_flutter/size_config.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
   static const String routeName = 'settings';
-  
+
   @override
   SettingsPageState createState() => SettingsPageState();
 }
@@ -13,7 +13,7 @@ class SettingsPage extends StatefulWidget {
 class SettingsPageState extends State<SettingsPage> {
   bool isGeolocationEnabled = false;
   bool isSafeModeEnabled = false;
-  bool isHDImageQualityEnabled = false;
+  bool isDarkModeEnabled = false;
   int _selectedIndex = 3;
 
   void _onItemTapped(int index) {
@@ -154,9 +154,9 @@ class SettingsPageState extends State<SettingsPage> {
                         Icons.dark_mode,
                         'Dark Mode',
                         'Switch between light and dark themes for a more comfortable viewing experience in low light',
-                        isHDImageQualityEnabled, (value) {
+                        isDarkModeEnabled, (value) {
                       setState(() {
-                        isHDImageQualityEnabled = value;
+                        isDarkModeEnabled = value;
                       });
                     }),
                     const SizedBox(height: 20),

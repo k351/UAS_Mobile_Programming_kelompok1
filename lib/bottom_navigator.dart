@@ -3,7 +3,6 @@ import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/Wishlist/WishlistPage.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
-import 'package:uas_flutter/size_config.dart';
 
 class NavigationUtils {
   static void navigateToPage(BuildContext context, int index) {
@@ -36,16 +35,13 @@ class NavigationUtils {
 class NavigasiBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onTap;
-
   const NavigasiBar({
     super.key,
     required this.selectedIndex,
     required this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
-    SizeConfig.init(context);
     return BottomNavigationBar(
       currentIndex: selectedIndex,
       onTap: onTap,

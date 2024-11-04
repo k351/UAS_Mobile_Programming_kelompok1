@@ -87,7 +87,7 @@ class TextFieldWidgetState extends State<TextFieldWidget> {
             suffixIcon: widget.suffixIcon ?? const SizedBox(),
             hintText: _isFocused ? null : widget.hintText,
             hintStyle: TextStyle(fontSize: getProportionateScreenWidth(14)),
-            fillColor: AppConstants.greyColor6,
+            fillColor: AppConstants.greyColor,
             disabledBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10)),
               borderSide: BorderSide(color: AppConstants.greyColor1),

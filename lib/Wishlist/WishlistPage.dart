@@ -6,6 +6,7 @@ import 'package:uas_flutter/size_config.dart';
 
 class WishlistPage extends StatefulWidget {
   const WishlistPage({super.key});
+  static const String routeName = '/wishlistpage';
 
   @override
   _WishlistPageState createState() => _WishlistPageState();

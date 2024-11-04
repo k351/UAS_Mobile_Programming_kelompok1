@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/home_page.dart';
-import 'package:uas_flutter/Search/search_page.dart';
+import 'package:uas_flutter/Wishlist/WishlistPage.dart';
+import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/routes.dart';
 
@@ -13,7 +14,10 @@ class NavigationUtils {
         routeName = Myhomepage.routeName;
         break;
       case 1:
-        routeName = Searchpage.routeName;
+        page = const WishlistPage();
+        break;
+      case 2:
+        page = const WishlistPage();
         break;
       case 3:
         routeName = SettingsPage.routeName;
@@ -45,8 +49,8 @@ class NavigasiBar extends StatelessWidget {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
+          icon: Icon(Icons.favorite),
+          label: 'Wishlist',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),

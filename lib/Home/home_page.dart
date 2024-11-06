@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Cart/CartPage.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/Home/search_page.dart';
 import 'package:uas_flutter/Home/tab_bar_views.dart';
@@ -132,7 +133,11 @@ class _MyhomepageState extends State<Myhomepage>
                   SizedBox(width: getProportionateScreenWidth(10)),
                   Row(
                     children: [
-                      const Icon(Icons.shopping_cart_sharp),
+                      InkWell(
+                        onTap: () =>
+                            Navigator.pushNamed(context, Cartpage.routeName),
+                        child: const Icon(Icons.shopping_cart_sharp),
+                      ),
                       SizedBox(width: getProportionateScreenWidth(10)),
                       const Icon(Icons.settings),
                     ],

@@ -1,0 +1,12 @@
+{
+  "editor.guides.bracketPairsHorizontal": false,
+  "editor.guides.bracketPairs": false,
+  "dart.previewFlutterUiGuidesCustomTracking": true,
+  "editor.guides.indentation": true,
+  "guides.active.extraIndent": false,
+  "guides.active.gutter": false,
+  "dart.previewFlutterUiGuides": true,
+  "workbench.tree.renderIndentGuides": "always",
+  "editor.guides.highlightActiveIndentation": true,
+  "terminal.integrated.shellIntegration.showCommandGuide": true
+}

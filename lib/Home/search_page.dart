@@ -32,7 +32,10 @@ class SearchResultsPage extends StatelessWidget {
         ),
         itemCount: filteredBooks.length,
         itemBuilder: (context, index) {
-          return ItemTabs(isi: filteredBooks[index]);
+          return ItemTabs(
+            isi: filteredBooks[index],
+            index: index,
+          );
         },
       ),
     );

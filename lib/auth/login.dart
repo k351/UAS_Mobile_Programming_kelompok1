@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uas_flutter/auth/widget/loginsocialfield.dart';
+import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/auth/forgotpassword_screen.dart';
 import 'package:uas_flutter/auth/signup.dart';
 import 'package:uas_flutter/size_config.dart';
-import 'package:uas_flutter/usage/loginsocialfield.dart';
-import 'package:uas_flutter/usage/textfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +19,34 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Handle login process
+  Future<void> _login() async {
+    try {
+      // Get email and password from the controllers
+      String email = emailController.text.trim();
+      String password = passwordController.text.trim();
+
+      // Sign in with Firebase Authentication
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // If login is successful, navigate to home page
+      if (userCredential.user != null) {
+        // Replace with your desired route for successful login
+        Navigator.pushReplacementNamed(context, '/myhomepage');
+      }
+    } catch (e) {
+      // Handle errors (e.g., incorrect credentials)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login failed. Please check your credentials.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,10 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                          context, '/myhomepage'); // Ubah route ke 'MyHomePage'
-                    },
+                    onTap: _login, // Call the login function
                     child: Center(
                       child: Text(
                         AppConstants.login,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uas_flutter/auth/widget/loginsocialfield.dart';
+import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/login/signup.dart';
+import 'package:uas_flutter/auth/forgotpassword_screen.dart';
+import 'package:uas_flutter/auth/signup.dart';
 import 'package:uas_flutter/size_config.dart';
-import 'package:uas_flutter/usage/loginsocialfield.dart';
-import 'package:uas_flutter/usage/textfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +20,34 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Handle login process
+  Future<void> _login() async {
+    try {
+      // Get email and password from the controllers
+      String email = emailController.text.trim();
+      String password = passwordController.text.trim();
+
+      // Sign in with Firebase Authentication
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // If login is successful, navigate to home page
+      if (userCredential.user != null) {
+        // Replace with your desired route for successful login
+        Navigator.pushReplacementNamed(context, '/myhomepage');
+      }
+    } catch (e) {
+      // Handle errors (e.g., incorrect credentials)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Login failed. Please check your credentials.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
@@ -25,7 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppConstants.clrBackground,
       body: SafeArea(
         child: SingleChildScrollView(
-          // Wrap the Container with SingleChildScrollView
           child: Container(
             margin: EdgeInsets.only(
               left: getProportionateScreenWidth(15),
@@ -35,16 +64,12 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: getProportionateScreenHeight(20),
-                ),
+                SizedBox(height: getProportionateScreenHeight(20)),
                 SvgPicture.asset(
                   AppConstants.imgAppLogo,
                   width: getProportionateScreenWidth(100),
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(30),
-                ),
+                SizedBox(height: getProportionateScreenHeight(30)),
                 Text(
                   AppConstants.signInTop,
                   style: TextStyle(
@@ -55,9 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(10),
-                ),
+                SizedBox(height: getProportionateScreenHeight(10)),
                 Text(
                   AppConstants.enterEmailPassText,
                   style: TextStyle(
@@ -67,9 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(30),
-                ),
+                SizedBox(height: getProportionateScreenHeight(30)),
                 TextFieldWidget(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -77,9 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: 'Enter your email here',
                   textInputAction: TextInputAction.next,
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(20),
-                ),
+                SizedBox(height: getProportionateScreenHeight(20)),
                 TextFieldWidget(
                   controller: passwordController,
                   keyboardType: TextInputType.visiblePassword,
@@ -88,25 +107,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: 'Enter your password here',
                   textInputAction: TextInputAction.done,
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(10),
-                ),
+                SizedBox(height: getProportionateScreenHeight(10)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      AppConstants.forgotPassword,
-                      style: TextStyle(
-                        color: AppConstants.textBlue,
-                        fontSize: getProportionateScreenWidth(14),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(
+                          context, ForgotPasswordScreen.routeName),
+                      child: Text(
+                        AppConstants.forgotPassword,
+                        style: TextStyle(
+                          color: AppConstants.textBlue,
+                          fontSize: getProportionateScreenWidth(14),
+                        ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(20),
-                ),
+                SizedBox(height: getProportionateScreenHeight(20)),
                 Container(
                   width: getProportionateScreenWidth(350),
                   padding: const EdgeInsets.all(15),
@@ -114,23 +132,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppConstants.mainColor,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  child: Center(
-                    child: Text(
-                      AppConstants.login,
-                      style: TextStyle(
-                        fontFamily: AppConstants.fontInterMedium,
-                        color: AppConstants.clrBackground,
-                        fontSize: getProportionateScreenWidth(16),
+                  child: GestureDetector(
+                    onTap: _login, // Call the login function
+                    child: Center(
+                      child: Text(
+                        AppConstants.login,
+                        style: TextStyle(
+                          fontFamily: AppConstants.fontInterMedium,
+                          color: AppConstants.clrBackground,
+                          fontSize: getProportionateScreenWidth(16),
+                        ),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(20),
-                ),
+                SizedBox(height: getProportionateScreenHeight(20)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       width: 150,
@@ -151,19 +169,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 0.5,
                       color: Colors.grey[400],
                       margin: const EdgeInsets.only(left: 10),
-                    )
+                    ),
                   ],
                 ),
-                SizedBox(
-                  height: getProportionateScreenHeight(20),
-                ),
-                // Add Google login button
-                const SocialLoginButton(
-                    image: AppConstants.imgGoogle, text: AppConstants.googleLogin),
                 SizedBox(height: getProportionateScreenHeight(20)),
-                // Add Facebook login button
                 const SocialLoginButton(
-                    image: AppConstants.imgFacebook, text: AppConstants.facebookLogin),
+                    image: AppConstants.imgGoogle,
+                    text: AppConstants.googleLogin),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                const SocialLoginButton(
+                    image: AppConstants.imgFacebook,
+                    text: AppConstants.facebookLogin),
                 SizedBox(height: getProportionateScreenHeight(20)),
                 GestureDetector(
                   onTap: () =>

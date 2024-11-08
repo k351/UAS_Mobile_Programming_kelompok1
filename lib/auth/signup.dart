@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Home/home_page.dart';
+import 'package:uas_flutter/auth/widget/phonenumberfield.dart';
+import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/login/login.dart';
+import 'package:uas_flutter/auth/login.dart';
+import 'package:uas_flutter/provider/provider.dart';
 import 'package:uas_flutter/size_config.dart';
-import 'package:uas_flutter/usage/phonenumberfield.dart';
-import 'package:uas_flutter/usage/textfield.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,6 +18,8 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  void loginNavigator() => Navigator.pushReplacement(
+      context, MaterialPageRoute(builder: (_) => const LoginScreen()));
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
@@ -23,6 +28,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isPassword = true;
 
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> signUp() async {
+    final signProvider = Provider.of<UserProvider>(context, listen: false);
+    await signProvider.signUp(
+        usernameController.text,
+        emailController.text,
+        dobController.text,
+        phoneNumberController.text,
+        passwordController.text);
+    homeNavigator();
+  }
+
+  void homeNavigator() => Navigator.pushReplacement(
+      context, MaterialPageRoute(builder: (_) => const Myhomepage()));
 
   @override
   Widget build(BuildContext context) {
@@ -172,15 +191,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscure: isPassword ? true : false,
                     textInputAction: TextInputAction.done,
                     validator: (value) {
+                      List<String> errorMessages = [];
+
+                      // Check for each condition and add an error message if the condition is not met
                       if (value == null || value.isEmpty) {
-                        return 'Password cannot be empty';
+                        errorMessages.add('Password cannot be empty');
+                      } else {
+                        if (value.length < 8 || value.length > 20) {
+                          errorMessages
+                              .add('Password must be between 8-20 characters');
+                        }
+                        if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                          errorMessages.add(
+                              'Password must contain at least one uppercase letter');
+                        }
+                        if (!RegExp(r'[a-z]').hasMatch(value)) {
+                          errorMessages.add(
+                              'Password must contain at least one lowercase letter');
+                        }
+                        if (!RegExp(r'\d').hasMatch(value)) {
+                          errorMessages
+                              .add('Password must contain at least one number');
+                        }
+                        if (!RegExp(r'[@$!%?&]').hasMatch(value)) {
+                          errorMessages.add(
+                              'Password must contain at least one special character (@, !, %, ?, &)');
+                        }
                       }
-                      if (!RegExp(
-                              r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$')
-                          .hasMatch(value)) {
-                        return 'Password must be 8-20 characters with uppercase, lowercase, number, and special character';
+
+                      // If error messages are not empty, join them into a single string
+                      if (errorMessages.isNotEmpty) {
+                        return errorMessages.join('\n');
                       }
-                      return null;
+
+                      return null; // Return null if all conditions are met
                     },
                   ),
                   SizedBox(height: getProportionateScreenHeight(20)),

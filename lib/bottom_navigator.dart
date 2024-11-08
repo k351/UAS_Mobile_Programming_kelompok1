@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/Wishlist/WishlistPage.dart';
 import 'package:uas_flutter/constants.dart';
@@ -16,7 +17,7 @@ class NavigationUtils {
         routeName = WishlistPage.routeName;
         break;
       case 2:
-        routeName = Myhomepage.routeName;
+        routeName = Cartpage.routeName;
         break;
       case 3:
         routeName = SettingsPage.routeName;

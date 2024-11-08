@@ -1,0 +1,29 @@
+{
+    "project_info": {
+      "project_number": "37912886138",
+      "project_id": "uasmoprog-93d47",
+      "storage_bucket": "uasmoprog-93d47.firebasestorage.app"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:37912886138:android:01164df43a2656dc73b4c3",
+          "android_client_info": {
+            "package_name": "com.example.uas_flutter"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyCDvVNptqr7DRt2DYrba7hqalTO3sMyiyM"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

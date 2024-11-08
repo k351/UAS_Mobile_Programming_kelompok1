@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/size_config.dart';
 
-class TopupsIndomaret extends StatefulWidget {
+class TopupsMarketplace extends StatefulWidget {
   final double initialSaldo;
 
-  const TopupsIndomaret({super.key, required this.initialSaldo});
+  const TopupsMarketplace({super.key, required this.initialSaldo});
   @override
-  TopupsState createState() => TopupsState();
+  TopupsMarketplaceState createState() => TopupsMarketplaceState();
 }
 
-class TopupsState extends State<TopupsIndomaret> {
+class TopupsMarketplaceState extends State<TopupsMarketplace> {
   late double saldo;
 
   @override
@@ -36,12 +36,12 @@ class TopupsState extends State<TopupsIndomaret> {
         Navigator.pop(context, saldo);
       } else {
         setState(() {
-          error = "Minimum pengisian 3000!!!";
+          error = "Minimum charge is Rp3000!!!";
         });
       }
     } catch (e) {
       setState(() {
-        error = "Masukkan angka yang valid!";
+        error = "Enter a valid number!";
       });
     }
   }
@@ -64,7 +64,7 @@ class TopupsState extends State<TopupsIndomaret> {
             Row(
               children: [
                 Text(
-                  "Duit anda sekarang: Rp${saldo.toStringAsFixed(0)}",
+                  "Your saldo: Rp${saldo.toStringAsFixed(0)}",
                   style: TextStyle(
                       fontSize: getProportionateScreenWidth(15),
                       fontWeight: FontWeight.w500,
@@ -106,8 +106,9 @@ class TopupsState extends State<TopupsIndomaret> {
                 Expanded(
                   child: TextFormField(
                     controller: _topupController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
-                      hintText: "Masukkan nominal",
+                      hintText: "Enter nominal",
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: AppConstants.clrBlue),
                       ),
@@ -120,7 +121,7 @@ class TopupsState extends State<TopupsIndomaret> {
             Row(
               children: [
                 Text(
-                  "+ Rp2.500 biaya top up",
+                  "+ Rp2.500 cost top up",
                   style: TextStyle(
                       fontSize: getProportionateScreenWidth(18),
                       color: AppConstants.greyColor,
@@ -149,7 +150,7 @@ class TopupsState extends State<TopupsIndomaret> {
               style: ElevatedButton.styleFrom(
                   backgroundColor: AppConstants.clrBlue),
               child: const Text(
-                "Top Up",
+                "Confirmation Top Up",
                 style: TextStyle(
                     color: AppConstants.clrAppBar,
                     fontFamily: AppConstants.fontInterRegular),

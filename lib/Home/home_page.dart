@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Cart/CartPage.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
@@ -6,6 +7,7 @@ import 'package:uas_flutter/Home/tab_bar_views.dart';
 import 'package:uas_flutter/Home/tabs.dart';
 import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'dart:async'; // Ambil Time
 import 'package:uas_flutter/utils.dart';
@@ -139,7 +141,11 @@ class _MyhomepageState extends State<Myhomepage>
                         child: const Icon(Icons.shopping_cart_sharp),
                       ),
                       SizedBox(width: getProportionateScreenWidth(10)),
-                      const Icon(Icons.settings),
+                      InkWell(
+                        onTap: () =>
+                            Navigator.pushNamed(context, SettingsPage.routeName),
+                        child: const Icon(Icons.settings),
+                      ),
                     ],
                   ),
                 ],

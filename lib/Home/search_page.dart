@@ -28,7 +28,7 @@ class SearchResultsPage extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 3,
           mainAxisSpacing: 3,
-          childAspectRatio: getProportionateScreenHeight(0.74),
+          childAspectRatio: getChildAspectRatio(),
         ),
         itemCount: filteredBooks.length,
         itemBuilder: (context, index) {

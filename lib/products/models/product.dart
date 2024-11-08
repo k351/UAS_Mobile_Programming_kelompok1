@@ -24,7 +24,7 @@ final List<Product> product = [
     title: "Wireless Headphones",
     description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Donec massa sapien faucibus et molestie ac feugiat. In massa tempor nec feugiat nisl. Libero id faucibus nisl tincidunt.",
-    image: "images/all/wireless.png",
+    image: "assets/product/wireless.png",
     price: 120,
     category: "Electronics",
     rate: 4.8,
@@ -34,7 +34,7 @@ final List<Product> product = [
     title: "Woman Sweter",
     description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Donec massa sapien faucibus et molestie ac feugiat. In massa tempor nec feugiat nisl. Libero id faucibus nisl tincidunt.",
-    image: "images/all/sweet.png",
+    image: "assets/product/sweet.png",
     price: 120,
     category: "Woman Fashion",
     rate: 4.5,

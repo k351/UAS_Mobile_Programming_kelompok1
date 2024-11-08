@@ -18,8 +18,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  void loginNavigator() => Navigator.pushReplacement(
-      context, MaterialPageRoute(builder: (_) => const LoginScreen()));
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
@@ -29,19 +27,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
+  void homeNavigator() => Navigator.pushReplacement(
+      context, MaterialPageRoute(builder: (_) => const Myhomepage()));
+
   Future<void> signUp() async {
     final signProvider = Provider.of<UserProvider>(context, listen: false);
-    await signProvider.signUp(
+    try {
+      await signProvider.signUp(
         usernameController.text,
         emailController.text,
         dobController.text,
         phoneNumberController.text,
-        passwordController.text);
-    homeNavigator();
+        passwordController.text,
+      );
+      // Show a success dialog or a message before navigating to the login page
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Account created successfully!')),
+      );
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
-
-  void homeNavigator() => Navigator.pushReplacement(
-      context, MaterialPageRoute(builder: (_) => const Myhomepage()));
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +99,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Username
                   TextFieldWidget(
                     controller: usernameController,
@@ -107,7 +117,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Email
                   TextFieldWidget(
                     controller: emailController,
@@ -126,7 +135,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Date of Birth
                   GestureDetector(
                     onTap: () async {
@@ -154,7 +162,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Phone Number
                   PhoneNumberFieldWidget(
                     title: AppConstants.phoneNumber,
@@ -170,7 +177,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-
                   // Password
                   TextFieldWidget(
                     controller: passwordController,
@@ -192,8 +198,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     textInputAction: TextInputAction.done,
                     validator: (value) {
                       List<String> errorMessages = [];
-
-                      // Check for each condition and add an error message if the condition is not met
                       if (value == null || value.isEmpty) {
                         errorMessages.add('Password cannot be empty');
                       } else {
@@ -218,17 +222,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               'Password must contain at least one special character (@, !, %, ?, &)');
                         }
                       }
-
-                      // If error messages are not empty, join them into a single string
                       if (errorMessages.isNotEmpty) {
                         return errorMessages.join('\n');
                       }
-
-                      return null; // Return null if all conditions are met
+                      return null;
                     },
                   ),
                   SizedBox(height: getProportionateScreenHeight(20)),
-
                   // Sign Up Button
                   Container(
                     width: getProportionateScreenWidth(340),
@@ -241,40 +241,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Center(
                       child: GestureDetector(
                         onTap: () {
-                          if (_formKey.currentState!.validate()) {}
+                          if (_formKey.currentState!.validate()) {
+                            signUp();
+                          }
                         },
                         child: Text(
                           AppConstants.signUp,
                           style: TextStyle(
-                            fontFamily: AppConstants.fontInterMedium,
+                            fontFamily: AppConstants.fontInterRegular,
+                            fontSize: getProportionateScreenWidth(15),
+                            fontWeight: FontWeight.bold,
                             color: AppConstants.clrBackground,
-                            fontSize: getProportionateScreenWidth(16),
                           ),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(height: getProportionateScreenHeight(20)),
-
-                  // Login Prompt
-                  GestureDetector(
-                    onTap: () =>
-                        Navigator.pushNamed(context, LoginScreen.routeName),
-                    child: Center(
-                      child: RichText(
-                        text: const TextSpan(
-                          text: AppConstants.alreadyHaveAccount,
-                          style: TextStyle(color: AppConstants.clrBlack),
-                          children: [
-                            TextSpan(text: " "),
-                            TextSpan(
-                              text: AppConstants.login,
-                              style: TextStyle(color: AppConstants.textBlue),
-                            ),
-                          ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppConstants.alreadyHaveAccount,
+                        style: TextStyle(
+                          color: AppConstants.greyColor,
+                          fontFamily: AppConstants.fontInterRegular,
+                          fontSize: getProportionateScreenWidth(13),
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
-                    ),
+                      const Text.rich(
+                        TextSpan(
+                          text: " ",
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                              context, LoginScreen.routeName);
+                        },
+                        child: Text(
+                          AppConstants.login,
+                          style: TextStyle(
+                            fontSize: getProportionateScreenWidth(14),
+                            fontWeight: FontWeight.bold,
+                            color: AppConstants.mainColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -285,7 +300,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Future<void> _selectDate() async {
+  // Function for selecting Date of Birth
+  _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -294,9 +310,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
     if (picked != null) {
       setState(() {
-        dobController.text = "${picked.month.toString().padLeft(2, '0')}/"
-            "${picked.day.toString().padLeft(2, '0')}/"
-            "${picked.year}";
+        dobController.text =
+            "${picked.month.toString().padLeft(2, '0')}/${picked.day.toString().padLeft(2, '0')}/${picked.year}";
       });
     }
   }

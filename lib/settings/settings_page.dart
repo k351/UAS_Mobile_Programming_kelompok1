@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/size_config.dart';
@@ -97,7 +98,7 @@ class SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.edit,
+                          icon: const Icon(Icons.edit,
                               color: AppConstants.clrBackground),
                           onPressed: () {
                             // Navigasi ke halaman edit profil
@@ -196,7 +197,7 @@ class SettingsPageState extends State<SettingsPage> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text(
+                          child: const Text(
                             'Logout',
                             style: TextStyle(
                               color: Colors.red,
@@ -225,16 +226,16 @@ class SettingsPageState extends State<SettingsPage> {
       leading: Icon(icon, color: AppConstants.mainColor),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: AppConstants.fontInterMedium,
           fontWeight: FontWeight.bold,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(fontFamily: AppConstants.fontInterRegular),
+        style: const TextStyle(fontFamily: AppConstants.fontInterRegular),
       ),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: () {
         // Logic navigasi
       },
@@ -247,14 +248,14 @@ class SettingsPageState extends State<SettingsPage> {
       leading: Icon(icon, color: AppConstants.mainColor),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: AppConstants.fontInterMedium,
           fontWeight: FontWeight.bold,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(fontFamily: AppConstants.fontInterRegular),
+        style: const TextStyle(fontFamily: AppConstants.fontInterRegular),
       ),
       trailing: Switch(
         value: value,
@@ -277,10 +278,10 @@ class SettingsPageState extends State<SettingsPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           elevation: 5,
-          title: Row(
+          title: const Row(
             children: [
-              const Icon(Icons.logout, color: Colors.red, size: 28),
-              const SizedBox(width: 10),
+              Icon(Icons.logout, color: Colors.red, size: 28),
+              SizedBox(width: 10),
               Text(
                 "Logout Confirmation",
                 style: TextStyle(
@@ -296,7 +297,7 @@ class SettingsPageState extends State<SettingsPage> {
             children: [
               Divider(color: Colors.grey.shade300, thickness: 1),
               const SizedBox(height: 10),
-              Text(
+              const Text(
                 "Are you sure you want to logout?",
                 style: TextStyle(
                   color: Colors.black54,
@@ -324,7 +325,7 @@ class SettingsPageState extends State<SettingsPage> {
                   vertical: getProportionateScreenHeight(12),
                 ),
               ),
-              child: Text(
+              child: const Text(
                 "Cancel",
                 style: TextStyle(
                   fontFamily: AppConstants.fontInterMedium,
@@ -332,9 +333,16 @@ class SettingsPageState extends State<SettingsPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Logic logout
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.of(context).pop();
+                  // Redirect to login screen after logout
+                  Navigator.pushReplacementNamed(context,
+                      '/loginScreen'); // Update '/login' with the actual route to your login screen
+                } catch (e) {
+                  print("Error during logout: $e");
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
@@ -347,7 +355,7 @@ class SettingsPageState extends State<SettingsPage> {
                   vertical: getProportionateScreenHeight(12),
                 ),
               ),
-              child: Text(
+              child: const Text(
                 "Confirm",
                 style: TextStyle(
                   fontFamily: AppConstants.fontInterMedium,

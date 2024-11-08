@@ -7,7 +7,7 @@ class UserProvider extends ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  AuthModel _user = AuthModel(id: "", name: "", email: "", dob: "", phone: "");
+  AuthModel _user = AuthModel(name: "", email: "", dob: "", phone: "");
   bool _isLoading = false;
 
   AuthModel get user => _user;
@@ -33,7 +33,6 @@ class UserProvider extends ChangeNotifier {
 
       // Buat instance AuthModel dengan semua data pengguna
       AuthModel authModel = AuthModel(
-        id: userCredential.user!.uid,
         name: username,
         email: email,
         dob: dob,
@@ -45,7 +44,6 @@ class UserProvider extends ChangeNotifier {
           .collection("users")
           .doc(userCredential.user!.uid)
           .set({
-        "id": userCredential.user!.uid,
         "username": username,
         "email": email,
         "dob": dob,

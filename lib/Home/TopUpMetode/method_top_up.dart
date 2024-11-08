@@ -60,7 +60,7 @@ class MethodTopUps extends StatelessWidget {
                     ),
                     child: InkWell(
                       onTap: () => _navigateToTopUpPage(context),
-                      child:  Padding(
+                      child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,10 +68,12 @@ class MethodTopUps extends StatelessWidget {
                             Row(
                               children: [
                                 const Icon(Icons.store),
-                                SizedBox(width: getProportionateScreenWidth(12)),
-                                Text("MarketPlace",
+                                SizedBox(
+                                    width: getProportionateScreenWidth(12)),
+                                Text("Market Place",
                                     style: TextStyle(
-                                        fontSize: getProportionateScreenWidth(14),
+                                        fontSize:
+                                            getProportionateScreenWidth(14),
                                         fontWeight: FontWeight.w600,
                                         fontFamily:
                                             AppConstants.fontInterRegular)),

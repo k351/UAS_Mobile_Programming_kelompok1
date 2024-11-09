@@ -76,6 +76,8 @@ flutter:
     - assets/carousel/monster.png
     - assets/carousel/paradise.png
     - assets/carousel/penthouse.png
+    - assets/product/fashion/polo.png
+    - assets/product/fitness/ball.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

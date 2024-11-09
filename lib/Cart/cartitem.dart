@@ -88,7 +88,10 @@ class Cartitem extends StatelessWidget {
                       ),
                       Spacer(),
                       Cartquantitycounter(
-                        counterData: data,
+                        counterData: {
+                          'id': data['id'],
+                          'cartQuantity': data['cartQuantity'],
+                        },
                         quantityChange: cartItemChange,
                       )
                     ],

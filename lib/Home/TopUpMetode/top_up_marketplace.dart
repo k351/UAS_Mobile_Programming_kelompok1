@@ -1,47 +1,85 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/size_config.dart';
 
-class TopupsIndomaret extends StatefulWidget {
+class TopupsMarketplace extends StatefulWidget {
   final double initialSaldo;
 
-  const TopupsIndomaret({super.key, required this.initialSaldo});
+  const TopupsMarketplace(
+      {super.key, required this.initialSaldo}); 
+
   @override
-  TopupsState createState() => TopupsState();
+  TopupsMarketplaceState createState() => TopupsMarketplaceState();
 }
 
-class TopupsState extends State<TopupsIndomaret> {
+class TopupsMarketplaceState extends State<TopupsMarketplace> {
   late double saldo;
+  String error = "";
+  final TextEditingController _topupController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late String userEmail;
 
   @override
   void initState() {
     super.initState();
-    saldo = widget.initialSaldo;
+    saldo =widget.initialSaldo; 
+    _getUserSaldo();
   }
 
-  String error = "";
-  final TextEditingController _topupController = TextEditingController();
+  // Ambil user saldo di firebase
+  Future<void> _getUserSaldo() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      userEmail = user.email!;
+      DocumentSnapshot userSaldoDoc = await FirebaseFirestore.instance
+          .collection('saldo')
+          .doc(userEmail)
+          .get();
 
-  void _topUpSaldo() {
+      if (userSaldoDoc.exists) {
+        setState(() {
+          saldo = userSaldoDoc['saldo'];
+        });
+      } else {
+        setState(() {
+          saldo =
+              0;
+        });
+      }
+    }
+  }
+
+  // Top up saldo
+  Future<void> _topUpSaldo() async {
     try {
       final double topUpAmount = double.parse(_topupController.text);
 
       if (topUpAmount >= 3000) {
         setState(() {
-          saldo += topUpAmount - 2500;
+          saldo += topUpAmount - 2500; 
           error = "";
         });
         _topupController.clear();
 
-        Navigator.pop(context, saldo);
+        // Update saldo di firebase
+        await FirebaseFirestore.instance
+            .collection('saldo') // nama database di firebase
+            .doc(userEmail) // user emailnya
+            .set({
+          'saldo': saldo, // nama saldo isi saldo 
+        }, SetOptions(merge: true)); // disatuin
+
+        Navigator.pop(context, saldo); 
       } else {
         setState(() {
-          error = "Minimum pengisian 3000!!!";
+          error = "Minimum charge is Rp3000!!!";
         });
       }
     } catch (e) {
       setState(() {
-        error = "Masukkan angka yang valid!";
+        error = "Enter a valid number!";
       });
     }
   }
@@ -64,7 +102,7 @@ class TopupsState extends State<TopupsIndomaret> {
             Row(
               children: [
                 Text(
-                  "Duit anda sekarang: Rp${saldo.toStringAsFixed(0)}",
+                  "Your saldo: Rp${saldo.toStringAsFixed(0)}",
                   style: TextStyle(
                       fontSize: getProportionateScreenWidth(15),
                       fontWeight: FontWeight.w500,
@@ -106,8 +144,9 @@ class TopupsState extends State<TopupsIndomaret> {
                 Expanded(
                   child: TextFormField(
                     controller: _topupController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
-                      hintText: "Masukkan nominal",
+                      hintText: "Enter nominal",
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: AppConstants.clrBlue),
                       ),
@@ -120,7 +159,7 @@ class TopupsState extends State<TopupsIndomaret> {
             Row(
               children: [
                 Text(
-                  "+ Rp2.500 biaya top up",
+                  "+ Rp2.500 cost top up",
                   style: TextStyle(
                       fontSize: getProportionateScreenWidth(18),
                       color: AppConstants.greyColor,
@@ -149,7 +188,7 @@ class TopupsState extends State<TopupsIndomaret> {
               style: ElevatedButton.styleFrom(
                   backgroundColor: AppConstants.clrBlue),
               child: const Text(
-                "Top Up",
+                "Confirmation Top Up",
                 style: TextStyle(
                     color: AppConstants.clrAppBar,
                     fontFamily: AppConstants.fontInterRegular),

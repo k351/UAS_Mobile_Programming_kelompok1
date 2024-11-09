@@ -6,9 +6,12 @@ import 'package:uas_flutter/Home/tab_bar_views.dart';
 import 'package:uas_flutter/Home/tabs.dart';
 import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'dart:async'; // Ambil Time
 import 'package:uas_flutter/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Myhomepage extends StatefulWidget {
   const Myhomepage({super.key});
@@ -20,14 +23,14 @@ class Myhomepage extends StatefulWidget {
 class _MyhomepageState extends State<Myhomepage>
     with SingleTickerProviderStateMixin {
   // Inisialisasi variabel
-  double saldo = 100000.0;
+  double saldo = 0;
   late ScrollController _scrollController;
   late TabController _tabController;
   late PageController _pageController;
   final TextEditingController _searchController = TextEditingController();
-  late Timer timer;
-  int _currentPage = 0;
-  int _selectedIndex = 0;
+  late Timer timer; // timer
+  int _currentPage = 0; // gambar
+  int _selectedIndex = 0; // warna bottom navigator
 
   @override
   void initState() {
@@ -35,20 +38,42 @@ class _MyhomepageState extends State<Myhomepage>
     _tabController = TabController(length: 4, vsync: this);
     _scrollController = ScrollController();
     _pageController = PageController(viewportFraction: 1);
+    _getSaldoFromFirestore(); // user saldo di firebase
 
-    // Timer untuk pindah gambar
+    // Gambar pindah pindah
     timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage < books.length - 1) {
-        _currentPage++;
+        setState(() {
+          _currentPage++;
+        });
       } else {
-        _currentPage = 0;
+        setState(() {
+          _currentPage = 0;
+        });
       }
       _pageController.animateToPage(
         _currentPage,
         duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
+        curve: Curves.easeInOut,
       );
     });
+  }
+
+  // user saldo firebase
+  Future<void> _getSaldoFromFirestore() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final saldoSnapshot = await FirebaseFirestore.instance
+          .collection('saldo') // nama database saldo
+          .doc(user.email) // user email
+          .get(); // ambil
+
+      if (saldoSnapshot.exists) {
+        setState(() {
+          saldo = saldoSnapshot.data()?['saldo']?.toDouble() ?? 0; // ambil data saldo abis itu kalo kosong blm ada saldo = 0 
+        });
+      }
+    }
   }
 
   @override
@@ -81,6 +106,16 @@ class _MyhomepageState extends State<Myhomepage>
       setState(() {
         saldo = updatedSaldo;
       });
+      _updateSaldoInFirestore(updatedSaldo); // Update saldo di Firestore
+    }
+  }
+
+  Future<void> _updateSaldoInFirestore(double newSaldo) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('saldo').doc(user.email).set({
+        'saldo': newSaldo,
+      }, SetOptions(merge: true)); 
     }
   }
 
@@ -139,7 +174,11 @@ class _MyhomepageState extends State<Myhomepage>
                         child: const Icon(Icons.shopping_cart_sharp),
                       ),
                       SizedBox(width: getProportionateScreenWidth(10)),
-                      const Icon(Icons.settings),
+                      InkWell(
+                        onTap: () => Navigator.pushNamed(
+                            context, SettingsPage.routeName),
+                        child: const Icon(Icons.settings),
+                      ),
                     ],
                   ),
                 ],

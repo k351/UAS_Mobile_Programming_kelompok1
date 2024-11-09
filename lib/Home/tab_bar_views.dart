@@ -19,11 +19,11 @@ class IsiTabs extends StatelessWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 3,
-        childAspectRatio: getProportionateScreenHeight(0.74),
+        childAspectRatio: getChildAspectRatio(),
       ),
       itemCount: list.length,
       itemBuilder: (context, index) {
-        return ItemTabs(isi: list[index], index: index,);
+        return ItemTabs(isi: list[index], index: index);
       },
     );
   }
@@ -71,7 +71,7 @@ class ItemTabs extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: getProportionateScreenHeight(110),
+                height: getProportionateScreenHeight(screenWidthAscpectRatio < 600 ? 190 : 250),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(

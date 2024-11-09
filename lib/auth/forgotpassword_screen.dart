@@ -61,8 +61,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   AppConstants.forgotPassword,
                   style: TextStyle(
                     color: AppConstants.mainColor,
-                    fontSize: getProportionateScreenWidth(28),
+                    fontSize: getProportionateScreenWidth(34),
                     fontFamily: AppConstants.fontInterBold,
+                    letterSpacing: -1,
                   ),
                 ),
                 SizedBox(height: getProportionateScreenHeight(12)),

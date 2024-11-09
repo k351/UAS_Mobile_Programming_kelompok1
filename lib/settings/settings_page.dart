@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/constants.dart';
@@ -235,7 +236,8 @@ class SettingsPageState extends State<SettingsPage> {
         subtitle,
         style: const TextStyle(fontFamily: AppConstants.fontInterRegular),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      trailing:
+          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: () {
         // Logic navigasi
       },
@@ -334,15 +336,14 @@ class SettingsPageState extends State<SettingsPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                try {
                   await FirebaseAuth.instance.signOut();
                   Navigator.of(context).pop();
-                  // Redirect to login screen after logout
-                  Navigator.pushReplacementNamed(context,
-                      '/loginScreen'); // Update '/login' with the actual route to your login screen
-                } catch (e) {
-                  print("Error during logout: $e");
-                }
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    (Route<dynamic> route) =>
+                        false, // Menghapus semua rute sebelumnya
+                  );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,

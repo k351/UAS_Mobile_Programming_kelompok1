@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Cartcheckbox extends StatefulWidget {
   final Map<String, dynamic> checkbox;
@@ -15,16 +15,23 @@ class Cartcheckbox extends StatefulWidget {
 }
 
 class _CartcheckboxState extends State<Cartcheckbox> {
-  void toggleCheck() {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late bool check;
+
+  @override
+  void initState() {
+    super.initState();
+    check = widget.checkbox['check'];
+  }
+
+  void toggleCheck() async {
     setState(() {
-      widget.checkbox['check'] = !widget.checkbox['check'];
-      final index =
-          cart.indexWhere((item) => item['id'] == widget.checkbox['id']);
-      if (index != -1) {
-        cart[index]['check'] = widget.checkbox['check'];
-      }
-      widget.cartCheckBoxChange();
+      check = !check;
     });
+    await _firestore.collection('cartItems').doc(widget.checkbox['id']).update({
+      'check': check,
+    });
+    widget.cartCheckBoxChange();
   }
 
   @override
@@ -35,9 +42,7 @@ class _CartcheckboxState extends State<Cartcheckbox> {
         onTap: () {
           toggleCheck();
         },
-        child: Icon(widget.checkbox['check']
-            ? Icons.check_box
-            : Icons.check_box_outline_blank),
+        child: Icon(check ? Icons.check_box : Icons.check_box_outline_blank),
       ),
     );
   }

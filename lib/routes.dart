@@ -7,7 +7,7 @@ import 'package:uas_flutter/Wishlist/WishlistPage.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
-import 'package:uas_flutter/Cart/CartPage.dart';
+import 'package:uas_flutter/Cart/cartpage.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LoginScreen.routeName: (context) => const LoginScreen(),
@@ -16,6 +16,7 @@ final Map<String, WidgetBuilder> routes = {
   WishlistPage.routeName: (context) => const WishlistPage(),
   SettingsPage.routeName: (context) => const SettingsPage(),
   ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(),
-  DetailScreen.routeName: (context) => DetailScreen(product: product[0]),
+  DetailScreen.routeName: (context) => DetailScreen(
+      product: ModalRoute.of(context)!.settings.arguments as Product),
   Cartpage.routeName: (context) => Cartpage(),
 };

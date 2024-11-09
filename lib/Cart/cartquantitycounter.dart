@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Utils.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/products/models/product.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class Cartquantitycounter extends StatefulWidget {
   final Map<String, dynamic> counterData;
@@ -14,36 +16,54 @@ class Cartquantitycounter extends StatefulWidget {
 
 class _CartquantitycounterState extends State<Cartquantitycounter> {
   late int quantity;
+  Product? product;
+  final CartDatabaseService cartDatabaseService =
+      CartDatabaseService(productDatabase: ProductDatabaseService());
 
   @override
   void initState() {
     super.initState();
-    quantity = widget.counterData['quantity'];
+    quantity = widget.counterData['cartQuantity'];
+    _initializeProduct();
   }
 
-  void updatingUtils(int newQuantity) {
-    int index =
-        cart.indexWhere((item) => item['id'] == widget.counterData['id']);
-    if (index != -1) {
-      cart[index]['quantity'] = newQuantity;
+  Future<void> _initializeProduct() async {
+    try {
+      product = await cartDatabaseService
+          .fetchProductByCartId(widget.counterData['id']);
+      setState(() {});
+    } catch (e) {
+      print("Gagal mengambil produk: $e");
     }
   }
 
   void increaseQuantity() {
-    setState(() {
-      quantity += 1;
-      updatingUtils(quantity);
+    if (product != null && product!.quantity > 0) {
+      setState(() {
+        if (product!.quantity > quantity) {
+          quantity++;
+        } else {
+          quantity = product!.quantity;
+        }
+      });
+      cartDatabaseService.updateCartQuantity(
+          widget.counterData['id'], quantity);
       widget.quantityChange();
-    });
+    } else {
+      print("Produk tidak ditemukan atau produk habis");
+    }
   }
 
-  void decreaseQuantity() {
-    if (quantity > 1) {
+  void decreaseQuantity() async {
+    if (product != null && quantity > 1 && product!.quantity > 0) {
       setState(() {
-        quantity -= 1;
-        updatingUtils(quantity);
-        widget.quantityChange();
+        quantity--;
       });
+      cartDatabaseService.updateCartQuantity(
+          widget.counterData['id'], quantity);
+      widget.quantityChange();
+    } else {
+      print("Produk tidak ditemukan atau produk habis");
     }
   }
 

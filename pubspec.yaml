@@ -67,21 +67,17 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/fonts/
-    - assets/logo.svg
-    - assets/logo.png
-    - assets/google.svg
-    - assets/facebook.svg
-    - assets/shinjuku.png
-    - assets/theforest.png
-    - assets/monster.png
-    - assets/paradise.png
-    - assets/penthouse.png
-    - assets/product/wireless.png
-    - assets/product/gamingmouse.png
-    - assets/bank/bca.jpg
-    - assets/bank/bni.jpg
-    - assets/bank/mandiri.jpg
-    - assets/bank/bri.jpg
+    - assets/logos/cartify.svg
+    - assets/logos/cartify.png
+    - assets/login/google.svg
+    - assets/login/facebook.svg
+    - assets/carousel/shinjuku.png
+    - assets/carousel/theforest.png
+    - assets/carousel/monster.png
+    - assets/carousel/paradise.png
+    - assets/carousel/penthouse.png
+    - assets/product/fashion/polo.png
+    - assets/product/fitness/ball.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/size_config.dart';
@@ -16,21 +18,40 @@ class TopUpBanksState extends State<TopUpBanks> {
   String error = "";
   final TextEditingController _topupController = TextEditingController();
   String? selectedBank;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late String userEmail;
 
   @override
   void initState() {
     super.initState();
     saldo = widget.initialSaldo;
+    _getUserSaldo();
   }
 
-  final List<Map<String, String>> banks = [
-    {'name': 'BCA', 'logo': 'assets/bank/bca.jpg'},
-    {'name': 'Mandiri', 'logo': 'assets/bank/mandiri.jpg'},
-    {'name': 'BNI', 'logo': 'assets/bank/bni.jpg'},
-    {'name': 'BRI', 'logo': 'assets/bank/bri.jpg'},
-  ];
+  // Ambil user saldo
+  Future<void> _getUserSaldo() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      userEmail = user.email!;
+      DocumentSnapshot userSaldoDoc = await FirebaseFirestore.instance
+          .collection('saldo')
+          .doc(userEmail)
+          .get();
 
-  void _topUpSaldo() {
+      if (userSaldoDoc.exists) {
+        setState(() {
+          saldo = userSaldoDoc['saldo'];
+        });
+      } else {
+        setState(() {
+          saldo = 0; // kalau blm ada saldo 0
+        });
+      }
+    }
+  }
+
+  // Top up saldo
+  Future<void> _topUpSaldo() async {
     try {
       final double topUpAmount = double.parse(_topupController.text);
 
@@ -48,6 +69,14 @@ class TopUpBanksState extends State<TopUpBanks> {
         });
         _topupController.clear();
 
+        // Update ke firebase
+        await FirebaseFirestore.instance
+            .collection('saldo') // nama database di firebase
+            .doc(userEmail) // user emailnya
+            .set({
+          'saldo': saldo, // nama saldo isi saldo 
+        }, SetOptions(merge: true)); // disatuin
+
         Navigator.pop(context, saldo);
       } else {
         setState(() {
@@ -56,10 +85,17 @@ class TopUpBanksState extends State<TopUpBanks> {
       }
     } catch (e) {
       setState(() {
-        error = "Enter a valid number";
+        error = "Enter a valid number!";
       });
     }
   }
+
+  final List<Map<String, String>> banks = [
+    {'name': 'BCA', 'logo': 'assets/bank/bca.jpg'},
+    {'name': 'Mandiri', 'logo': 'assets/bank/mandiri.jpg'},
+    {'name': 'BNI', 'logo': 'assets/bank/bni.jpg'},
+    {'name': 'BRI', 'logo': 'assets/bank/bri.jpg'},
+  ];
 
   @override
   Widget build(BuildContext context) {

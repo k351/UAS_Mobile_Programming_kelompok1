@@ -5,41 +5,41 @@ import 'package:uas_flutter/products/product_detail_screen.dart';
 // import 'package:uas_flutter/products/models/product.dart';
 // import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class IsiTabs extends StatelessWidget {
-  final List<Map<String, dynamic>> list;
-
-  const IsiTabs({super.key, required this.list});
+  const IsiTabs({super.key});
 
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 3,
-        childAspectRatio: getChildAspectRatio(),
-      ),
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        return ItemTabs(isi: list[index], index: index);
+    return FutureBuilder<List<Product>>(
+      future: ProductDatabaseService().fetchProducts(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        List<Product> products = snapshot.data!;
+        return GridView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 3,
+            childAspectRatio: getProportionateScreenHeight(0.74),
+          ),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            return ItemTabs(product: products[index]);
+          },
+        );
       },
     );
   }
 }
 
 class ItemTabs extends StatelessWidget {
-  final Map<String, dynamic> isi;
-  final int index;
-  // final Product product;
-
-  const ItemTabs({
-    super.key,
-    required this.isi,
-    required this.index,
-    /*required this.product*/
-  });
+  final Product product;
+  const ItemTabs({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class ItemTabs extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailScreen(product: product[index]),
+            builder: (context) => DetailScreen(product: product),
           ),
         );
       },
@@ -71,18 +71,18 @@ class ItemTabs extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: getProportionateScreenHeight(screenWidthAscpectRatio < 600 ? 190 : 250),
+                height: getProportionateScreenHeight(110),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                    image: AssetImage(isi['image']),
+                    image: AssetImage(product.image),
                     fit: BoxFit.fitHeight,
                   ),
                 ),
               ),
               SizedBox(height: getProportionateScreenHeight(12)),
               Text(
-                isi['title'],
+                product.title,
                 style: TextStyle(
                     fontSize: getProportionateScreenWidth(17),
                     fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class ItemTabs extends StatelessWidget {
                       size: getProportionateScreenWidth(20),
                       color: AppConstants.star),
                   Text(
-                    isi['rating'].toString(),
+                    product.rate.toString(),
                     style: TextStyle(
                         fontSize: getProportionateScreenWidth(14),
                         fontFamily: AppConstants.fontInterRegular),

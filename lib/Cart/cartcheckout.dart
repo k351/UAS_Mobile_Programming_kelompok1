@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class Cartcheckout extends StatefulWidget {
   const Cartcheckout({super.key});
@@ -9,6 +11,8 @@ class Cartcheckout extends StatefulWidget {
 }
 
 class CartcheckoutState extends State<Cartcheckout> {
+  final CartDatabaseService cartDatabaseService =
+      CartDatabaseService(productDatabase: ProductDatabaseService());
   num total = 0;
   @override
   void initState() {
@@ -16,17 +20,20 @@ class CartcheckoutState extends State<Cartcheckout> {
     calculateTotal();
   }
 
-  void calculateTotal() {
-    total = cart.where((cartItem) => cartItem['check'] == true).fold(
-      0,
-      (sum, cartItem) {
-        final book = books.firstWhere(
-          (book) => book['id'] == cartItem['id'],
-        );
-        return sum + (book != null ? book['price'] * cartItem['quantity'] : 0);
-      },
-    );
-    setState(() {});
+  void calculateTotal() async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      try {
+        num calculatedTotal = await cartDatabaseService.calculateTotal(userId);
+        setState(() {
+          total = calculatedTotal;
+        });
+      } catch (e) {
+        print("Error calculating total: $e");
+      }
+    } else {
+      print("No user is logged in.");
+    }
   }
 
   @override

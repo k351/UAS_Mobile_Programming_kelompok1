@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Cart/CartPage.dart';
+import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/Home/search_page.dart';
 import 'package:uas_flutter/Home/tab_bar_views.dart';
@@ -9,9 +9,9 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'dart:async'; // Ambil Time
-import 'package:uas_flutter/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uas_flutter/products/models/product.dart';
 
 class Myhomepage extends StatefulWidget {
   const Myhomepage({super.key});
@@ -31,7 +31,7 @@ class _MyhomepageState extends State<Myhomepage>
   late Timer timer; // timer
   int _currentPage = 0; // gambar
   int _selectedIndex = 0; // warna bottom navigator
-
+  List<Product> books = [];
   @override
   void initState() {
     super.initState();
@@ -70,7 +70,8 @@ class _MyhomepageState extends State<Myhomepage>
 
       if (saldoSnapshot.exists) {
         setState(() {
-          saldo = saldoSnapshot.data()?['saldo']?.toDouble() ?? 0; // ambil data saldo abis itu kalo kosong blm ada saldo = 0 
+          saldo = saldoSnapshot.data()?['saldo']?.toDouble() ??
+              0; // ambil data saldo abis itu kalo kosong blm ada saldo = 0
         });
       }
     }
@@ -115,7 +116,7 @@ class _MyhomepageState extends State<Myhomepage>
     if (user != null) {
       await FirebaseFirestore.instance.collection('saldo').doc(user.email).set({
         'saldo': newSaldo,
-      }, SetOptions(merge: true)); 
+      }, SetOptions(merge: true));
     }
   }
 
@@ -195,7 +196,7 @@ class _MyhomepageState extends State<Myhomepage>
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.horizontal(),
                       image: DecorationImage(
-                          image: AssetImage(books[index]['image']),
+                          image: AssetImage(books[index].image),
                           fit: BoxFit.fill),
                     ),
                   );
@@ -308,8 +309,8 @@ class _MyhomepageState extends State<Myhomepage>
                 body: TabBarView(
                   controller: _tabController,
                   children: [
-                    IsiTabs(list: books),
-                    IsiTabs(list: anjay),
+                    IsiTabs(),
+                    const Center(child: Text("Anjany Books")),
                     const Center(child: Text("Popular Books")),
                     const Center(child: Text("Brand Books")),
                   ],

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/tab_bar_views.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/products/models/product.dart';
 
 class SearchResultsPage extends StatelessWidget {
   final String isiSearch;
-  final List<Map<String, dynamic>> books;
+  final List<Product> books;
 
   const SearchResultsPage(
       {super.key, required this.isiSearch, required this.books});
@@ -14,7 +15,7 @@ class SearchResultsPage extends StatelessWidget {
     SizeConfig.init(context);
 
     final filteredBooks = books
-        .where((index) => index['title']
+        .where((product) => product.title
             .toString()
             .toLowerCase()
             .contains(isiSearch.toLowerCase()))
@@ -28,13 +29,12 @@ class SearchResultsPage extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 3,
           mainAxisSpacing: 3,
-          childAspectRatio: getChildAspectRatio(),
+          childAspectRatio: getProportionateScreenHeight(0.74),
         ),
         itemCount: filteredBooks.length,
         itemBuilder: (context, index) {
           return ItemTabs(
-            isi: filteredBooks[index],
-            index: index,
+            product: filteredBooks[index],
           );
         },
       ),

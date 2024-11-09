@@ -48,7 +48,7 @@ class AppConstants {
 
   static const String rootImage = "assets/";
 
-  static const String imgAppLogo = "${rootImage}logo.svg";
-  static const String imgGoogle = "${rootImage}google.svg";
-  static const String imgFacebook = "${rootImage}facebook.svg";
+  static const String imgAppLogo = "${rootImage}logos/cartify.svg";
+  static const String imgGoogle = "${rootImage}login/google.svg";
+  static const String imgFacebook = "${rootImage}login/facebook.svg";
 }

@@ -7,6 +7,7 @@ import 'package:uas_flutter/auth/forgotpassword_screen.dart';
 import 'package:uas_flutter/auth/signup.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool isPasswordVisible = false; // State variable to track password visibility
 
   // Handle login process
   Future<void> _login() async {
@@ -91,21 +94,52 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 SizedBox(height: getProportionateScreenHeight(30)),
+                // Email Field
                 TextFieldWidget(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   title: AppConstants.email,
                   hintText: 'Enter your email here',
                   textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Email cannot be empty';
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return 'Enter a valid email address';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: getProportionateScreenHeight(20)),
+                // Password Field with Visibility Toggle
                 TextFieldWidget(
                   controller: passwordController,
                   keyboardType: TextInputType.visiblePassword,
                   title: AppConstants.password,
-                  obscure: true,
+                  obscure: !isPasswordVisible, // Toggle obscure based on state
                   hintText: 'Enter your password here',
                   textInputAction: TextInputAction.done,
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: AppConstants.clrBlack,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Password cannot be empty';
+                    }
+                    // Add more validation if needed
+                    return null;
+                  },
                 ),
                 SizedBox(height: getProportionateScreenHeight(10)),
                 Row(
@@ -118,6 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppConstants.forgotPassword,
                         style: TextStyle(
                           color: AppConstants.textBlue,
+                          fontWeight: FontWeight.bold,
                           fontSize: getProportionateScreenWidth(14),
                         ),
                       ),
@@ -125,15 +160,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 SizedBox(height: getProportionateScreenHeight(20)),
-                Container(
-                  width: getProportionateScreenWidth(350),
-                  padding: const EdgeInsets.all(15),
-                  decoration: const BoxDecoration(
-                    color: AppConstants.mainColor,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: GestureDetector(
-                    onTap: _login, // Call the login function
+                GestureDetector(
+                  onTap: _login, // Call the login function
+                  child: Container(
+                    width: getProportionateScreenWidth(350),
+                    padding: const EdgeInsets.all(15),
+                    decoration: const BoxDecoration(
+                      color: AppConstants.mainColor,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
                     child: Center(
                       child: Text(
                         AppConstants.login,
@@ -181,22 +216,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     image: AppConstants.imgFacebook,
                     text: AppConstants.facebookLogin),
                 SizedBox(height: getProportionateScreenHeight(20)),
-                GestureDetector(
-                  onTap: () =>
-                      Navigator.pushNamed(context, SignUpScreen.routeName),
-                  child: Center(
-                    child: RichText(
-                      text: const TextSpan(
-                        text: AppConstants.dontHaveAccount,
-                        style: TextStyle(color: AppConstants.clrBlack),
-                        children: [
-                          TextSpan(text: " "),
-                          TextSpan(
-                            text: AppConstants.signUp,
-                            style: TextStyle(color: AppConstants.textBlue),
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: AppConstants.dontHaveAccount,
+                      style: const TextStyle(color: AppConstants.clrBlack),
+                      children: [
+                        const TextSpan(text: " "),
+                        TextSpan(
+                          text: AppConstants.signUp,
+                          style: const TextStyle(
+                            color: AppConstants.textBlue,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushNamed(
+                                  context, SignUpScreen.routeName);
+                            },
+                        ),
+                      ],
                     ),
                   ),
                 ),

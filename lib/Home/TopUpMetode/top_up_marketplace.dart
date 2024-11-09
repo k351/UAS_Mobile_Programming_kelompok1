@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/size_config.dart';
@@ -5,35 +7,71 @@ import 'package:uas_flutter/size_config.dart';
 class TopupsMarketplace extends StatefulWidget {
   final double initialSaldo;
 
-  const TopupsMarketplace({super.key, required this.initialSaldo});
+  const TopupsMarketplace(
+      {super.key, required this.initialSaldo}); 
+
   @override
   TopupsMarketplaceState createState() => TopupsMarketplaceState();
 }
 
 class TopupsMarketplaceState extends State<TopupsMarketplace> {
   late double saldo;
+  String error = "";
+  final TextEditingController _topupController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late String userEmail;
 
   @override
   void initState() {
     super.initState();
-    saldo = widget.initialSaldo;
+    saldo =widget.initialSaldo; 
+    _getUserSaldo();
   }
 
-  String error = "";
-  final TextEditingController _topupController = TextEditingController();
-  // top up
-  void _topUpSaldo() {
+  // Ambil user saldo di firebase
+  Future<void> _getUserSaldo() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      userEmail = user.email!;
+      DocumentSnapshot userSaldoDoc = await FirebaseFirestore.instance
+          .collection('saldo')
+          .doc(userEmail)
+          .get();
+
+      if (userSaldoDoc.exists) {
+        setState(() {
+          saldo = userSaldoDoc['saldo'];
+        });
+      } else {
+        setState(() {
+          saldo =
+              0;
+        });
+      }
+    }
+  }
+
+  // Top up saldo
+  Future<void> _topUpSaldo() async {
     try {
       final double topUpAmount = double.parse(_topupController.text);
 
       if (topUpAmount >= 3000) {
         setState(() {
-          saldo += topUpAmount - 2500;
+          saldo += topUpAmount - 2500; 
           error = "";
         });
         _topupController.clear();
 
-        Navigator.pop(context, saldo);
+        // Update saldo di firebase
+        await FirebaseFirestore.instance
+            .collection('saldo') // nama database di firebase
+            .doc(userEmail) // user emailnya
+            .set({
+          'saldo': saldo, // nama saldo isi saldo 
+        }, SetOptions(merge: true)); // disatuin
+
+        Navigator.pop(context, saldo); 
       } else {
         setState(() {
           error = "Minimum charge is Rp3000!!!";

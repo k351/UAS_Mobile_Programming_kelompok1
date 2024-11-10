@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Home/home_page.dart';
+import 'package:uas_flutter/auth/widget/phonenumberfield.dart';
+import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/login/login.dart';
+import 'package:uas_flutter/auth/login.dart';
+import 'package:uas_flutter/provider/provider.dart';
 import 'package:uas_flutter/size_config.dart';
-import 'package:uas_flutter/usage/phonenumberfield.dart';
-import 'package:uas_flutter/usage/textfield.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -23,6 +26,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isPassword = true;
 
   final _formKey = GlobalKey<FormState>();
+
+  void homeNavigator() => Navigator.pushReplacement(
+      context, MaterialPageRoute(builder: (_) => const Myhomepage()));
+
+  Future<void> signUp() async {
+    final signProvider = Provider.of<UserProvider>(context, listen: false);
+    try {
+      await signProvider.signUp(
+        usernameController.text,
+        emailController.text,
+        dobController.text,
+        phoneNumberController.text,
+        passwordController.text,
+      );
+      // Show a success dialog or a message before navigating to the login page
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Account created successfully!')),
+      );
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +99,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Username
                   TextFieldWidget(
                     controller: usernameController,
@@ -88,7 +117,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Email
                   TextFieldWidget(
                     controller: emailController,
@@ -107,7 +135,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Date of Birth
                   GestureDetector(
                     onTap: () async {
@@ -135,7 +162,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   SizedBox(height: getProportionateScreenHeight(10)),
-
                   // Phone Number
                   PhoneNumberFieldWidget(
                     title: AppConstants.phoneNumber,
@@ -151,7 +177,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-
                   // Password
                   TextFieldWidget(
                     controller: passwordController,
@@ -172,19 +197,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscure: isPassword ? true : false,
                     textInputAction: TextInputAction.done,
                     validator: (value) {
+                      List<String> errorMessages = [];
                       if (value == null || value.isEmpty) {
-                        return 'Password cannot be empty';
+                        errorMessages.add('Password cannot be empty');
+                      } else {
+                        if (value.length < 8 || value.length > 20) {
+                          errorMessages
+                              .add('Password must be between 8-20 characters');
+                        }
+                        if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                          errorMessages.add(
+                              'Password must contain at least one uppercase letter');
+                        }
+                        if (!RegExp(r'[a-z]').hasMatch(value)) {
+                          errorMessages.add(
+                              'Password must contain at least one lowercase letter');
+                        }
+                        if (!RegExp(r'\d').hasMatch(value)) {
+                          errorMessages
+                              .add('Password must contain at least one number');
+                        }
+                        if (!RegExp(r'[@$!%?&]').hasMatch(value)) {
+                          errorMessages.add(
+                              'Password must contain at least one special character (@, !, %, ?, &)');
+                        }
                       }
-                      if (!RegExp(
-                              r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$')
-                          .hasMatch(value)) {
-                        return 'Password must be 8-20 characters with uppercase, lowercase, number, and special character';
+                      if (errorMessages.isNotEmpty) {
+                        return errorMessages.join('\n');
                       }
                       return null;
                     },
                   ),
                   SizedBox(height: getProportionateScreenHeight(20)),
-
                   // Sign Up Button
                   Container(
                     width: getProportionateScreenWidth(340),
@@ -197,40 +241,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Center(
                       child: GestureDetector(
                         onTap: () {
-                          if (_formKey.currentState!.validate()) {}
+                          if (_formKey.currentState!.validate()) {
+                            signUp();
+                          }
                         },
                         child: Text(
                           AppConstants.signUp,
                           style: TextStyle(
-                            fontFamily: AppConstants.fontInterMedium,
+                            fontFamily: AppConstants.fontInterRegular,
+                            fontSize: getProportionateScreenWidth(15),
+                            fontWeight: FontWeight.bold,
                             color: AppConstants.clrBackground,
-                            fontSize: getProportionateScreenWidth(16),
                           ),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(height: getProportionateScreenHeight(20)),
-
-                  // Login Prompt
-                  GestureDetector(
-                    onTap: () =>
-                        Navigator.pushNamed(context, LoginScreen.routeName),
-                    child: Center(
-                      child: RichText(
-                        text: const TextSpan(
-                          text: AppConstants.alreadyHaveAccount,
-                          style: TextStyle(color: AppConstants.clrBlack),
-                          children: [
-                            TextSpan(text: " "),
-                            TextSpan(
-                              text: AppConstants.login,
-                              style: TextStyle(color: AppConstants.textBlue),
-                            ),
-                          ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppConstants.alreadyHaveAccount,
+                        style: TextStyle(
+                          color: AppConstants.greyColor,
+                          fontFamily: AppConstants.fontInterRegular,
+                          fontSize: getProportionateScreenWidth(13),
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
-                    ),
+                      const Text.rich(
+                        TextSpan(
+                          text: " ",
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                              context, LoginScreen.routeName);
+                        },
+                        child: Text(
+                          AppConstants.login,
+                          style: TextStyle(
+                            fontSize: getProportionateScreenWidth(14),
+                            fontWeight: FontWeight.bold,
+                            color: AppConstants.mainColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -241,7 +300,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Future<void> _selectDate() async {
+  // Function for selecting Date of Birth
+  _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -250,9 +310,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
     if (picked != null) {
       setState(() {
-        dobController.text = "${picked.month.toString().padLeft(2, '0')}/"
-            "${picked.day.toString().padLeft(2, '0')}/"
-            "${picked.year}";
+        dobController.text =
+            "${picked.month.toString().padLeft(2, '0')}/${picked.day.toString().padLeft(2, '0')}/${picked.year}";
       });
     }
   }

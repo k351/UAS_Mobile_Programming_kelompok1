@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Cart/cartpage.dart';
+import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
-import 'package:uas_flutter/Home/search_page.dart';
-import 'package:uas_flutter/Home/tab_bar_views.dart';
-import 'package:uas_flutter/Home/tabs.dart';
+import 'package:uas_flutter/Home/search/search_page.dart';
+import 'package:uas_flutter/Home/tabbar/tab_bar_views.dart';
+import 'package:uas_flutter/Home/tabbar/tabs.dart';
 import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'dart:async'; // Ambil Time
-import 'package:uas_flutter/utils.dart';
+import 'package:uas_flutter/products/models/product.dart';
 
 class Myhomepage extends StatefulWidget {
   const Myhomepage({super.key});
@@ -19,37 +22,44 @@ class Myhomepage extends StatefulWidget {
 class _MyhomepageState extends State<Myhomepage>
     with SingleTickerProviderStateMixin {
   // Inisialisasi variabel
-  double saldo = 100000.0;
+  double saldo = 0;
   late ScrollController _scrollController;
   late TabController _tabController;
   late PageController _pageController;
   final TextEditingController _searchController = TextEditingController();
-  late Timer timer;
-  int _currentPage = 0;
-  int _selectedIndex = 0;
-
+  late Timer timer; // timer
+  int _currentPage = 0; // gambar
+  int _selectedIndex = 0; // warna bottom navigator
+  List<Product> books = [];
+  
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _scrollController = ScrollController();
     _pageController = PageController(viewportFraction: 1);
+    _getUserSaldo(); // user saldo di firebase
 
-    // Timer untuk pindah gambar
+    // Gambar pindah pindah
     timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage < books.length - 1) {
-        _currentPage++;
+        setState(() {
+          _currentPage++;
+        });
       } else {
-        _currentPage = 0;
+        setState(() {
+          _currentPage = 0;
+        });
       }
       _pageController.animateToPage(
         _currentPage,
         duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
+        curve: Curves.easeInOut,
       );
     });
   }
 
+  // untuk menghindari error
   @override
   void dispose() {
     timer.cancel();
@@ -59,7 +69,15 @@ class _MyhomepageState extends State<Myhomepage>
     super.dispose();
   }
 
-  // Fungsi untuk berpindah halaman pada navigator bawah
+  // user saldo firebase
+  Future<void> _getUserSaldo() async {
+    final saldoUser = await FirebaseTopup.getSaldoFromFirestore();
+    setState(() {
+      saldo = saldoUser;
+    });
+  }
+
+  // Bottom navigator
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -80,7 +98,13 @@ class _MyhomepageState extends State<Myhomepage>
       setState(() {
         saldo = updatedSaldo;
       });
+      _updateUserSaldo(updatedSaldo);
     }
+  }
+
+  // Update saldo ke databse users
+  Future<void> _updateUserSaldo(double newSaldo) async {
+    await FirebaseTopup.updateSaldoInFirestore(newSaldo);
   }
 
   @override
@@ -132,9 +156,17 @@ class _MyhomepageState extends State<Myhomepage>
                   SizedBox(width: getProportionateScreenWidth(10)),
                   Row(
                     children: [
-                      const Icon(Icons.shopping_cart_sharp),
+                      InkWell(
+                        onTap: () =>
+                            Navigator.pushNamed(context, Cartpage.routeName),
+                        child: const Icon(Icons.shopping_cart_sharp),
+                      ),
                       SizedBox(width: getProportionateScreenWidth(10)),
-                      const Icon(Icons.settings),
+                      InkWell(
+                        onTap: () => Navigator.pushNamed(
+                            context, SettingsPage.routeName),
+                        child: const Icon(Icons.settings),
+                      ),
                     ],
                   ),
                 ],
@@ -151,7 +183,7 @@ class _MyhomepageState extends State<Myhomepage>
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.horizontal(),
                       image: DecorationImage(
-                          image: AssetImage(books[index]['image']),
+                          image: AssetImage(books[index].image),
                           fit: BoxFit.fill),
                     ),
                   );
@@ -263,11 +295,11 @@ class _MyhomepageState extends State<Myhomepage>
                 },
                 body: TabBarView(
                   controller: _tabController,
-                  children: [
-                    IsiTabs(list: books),
-                    IsiTabs(list: anjay),
-                    const Center(child: Text("Popular Books")),
-                    const Center(child: Text("Brand Books")),
+                  children: const [
+                    IsiTabs(),
+                    Center(child: Text("Anjany Books")),
+                    Center(child: Text("Popular Books")),
+                    Center(child: Text("Brand Books")),
                   ],
                 ),
               ),

@@ -2,7 +2,7 @@ name: uas_flutter
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -31,13 +31,17 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.11
   provider: ^6.1.2
   intl_phone_field: ^3.2.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  firebase_core: ^3.6.0
+  firebase_database: ^11.1.4
+  firebase_storage: ^12.3.4
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +59,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -64,15 +67,64 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/fonts/
-    - assets/logo.svg
-    - assets/logo.png
-    - assets/google.svg
-    - assets/facebook.svg
-    - assets/shinjuku.png
-    - assets/theforest.png
-    - assets/monster.png
-    - assets/paradise.png
-    - assets/penthouse.png
+    - assets/logos/cartify.svg
+    - assets/logos/cartify.png
+    - assets/login/google.svg
+    - assets/login/facebook.svg
+    - assets/carousel/shinjuku.png
+    - assets/carousel/theforest.png
+    - assets/carousel/monster.png
+    - assets/carousel/paradise.png
+    - assets/carousel/penthouse.png
+    - assets/product/beauty/bodywash.png
+    - assets/product/beauty/eyecream.png
+    - assets/product/beauty/hair_serum.png
+    - assets/product/beauty/liptin.png
+    - assets/product/beauty/makeup.png
+    - assets/product/beauty/powder.png
+    - assets/product/beauty/skintific.png
+    - assets/product/electronics/charger.png
+    - assets/product/electronics/earbuds.png
+    - assets/product/electronics/headphones.png
+    - assets/product/electronics/mechanical_keyboard.png
+    - assets/product/electronics/mouse.png
+    - assets/product/electronics/plug.png
+    - assets/product/electronics/powerbank.png
+    - assets/product/electronics/refrigerator.png
+    - assets/product/electronics/terminal.png
+    - assets/product/electronics/washing_machine.png
+    - assets/product/fashion/business_shirt.png
+    - assets/product/fashion/jeans.png
+    - assets/product/fashion/jeans2.png
+    - assets/product/fashion/shirt.png
+    - assets/product/fashion/shortsleeve1.png
+    - assets/product/fashion/shortsleeve2.png
+    - assets/product/fashion/shortsleeve3.png
+    - assets/product/fashion/tshirt.png
+    - assets/product/fashion/polo.png
+    - assets/product/fitness/adidas_bottle.png
+    - assets/product/fitness/adidas_shoes.png
+    - assets/product/fitness/ball.png
+    - assets/product/fitness/headband.png
+    - assets/product/fitness/prince_racket.png
+    - assets/product/fitness/ptp.png
+    - assets/product/fitness/racket.png
+    - assets/product/fitness/sports_shirt.png
+    - assets/product/fitness/swimming_goggles.png
+    - assets/product/toys/avalon.png
+    - assets/product/toys/cards.png
+    - assets/product/toys/deadofwinter.png
+    - assets/product/toys/explodingkittens.png
+    - assets/product/toys/gundai.png
+    - assets/product/toys/hotwheels.png
+    - assets/product/toys/optimusprime.png
+    - assets/product/toys/pokemon.png
+    - assets/product/toys/uno.png
+    - assets/product/toys/virus.png
+    - assets/bank/bca.jpg
+    - assets/bank/bni.jpg
+    - assets/bank/bri.jpg
+    - assets/bank/mandiri.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

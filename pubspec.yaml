@@ -76,9 +76,51 @@ flutter:
     - assets/carousel/monster.png
     - assets/carousel/paradise.png
     - assets/carousel/penthouse.png
+    - assets/product/beauty/bodywash.png
+    - assets/product/beauty/eyecream.png
+    - assets/product/beauty/hair_serum.png
+    - assets/product/beauty/liptin.png
+    - assets/product/beauty/makeup.png
+    - assets/product/beauty/powder.png
+    - assets/product/beauty/skintific.png
+    - assets/product/electronics/charger.png
+    - assets/product/electronics/earbuds.png
+    - assets/product/electronics/headphones.png
+    - assets/product/electronics/mechanical_keyboard.png
+    - assets/product/electronics/mouse.png
+    - assets/product/electronics/plug.png
+    - assets/product/electronics/powerbank.png
+    - assets/product/electronics/refrigerator.png
+    - assets/product/electronics/terminal.png
+    - assets/product/electronics/washing_machine.png
+    - assets/product/fashion/business_shirt.png
+    - assets/product/fashion/jeans.png
+    - assets/product/fashion/jeans2.png
+    - assets/product/fashion/shirt.png
+    - assets/product/fashion/shortsleeve1.png
+    - assets/product/fashion/shortsleeve2.png
+    - assets/product/fashion/shortsleeve3.png
+    - assets/product/fashion/tshirt.png
     - assets/product/fashion/polo.png
+    - assets/product/fitness/adidas_bottle.png
+    - assets/product/fitness/adidas_shoes.png
     - assets/product/fitness/ball.png
-    - assets/product/electronics/
+    - assets/product/fitness/headband.png
+    - assets/product/fitness/prince_racket.png
+    - assets/product/fitness/ptp.png
+    - assets/product/fitness/racket.png
+    - assets/product/fitness/sports_shirt.png
+    - assets/product/fitness/swimming_goggles.png
+    - assets/product/toys/avalon.png
+    - assets/product/toys/cards.png
+    - assets/product/toys/deadofwinter.png
+    - assets/product/toys/explodingkittens.png
+    - assets/product/toys/gundai.png
+    - assets/product/toys/hotwheels.png
+    - assets/product/toys/optimusprime.png
+    - assets/product/toys/pokemon.png
+    - assets/product/toys/uno.png
+    - assets/product/toys/virus.png
     - assets/bank/bca.jpg
     - assets/bank/bni.jpg
     - assets/bank/bri.jpg

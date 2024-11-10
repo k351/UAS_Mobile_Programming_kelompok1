@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/size_config.dart';
@@ -12,13 +13,27 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  // Move the controller here as a class property
   final TextEditingController emailController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
     emailController.dispose();
     super.dispose();
+  }
+
+  Future<void> resetPassword() async {
+    try {
+      await _auth.sendPasswordResetEmail(email: emailController.text);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password reset email sent! Check your inbox.')),
+      );
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 
   @override
@@ -37,7 +52,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: getProportionateScreenHeight(20)),
-                // Back Button
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
@@ -56,7 +70,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
                 SizedBox(height: getProportionateScreenHeight(40)),
-                // Title
                 Text(
                   AppConstants.forgotPassword,
                   style: TextStyle(
@@ -67,7 +80,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
                 SizedBox(height: getProportionateScreenHeight(12)),
-                // Description
                 Text(
                   "Don't worry! It happens. Please enter the email address associated with your account.",
                   style: TextStyle(
@@ -78,7 +90,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
                 SizedBox(height: getProportionateScreenHeight(40)),
-                // Email TextField
                 TextFieldWidget(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -87,11 +98,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   textInputAction: TextInputAction.done,
                 ),
                 SizedBox(height: getProportionateScreenHeight(40)),
-                // Reset Button
                 GestureDetector(
                   onTap: () {
-                    // Add your reset password logic here
-                    print('Email entered: ${emailController.text}');
+                    if (emailController.text.isNotEmpty) {
+                      resetPassword();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Please enter your email address')),
+                      );
+                    }
                   },
                   child: Container(
                     width: double.infinity,

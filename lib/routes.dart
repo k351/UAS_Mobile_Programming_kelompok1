@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Checkout/checkout_page.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/auth/forgotpassword_screen.dart';
 import 'package:uas_flutter/auth/login.dart';
@@ -19,4 +20,5 @@ final Map<String, WidgetBuilder> routes = {
   DetailScreen.routeName: (context) => DetailScreen(
       product: ModalRoute.of(context)!.settings.arguments as Product),
   Cartpage.routeName: (context) => Cartpage(),
+  CheckoutPage.routeName : (context) => const CheckoutPage(),
 };

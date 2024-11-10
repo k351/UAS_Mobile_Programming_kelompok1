@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
@@ -17,27 +18,16 @@ class CartcheckoutState extends State<Cartcheckout> {
   @override
   void initState() {
     super.initState();
-    calculateTotal();
+    initiateData();
   }
 
-  void calculateTotal() async {
-    if (FirebaseAuth.instance.currentUser != null) {
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-      try {
-        num calculatedTotal = await cartDatabaseService.calculateTotal(userId);
-        setState(() {
-          total = calculatedTotal;
-        });
-      } catch (e) {
-        print("Error calculating total: $e");
-      }
-    } else {
-      print("No user is logged in.");
-    }
+  void initiateData() async {
+    final cartProvider = Provider.of<Cartprovider>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<Cartprovider>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -53,7 +43,7 @@ class CartcheckoutState extends State<Cartcheckout> {
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
                 Text(
-                  total.toStringAsFixed(2),
+                  cartProvider.total.toStringAsFixed(2),
                   style: TextStyle(
                       color: Colors.grey,
                       fontSize: 15,

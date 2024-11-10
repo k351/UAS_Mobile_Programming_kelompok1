@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 
 class Cartcheckbox extends StatefulWidget {
   final Map<String, dynamic> checkbox;
-  final VoidCallback cartCheckBoxChange;
   const Cartcheckbox({
     super.key,
     required this.checkbox,
-    required this.cartCheckBoxChange,
   });
 
   @override
@@ -28,10 +28,12 @@ class _CartcheckboxState extends State<Cartcheckbox> {
     setState(() {
       check = !check;
     });
+    final cartProvider = Provider.of<Cartprovider>(context, listen: false);
+    cartProvider.check(widget.checkbox['id'], widget.checkbox['cartQuantity'],
+        widget.checkbox['price'], check);
     await _firestore.collection('cartItems').doc(widget.checkbox['id']).update({
       'check': check,
     });
-    widget.cartCheckBoxChange();
   }
 
   @override

@@ -78,6 +78,10 @@ flutter:
     - assets/carousel/penthouse.png
     - assets/product/fashion/polo.png
     - assets/product/fitness/ball.png
+    - assets/bank/bca.jpg
+    - assets/bank/bni.jpg
+    - assets/bank/bri.jpg
+    - assets/bank/mandiri.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

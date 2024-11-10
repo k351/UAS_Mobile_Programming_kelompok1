@@ -39,7 +39,7 @@ class UserProvider extends ChangeNotifier {
         phone: phoneNumber,
       );
 
-      // Simpan data pengguna ke Firestore
+      // Simpan data ke Firestore
       await firebaseFirestore
           .collection("users")
           .doc(userCredential.user!.uid)
@@ -48,9 +48,10 @@ class UserProvider extends ChangeNotifier {
         "email": email,
         "dob": dob,
         "phone": phoneNumber,
+        "saldo": 0, 
       });
 
-      _user = authModel; // Perbarui model pengguna lokal
+      _user = authModel;
     } on FirebaseAuthException catch (e) {
       if (e.code == "invalid-email") {
         throw Exception("Invalid email address format.");

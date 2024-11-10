@@ -33,18 +33,27 @@ class TopUpBanksState extends State<TopUpBanks> {
     User? user = _auth.currentUser;
     if (user != null) {
       userEmail = user.email!;
-      DocumentSnapshot userSaldoDoc = await FirebaseFirestore.instance
-          .collection('saldo')
-          .doc(userEmail)
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
           .get();
 
-      if (userSaldoDoc.exists) {
+      if (userDoc.exists) {
         setState(() {
-          saldo = userSaldoDoc['saldo'];
+          // Mengambil saldo dengan nilai default 0.0 dan konversi ke double
+          final dynamic saldoData =
+              (userDoc.data() as Map<String, dynamic>)['saldo'];
+          saldo = (saldoData is int) ? saldoData.toDouble() : saldoData ?? 0.0;
         });
       } else {
+        // Inisialisasi saldo kalau belum terisi 0
         setState(() {
-          saldo = 0; // kalau blm ada saldo 0
+          saldo = 0.0;
+        });
+
+        // Buat saldo di users
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'saldo': saldo,
         });
       }
     }
@@ -69,13 +78,13 @@ class TopUpBanksState extends State<TopUpBanks> {
         });
         _topupController.clear();
 
-        // Update ke firebase
+        // Update saldo ke firestore
         await FirebaseFirestore.instance
-            .collection('saldo') // nama database di firebase
-            .doc(userEmail) // user emailnya
-            .set({
-          'saldo': saldo, // nama saldo isi saldo 
-        }, SetOptions(merge: true)); // disatuin
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .update({
+          'saldo': saldo.toDouble(),
+        });
 
         Navigator.pop(context, saldo);
       } else {

@@ -6,6 +6,8 @@ import 'package:uas_flutter/products/product_detail_screen.dart';
 // import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 
 class IsiTabs extends StatelessWidget {
   const IsiTabs({super.key});
@@ -13,13 +15,16 @@ class IsiTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
-    return FutureBuilder<List<Product>>(
-      future: ProductDatabaseService().fetchProducts(),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: ProductDatabaseService().fetchProductsWithId(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        List<Product> products = snapshot.data!;
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No products available'));
+        }
+        List<Map<String, dynamic>> products = snapshot.data!;
         return GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -29,7 +34,9 @@ class IsiTabs extends StatelessWidget {
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {
-            return ItemTabs(product: products[index]);
+            String productId = products[index]['id'];
+            Product product = products[index]['product'];
+            return ItemTabs(product: product, productId: productId);
           },
         );
       },
@@ -39,7 +46,21 @@ class IsiTabs extends StatelessWidget {
 
 class ItemTabs extends StatelessWidget {
   final Product product;
-  const ItemTabs({super.key, required this.product});
+  final String productId;
+  const ItemTabs({super.key, required this.product, required this.productId});
+
+  Future<void> addCartItemToCart(BuildContext context) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      final cartDatabaseService = CartDatabaseService(
+        productDatabase: ProductDatabaseService(),
+      );
+      await cartDatabaseService.addCartItemToCart(userId, productId, 1);
+      print('Item added to cart successfully');
+    } catch (e) {
+      print('Failed to add item to cart: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +70,8 @@ class ItemTabs extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailScreen(product: product),
+            builder: (context) =>
+                DetailScreen(product: product, productId: productId),
           ),
         );
       },
@@ -102,20 +124,42 @@ class ItemTabs extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                height: getProportionateScreenHeight(34),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppConstants.mainColor,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Open",
-                  style: TextStyle(
-                      fontSize: getProportionateScreenWidth(16),
-                      color: AppConstants.clrBackground,
-                      fontFamily: AppConstants.fontInterRegular),
-                ),
+              Row(
+                children: [
+                  Container(
+                    height: getProportionateScreenHeight(34),
+                    width: getProportionateScreenWidth(130),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: AppConstants.mainColor,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Open",
+                      style: TextStyle(
+                          fontSize: getProportionateScreenWidth(16),
+                          color: AppConstants.clrBackground,
+                          fontFamily: AppConstants.fontInterRegular),
+                    ),
+                  ),
+                  Spacer(),
+                  InkWell(
+                    onTap: () => addCartItemToCart(context),
+                    child: Container(
+                      height: getProportionateScreenHeight(34),
+                      width: getProportionateScreenWidth(34),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: AppConstants.mainColor,
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Colors.grey[100],
+                      ),
+                    ),
+                  )
+                ],
               ),
             ],
           ),

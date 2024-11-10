@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/products/widget/image_slider.dart';
 import 'package:uas_flutter/products/widget/product_detail_appbar.dart';
 import 'package:uas_flutter/products/models/product.dart';
@@ -13,7 +16,9 @@ import 'package:uas_flutter/products/widget/add_to_cart_button.dart';
 class DetailScreen extends StatefulWidget {
   static const String routeName = 'details';
   final Product product;
-  const DetailScreen({super.key, required this.product});
+  final String productId;
+  const DetailScreen(
+      {super.key, required this.product, required this.productId});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -22,6 +27,20 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   int currentImage = 0;
   int quantity = 1;
+
+  Future<void> addCartItemToCart(BuildContext context) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      final cartDatabaseService = CartDatabaseService(
+        productDatabase: ProductDatabaseService(),
+      );
+      await cartDatabaseService.addCartItemToCart(
+          userId, widget.productId, quantity);
+      print('Item added to cart successfully');
+    } catch (e) {
+      print('Failed to add item to cart: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +152,8 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
             AddToCartButton(
               onPressed: () {
-                // Christopher tolong diisi yak
+                addCartItemToCart(context);
+                print("aku ditekan");
               },
             ),
           ],

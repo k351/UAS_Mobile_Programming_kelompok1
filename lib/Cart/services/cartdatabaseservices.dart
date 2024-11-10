@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uas_flutter/Cart/cartitem.dart';
 import 'package:uas_flutter/Cart/models/cart.dart';
 import 'package:uas_flutter/Cart/models/cartitem.dart';
 import 'package:uas_flutter/products/models/product.dart';
@@ -56,6 +57,24 @@ class CartDatabaseService {
       return snapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<Product?> fetchProductByCartId(String cartItemId) async {
+    try {
+      DocumentSnapshot<CartItem> cartItemSnapshot =
+          await _cartItemsRef.doc(cartItemId).get();
+      CartItem? cartItem = cartItemSnapshot.data();
+
+      if (cartItem != null) {
+        Product? product =
+            await productDatabase.fetchProductById(cartItem.productId);
+        return product;
+      } else {
+        throw Exception("Cart item not found for ID: $cartItemId");
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch product: $e");
     }
   }
 
@@ -125,25 +144,7 @@ class CartDatabaseService {
         throw Exception("CartItem not found for ID: $cartItemId");
       }
     } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<Product?> fetchProductByCartId(String cartItemId) async {
-    try {
-      DocumentSnapshot<CartItem> cartItemSnapshot =
-          await _cartItemsRef.doc(cartItemId).get();
-      CartItem? cartItem = cartItemSnapshot.data();
-
-      if (cartItem != null) {
-        Product? product =
-            await productDatabase.fetchProductById(cartItem.productId);
-        return product;
-      } else {
-        throw Exception("Cart item not found for ID: $cartItemId");
-      }
-    } catch (e) {
-      throw Exception("Failed to fetch product: $e");
+      print("Cart Item not found or have been deleted");
     }
   }
 
@@ -163,6 +164,63 @@ class CartDatabaseService {
       }
     } else {
       throw Exception("Cart item not found for ID: $cartItemId");
+    }
+  }
+
+  Future<void> addCartItemToCart(
+      String userId, String productId, int quantity) async {
+    try {
+      final productSnapshot =
+          await ProductDatabaseService().fetchProductById(productId);
+      if (productSnapshot == null) {
+        throw Exception("Product not found.");
+      }
+
+      final querySnapshot =
+          await _cartsRef.where('userId', isEqualTo: userId).get();
+      Cart userCart = querySnapshot.docs.first.data();
+      List<CartItem> cartItemsList =
+          await fetchCartItemsbyCartId(querySnapshot.docs.first.id);
+      bool productExists =
+          cartItemsList.any((item) => item.productId == productId);
+      if (productExists) {
+        final cartItemSnapshot = await _cartItemsRef
+            .where('cartId', isEqualTo: querySnapshot.docs.first.id)
+            .where('productId', isEqualTo: productId)
+            .get();
+        String existingCartItemId = cartItemSnapshot.docs.first.id;
+        CartItem existingCartItem = cartItemSnapshot.docs.first.data();
+
+        int newQuantity = existingCartItem.cartQuantity + quantity;
+        int availableQuantity = productSnapshot.quantity;
+        if (newQuantity > availableQuantity) {
+          newQuantity = availableQuantity;
+          print('Quantity limited to available stock: $availableQuantity');
+        }
+        await updateCartItem(
+          existingCartItemId,
+          existingCartItem.copyWith(
+              cartQuantity: existingCartItem.cartQuantity + quantity),
+        );
+      } else {
+        String newCartItemId = _cartItemsRef.doc().id;
+        CartItem newCartItem = CartItem(
+          cartId: querySnapshot.docs.first.id,
+          productId: productId,
+          cartQuantity: quantity,
+          check: true,
+        );
+        await _cartItemsRef.doc(newCartItemId).set(newCartItem);
+        await _cartsRef
+            .doc(
+          querySnapshot.docs.first.id,
+        )
+            .update({
+          'cartList': FieldValue.arrayUnion([newCartItemId]),
+        });
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

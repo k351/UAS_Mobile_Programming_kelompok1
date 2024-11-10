@@ -17,8 +17,14 @@ final Map<String, WidgetBuilder> routes = {
   WishlistPage.routeName: (context) => const WishlistPage(),
   SettingsPage.routeName: (context) => const SettingsPage(),
   ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(),
-  DetailScreen.routeName: (context) => DetailScreen(
-      product: ModalRoute.of(context)!.settings.arguments as Product),
+  DetailScreen.routeName: (context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Product;
+    final productId = ModalRoute.of(context)!.settings.arguments as String;
+    return DetailScreen(
+      product: args,
+      productId: productId,
+    );
+  },
   Cartpage.routeName: (context) => Cartpage(),
-  CheckoutPage.routeName : (context) => const CheckoutPage(),
+  CheckoutPage.routeName: (context) => const CheckoutPage(),
 };

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uas_flutter/products/models/product.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 const String PRODUCT_COLLECTION_REF = "products";
 
@@ -29,6 +30,35 @@ class ProductDatabaseService {
     try {
       DocumentSnapshot<Product> doc = await _productsRef.doc(productId).get();
       return doc.exists ? doc.data() : null;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchProductsWithId() async {
+    try {
+      QuerySnapshot<Product> snapshot = await _productsRef.get();
+      return snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          'product': doc.data(),
+        };
+      }).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchProductByTitle(String title) async {
+    try {
+      QuerySnapshot<Product> snapshot =
+          await _productsRef.where('title', isEqualTo: title).get();
+      return snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          'product': doc.data(),
+        };
+      }).toList();
     } catch (e) {
       rethrow;
     }

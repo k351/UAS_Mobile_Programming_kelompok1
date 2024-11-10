@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class Cartquantitycounter extends StatefulWidget {
   final Map<String, dynamic> counterData;
-  final VoidCallback quantityChange;
 
-  const Cartquantitycounter(
-      {super.key, required this.counterData, required this.quantityChange});
+  const Cartquantitycounter({super.key, required this.counterData});
 
   @override
   _CartquantitycounterState createState() => _CartquantitycounterState();
@@ -39,16 +39,18 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
 
   void increaseQuantity() {
     if (product != null && product!.quantity > 0) {
+      final cartProvider = Provider.of<Cartprovider>(context, listen: false);
       setState(() {
         if (product!.quantity > quantity) {
           quantity++;
+          cartProvider.increase(
+              widget.counterData['id'], widget.counterData['price']);
         } else {
           quantity = product!.quantity;
         }
       });
       cartDatabaseService.updateCartQuantity(
           widget.counterData['id'], quantity);
-      widget.quantityChange();
     } else {
       print("Produk tidak ditemukan atau produk habis");
     }
@@ -56,12 +58,14 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
 
   void decreaseQuantity() async {
     if (product != null && quantity > 1 && product!.quantity > 0) {
+      final cartProvider = Provider.of<Cartprovider>(context, listen: false);
       setState(() {
         quantity--;
+        cartProvider.decrease(
+            widget.counterData['id'], widget.counterData['price']);
       });
       cartDatabaseService.updateCartQuantity(
           widget.counterData['id'], quantity);
-      widget.quantityChange();
     } else {
       print("Produk tidak ditemukan atau produk habis");
     }

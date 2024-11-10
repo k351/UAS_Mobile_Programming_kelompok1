@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/cartitem.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class Cartitemlist extends StatefulWidget {
-  final VoidCallback cartItemListChange;
-
   const Cartitemlist({
     super.key,
-    required this.cartItemListChange,
   });
 
   @override
@@ -17,31 +16,42 @@ class Cartitemlist extends StatefulWidget {
 }
 
 class _CartitemlistState extends State<Cartitemlist> {
-final CartDatabaseService cartDatabaseService =
+  final CartDatabaseService cartDatabaseService =
       CartDatabaseService(productDatabase: ProductDatabaseService());
 
-  List<Map<String, dynamic>> cartItems = []; 
+  List<Map<String, dynamic>> cartItems = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchCartItems(); 
+    _fetchCartItems();
   }
 
   Future<void> _fetchCartItems() async {
     if (FirebaseAuth.instance.currentUser != null) {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      List<Map<String, dynamic>> items = await cartDatabaseService.fetchCartItemsWithProductDetails(userId);
+      List<Map<String, dynamic>> items =
+          await cartDatabaseService.fetchCartItemsWithProductDetails(userId);
       setState(() {
-        cartItems = items; 
+        cartItems = items;
       });
+      final cartProvider = Provider.of<Cartprovider>(context, listen: false);
+      List<Map<String, dynamic>> filteredItems = items.map((item) {
+        return {
+          'id': item['id'],
+          'check': item['check'],
+          'price': item['price'],
+          'quantity': item['cartQuantity']
+        };
+      }).toList();
+      cartProvider.setCartItems(filteredItems);
+      cartProvider.calculateTotal();
     }
   }
 
   Future<void> removeItem(String cartItemId) async {
     await cartDatabaseService.removeCartItem(cartItemId);
-    await _fetchCartItems(); 
-    widget.cartItemListChange();
+    await _fetchCartItems();
   }
 
   @override
@@ -51,10 +61,8 @@ final CartDatabaseService cartDatabaseService =
       itemBuilder: (context, index) {
         return Cartitem(
           data: cartItems[index],
-          onDelete: () => removeItem(cartItems[index]['id']),
-          cartItemChange: () {
-            widget.cartItemListChange();
-            _fetchCartItems();
+          onDelete: () {
+            removeItem(cartItems[index]['id']);
           },
         );
       },

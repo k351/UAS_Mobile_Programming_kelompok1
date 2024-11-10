@@ -32,8 +32,9 @@ class _DetailScreenState extends State<DetailScreen> {
               ImageSlider(
                 onChange: (index) {
                   setState(() {
-                    print(index);
-                    currentimage = index;
+                    if (index < 5) {
+                      currentimage = index % 5;
+                    }
                   });
                 },
                 image: widget.product.image,

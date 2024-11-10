@@ -147,41 +147,6 @@ class CartDatabaseService {
     }
   }
 
-  Future<num> calculateTotal(String userId) async {
-    try {
-      QuerySnapshot<Cart> cartSnapshot =
-          await _cartsRef.where('userId', isEqualTo: userId).get();
-
-      if (cartSnapshot.docs.isEmpty) {
-        throw Exception("Cart not found for User ID: $userId");
-      }
-      String cartId = cartSnapshot.docs.first.id;
-      QuerySnapshot<CartItem> cartItemsSnapshot =
-          await _cartItemsRef.where('cartId', isEqualTo: cartId).get();
-      num total = 0.0;
-      for (var doc in cartItemsSnapshot.docs) {
-        CartItem cartItem = doc.data();
-        if (cartItem.check) {
-          Product? product =
-              await productDatabase.fetchProductById(cartItem.productId);
-          if (product != null) {
-            int finalQuantity = cartItem.cartQuantity;
-            if (cartItem.cartQuantity > product.quantity) {
-              finalQuantity = product.quantity;
-              await updateCartItem(
-                  doc.id, cartItem.copyWith(cartQuantity: finalQuantity));
-            }
-            total += product.price * finalQuantity;
-          }
-        }
-      }
-      return total;
-    } catch (e) {
-      print("Failed to count total: $e");
-      rethrow;
-    }
-  }
-
   Future<void> updateCartQuantity(String cartItemId, int newQuantity) async {
     DocumentSnapshot<CartItem> cartItemSnapshot =
         await _cartItemsRef.doc(cartItemId).get();

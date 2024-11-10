@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:uas_flutter/constants.dart';
 
 class ImageSlider extends StatefulWidget {
   final Function(int) onChange;
@@ -46,6 +47,38 @@ class _ImageSliderState extends State<ImageSlider> {
             child: Image.asset(widget.image),
           );
         },
+      ),
+    );
+  }
+}
+
+class ProductImageIndicators extends StatelessWidget {
+  final int currentImage;
+
+  const ProductImageIndicators({
+    super.key,
+    required this.currentImage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        5,
+        (index) => AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: currentImage == index ? 15 : 8,
+          height: 8,
+          margin: const EdgeInsets.only(right: 3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: currentImage == index
+                ? AppConstants.clrBlack
+                : Colors.transparent,
+            border: Border.all(color: AppConstants.clrBlack),
+          ),
+        ),
       ),
     );
   }

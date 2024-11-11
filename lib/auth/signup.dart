@@ -45,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         SnackBar(content: Text('Account created successfully!')),
       );
       Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+        Navigator.pushReplacementNamed(context, Myhomepage.routeName);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

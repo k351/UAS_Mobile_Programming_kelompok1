@@ -6,13 +6,11 @@ import 'package:uas_flutter/Cart/cartcheckbox.dart';
 class Cartitem extends StatelessWidget {
   final Map<String, dynamic> data;
   final VoidCallback onDelete;
-  final VoidCallback cartItemChange;
 
   const Cartitem({
     super.key,
     required this.data,
     required this.onDelete,
-    required this.cartItemChange,
   });
 
   @override
@@ -31,8 +29,9 @@ class Cartitem extends StatelessWidget {
                   checkbox: {
                     'id': data['id'],
                     'check': data['check'],
+                    'cartQuantity': data['cartQuantity'],
+                    'price': data['price'],
                   },
-                  cartCheckBoxChange: cartItemChange,
                 ),
                 Container(
                   height: 70,
@@ -91,8 +90,8 @@ class Cartitem extends StatelessWidget {
                         counterData: {
                           'id': data['id'],
                           'cartQuantity': data['cartQuantity'],
+                          'price': data['price'],
                         },
-                        quantityChange: cartItemChange,
                       )
                     ],
                   ),

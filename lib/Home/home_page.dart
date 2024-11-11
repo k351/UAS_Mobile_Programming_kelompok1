@@ -10,7 +10,6 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'dart:async'; // Ambil Time
-import 'package:uas_flutter/products/models/product.dart';
 
 class Myhomepage extends StatefulWidget {
   const Myhomepage({super.key});
@@ -30,8 +29,14 @@ class _MyhomepageState extends State<Myhomepage>
   late Timer timer; // timer
   int _currentPage = 0; // gambar
   int _selectedIndex = 0; // warna bottom navigator
-  List<Product> books = [];
-  
+  List<String> carousel = [
+    "assets/carousel/shinjuku.png",
+    "assets/carousel/theforest.png",
+    "assets/carousel/monster.png",
+    "assets/carousel/paradise.png",
+    "assets/carousel/penthouse.png"
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +47,7 @@ class _MyhomepageState extends State<Myhomepage>
 
     // Gambar pindah pindah
     timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
-      if (_currentPage < books.length - 1) {
+      if (_currentPage < carousel.length - 1) {
         setState(() {
           _currentPage++;
         });
@@ -145,7 +150,6 @@ class _MyhomepageState extends State<Myhomepage>
                             MaterialPageRoute(
                               builder: (context) => SearchResultsPage(
                                 isiSearch: search,
-                                books: books,
                               ),
                             ),
                           );
@@ -177,14 +181,13 @@ class _MyhomepageState extends State<Myhomepage>
               height: getProportionateScreenHeight(185),
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: books.length,
+                itemCount: carousel.length,
                 itemBuilder: (context, index) {
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.horizontal(),
                       image: DecorationImage(
-                          image: AssetImage(books[index].image),
-                          fit: BoxFit.fill),
+                          image: AssetImage(carousel[index]), fit: BoxFit.fill),
                     ),
                   );
                 },

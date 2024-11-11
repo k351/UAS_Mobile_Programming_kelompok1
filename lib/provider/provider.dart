@@ -48,7 +48,15 @@ class UserProvider extends ChangeNotifier {
         "email": email,
         "dob": dob,
         "phone": phoneNumber,
-        "saldo": 0, 
+        "saldo": 0,
+      });
+
+      await firebaseFirestore
+          .collection("carts")
+          .doc()
+          .set({
+        "userId": userCredential.user!.uid,
+        "cartList": [],
       });
 
       _user = authModel;

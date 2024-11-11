@@ -1,88 +1,162 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/products/widget/image_slider.dart';
-import 'package:uas_flutter/products/widget/item_details.dart';
 import 'package:uas_flutter/products/widget/product_detail_appbar.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/products/widget/product_category_tag.dart';
+import 'package:uas_flutter/products/widget/product_title_price.dart';
+import 'package:uas_flutter/products/widget/product_rating_stock.dart';
+import 'package:uas_flutter/products/widget/product_description.dart';
+import 'package:uas_flutter/products/widget/add_to_cart_button.dart';
 
 class DetailScreen extends StatefulWidget {
   static const String routeName = 'details';
   final Product product;
-  const DetailScreen({super.key, required this.product});
+  final String productId;
+  const DetailScreen(
+      {super.key, required this.product, required this.productId});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  int currentimage = 0;
+  int currentImage = 0;
+  int quantity = 1;
+
+  Future<void> addCartItemToCart(BuildContext context) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      final cartDatabaseService = CartDatabaseService(
+        productDatabase: ProductDatabaseService(),
+      );
+      await cartDatabaseService.addCartItemToCart(
+          userId, widget.productId, quantity);
+      print('Item added to cart successfully');
+    } catch (e) {
+      print('Failed to add item to cart: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     return Scaffold(
-      backgroundColor: AppConstants.clrBackground,
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Untuk share dan favorit
-              DetailAppBar(),
-              // Image slider
-              ImageSlider(
-                onChange: (index) {
-                  setState(() {
-                    if (index < 5) {
-                      currentimage = index % 5;
-                    }
-                  });
-                },
-                image: widget.product.image,
-              ),
-              SizedBox(height: getProportionateScreenHeight(10)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  5,
-                  (index) => AnimatedContainer(
-                    duration: const Duration(microseconds: 300),
-                    width: currentimage == index ? 15 : 8,
-                    height: 8,
-                    margin: const EdgeInsets.only(right: 3),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: currentimage == index
-                          ? Colors.black
-                          : Colors.transparent,
-                      border: Border.all(
-                        color: Colors.black,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const DetailAppBar(),
+                    ImageSlider(
+                      onChange: (index) {
+                        setState(() {
+                          if (index <= 5) {
+                            currentImage = index % 5;
+                          }
+                        });
+                      },
+                      image: widget.product.image,
+                    ),
+                    SizedBox(height: getProportionateScreenHeight(10)),
+                    ProductImageIndicators(currentImage: currentImage),
+                    SizedBox(height: getProportionateScreenHeight(20)),
+                    Container(
+                      width: double.infinity,
+                      color: Colors.white,
+                      padding: EdgeInsets.all(getProportionateScreenWidth(20)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ProductCategoryTag(category: widget.product.category),
+                          SizedBox(height: getProportionateScreenHeight(15)),
+                          ProductTitlePrice(
+                            title: widget.product.title,
+                            price: widget.product.price.toDouble(),
+                          ),
+                          SizedBox(height: getProportionateScreenHeight(15)),
+                          ProductRatingStock(
+                            rating: widget.product.rate.toDouble(),
+                            stock: widget.product.quantity,
+                          ),
+                          SizedBox(height: getProportionateScreenHeight(20)),
+                          ProductDescription(
+                              description: widget.product.description),
+                          SizedBox(height: getProportionateScreenHeight(20)),
+                          Row(
+                            children: [
+                              const Text(
+                                "Quantity:",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.remove),
+                                      onPressed: () {
+                                        if (quantity > 1) {
+                                          setState(() {
+                                            quantity--;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    Text(
+                                      quantity.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.add),
+                                      onPressed: () {
+                                        if (quantity <
+                                            widget.product.quantity) {
+                                          setState(() {
+                                            quantity++;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-              SizedBox(height: getProportionateScreenHeight(20)),
-              Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(40),
-                      topLeft: Radius.circular(40),
-                    ),
-                  ),
-                  padding: EdgeInsets.only(
-                    left: getProportionateScreenWidth(20),
-                    right: getProportionateScreenWidth(20),
-                    top: getProportionateScreenHeight(20),
-                    bottom: getProportionateScreenHeight(100),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [ItemsDetails(product: widget.product)],
-                  )),
-            ],
-          ),
+            ),
+            AddToCartButton(
+              onPressed: () {
+                addCartItemToCart(context);
+                print("aku ditekan");
+              },
+            ),
+          ],
         ),
       ),
     );

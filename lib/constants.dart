@@ -20,6 +20,8 @@ class AppConstants {
   static const Color clrRed = Color.fromARGB(255, 255, 0, 0);
   static const Color clrBlue = Color(0xff5598FF);
   static const Color clrGreyBg = Color(0xffF6F6F6);
+  static final Color clrGreen =
+      const Color.fromARGB(255, 184, 247, 173).withOpacity(0.2);
   static const Color star = Color.fromARGB(255, 255, 235, 59);
 
   static const String signInTop = "Sign in to your \nAccount";

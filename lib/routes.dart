@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Checkout/checkout_page.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/auth/forgotpassword_screen.dart';
 import 'package:uas_flutter/auth/login.dart';
@@ -16,7 +17,14 @@ final Map<String, WidgetBuilder> routes = {
   WishlistPage.routeName: (context) => const WishlistPage(),
   SettingsPage.routeName: (context) => const SettingsPage(),
   ForgotPasswordScreen.routeName: (context) => const ForgotPasswordScreen(),
-  DetailScreen.routeName: (context) => DetailScreen(
-      product: ModalRoute.of(context)!.settings.arguments as Product),
+  DetailScreen.routeName: (context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Product;
+    final productId = ModalRoute.of(context)!.settings.arguments as String;
+    return DetailScreen(
+      product: args,
+      productId: productId,
+    );
+  },
   Cartpage.routeName: (context) => Cartpage(),
+  CheckoutPage.routeName: (context) => const CheckoutPage(),
 };

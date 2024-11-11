@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
+import 'package:uas_flutter/Home/tabbar/product_tabbar.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/Home/search/search_page.dart';
-import 'package:uas_flutter/Home/tabbar/tab_bar_views.dart';
 import 'package:uas_flutter/Home/tabbar/tabs.dart';
 import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
 import 'package:uas_flutter/constants.dart';
@@ -40,7 +40,7 @@ class _MyhomepageState extends State<Myhomepage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
     _scrollController = ScrollController();
     _pageController = PageController(viewportFraction: 1);
     _getUserSaldo(); // user saldo di firebase
@@ -213,7 +213,7 @@ class _MyhomepageState extends State<Myhomepage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Saldo",
+                            "Cartipay",
                             style: TextStyle(
                                 fontSize: getProportionateScreenWidth(13),
                                 color: AppConstants.greyColor,
@@ -286,9 +286,11 @@ class _MyhomepageState extends State<Myhomepage>
                             labelColor: AppConstants.clrBlue,
                             tabs: const [
                               AppTabs(text: "All"),
-                              AppTabs(text: "New"),
-                              AppTabs(text: "Popular"),
-                              AppTabs(text: "Brand"),
+                              AppTabs(text: "Beauty"),
+                              AppTabs(text: "Electronics"),
+                              AppTabs(text: "Fashion"),
+                              AppTabs(text: "Fitness"),
+                              AppTabs(text: "Toys"),
                             ],
                           ),
                         ),
@@ -300,9 +302,11 @@ class _MyhomepageState extends State<Myhomepage>
                   controller: _tabController,
                   children: const [
                     IsiTabs(),
-                    Center(child: Text("Anjany Books")),
-                    Center(child: Text("Popular Books")),
-                    Center(child: Text("Brand Books")),
+                    IsiCategory(category: 'Beauty'),
+                    IsiCategory(category: 'Electronics'),
+                    IsiCategory(category: 'Fashion'),
+                    IsiCategory(category: 'Fitness'),
+                    IsiCategory(category: 'Toys'),
                   ],
                 ),
               ),

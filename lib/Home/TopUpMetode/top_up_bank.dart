@@ -112,7 +112,7 @@ class TopUpBanksState extends State<TopUpBanks> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Top Up via m-Banking",
+          "M-Banking",
           style: TextStyle(fontFamily: AppConstants.fontInterRegular),
         ),
       ),

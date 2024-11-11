@@ -2,47 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
-// import 'package:uas_flutter/products/models/product.dart';
-// import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 
-class IsiTabs extends StatelessWidget {
-  const IsiTabs({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    SizeConfig.init(context);
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: ProductDatabaseService().fetchProductsWithId(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No products available'));
-        }
-        List<Map<String, dynamic>> products = snapshot.data!;
-        return GridView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 3,
-            childAspectRatio: getProportionateScreenHeight(0.74),
-          ),
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            String productId = products[index]['id'];
-            Product product = products[index]['product'];
-            return ItemTabs(product: product, productId: productId);
-          },
-        );
-      },
-    );
-  }
-}
 
 class ItemTabs extends StatelessWidget {
   final Product product;
@@ -88,7 +52,7 @@ class ItemTabs extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(6.0),
+          padding: const EdgeInsets.all(3.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -127,18 +91,11 @@ class ItemTabs extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    height: getProportionateScreenHeight(34),
-                    width: getProportionateScreenWidth(130),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: AppConstants.mainColor,
-                    ),
-                    alignment: Alignment.center,
                     child: Text(
-                      "Open",
+                      "Rp ${product.price}",
                       style: TextStyle(
                           fontSize: getProportionateScreenWidth(16),
-                          color: AppConstants.clrBackground,
+                          color: const Color.fromARGB(255, 255, 7, 7),
                           fontFamily: AppConstants.fontInterRegular),
                     ),
                   ),

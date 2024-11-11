@@ -97,7 +97,7 @@ class TopupsMarketplaceState extends State<TopupsMarketplace> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Top Up",
+          "Market Place",
           style: TextStyle(fontFamily: AppConstants.fontInterRegular),
         ),
       ),

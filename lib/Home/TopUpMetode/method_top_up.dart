@@ -42,7 +42,7 @@ class MethodTopUps extends StatelessWidget {
     SizeConfig.init(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Top Up"),
+        title: const Text("Top Up",style: TextStyle(fontFamily: AppConstants.fontInterRegular),),
       ),
       backgroundColor: AppConstants.greyColor1,
       body: Padding(
@@ -136,7 +136,7 @@ class MethodTopUps extends StatelessWidget {
                                 const Icon(Icons.store),
                                 SizedBox(width: getProportionateScreenWidth(12)),
                                 Text(
-                                  "Indomaret",
+                                  "Market Place",
                                   style: TextStyle(
                                     fontSize: getProportionateScreenWidth(14),
                                     fontWeight: FontWeight.w600,

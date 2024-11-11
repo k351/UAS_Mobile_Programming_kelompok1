@@ -79,20 +79,4 @@ class ProductDatabaseService {
       rethrow;
     }
   }
-
-    Future<List<Map<String, dynamic>>> fetchProductsByHarga(
-      String category) async {
-    try {
-      QuerySnapshot<Product> snapshot =
-          await _productsRef.where('Price', isEqualTo: category).get();
-      return snapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          'product': doc.data(),
-        };
-      }).toList();
-    } catch (e) {
-      rethrow;
-    }
-  }
 }

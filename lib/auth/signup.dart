@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Home/home_page.dart';
+import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/auth/widget/phonenumberfield.dart';
 import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/auth/login.dart';
-import 'package:uas_flutter/provider/provider.dart';
 import 'package:uas_flutter/size_config.dart';
 
 class SignUpScreen extends StatefulWidget {

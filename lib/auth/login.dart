@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uas_flutter/auth/services/auth_services.dart';
 import 'package:uas_flutter/auth/widget/loginsocialfield.dart';
 import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
@@ -208,11 +209,41 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 SizedBox(height: getProportionateScreenHeight(20)),
-                const SocialLoginButton(
-                    image: AppConstants.imgGoogle,
-                    text: AppConstants.googleLogin),
+                SocialLoginButton(
+                  onTap: () async {
+                    try {
+                      // Sign in with Google
+                      UserCredential userCredential =
+                          await AuthService().signInWithGoogle(context);
+
+                      // Check if userCredential is not null and has a valid user
+                      if (userCredential.user != null) {
+                        Navigator.pushReplacementNamed(context, '/myhomepage');
+                      } else {
+                        // If userCredential is null, show an error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Google sign-in failed. Please try again.'),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      // Catch the exception and show a notification
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text('Google sign-in failed: ${e.toString()}'),
+                        ),
+                      );
+                    }
+                  },
+                  image: AppConstants.imgGoogle,
+                  text: AppConstants.googleLogin,
+                ),
                 SizedBox(height: getProportionateScreenHeight(20)),
-                const SocialLoginButton(
+                SocialLoginButton(
+                    onTap: () {},
                     image: AppConstants.imgFacebook,
                     text: AppConstants.facebookLogin),
                 SizedBox(height: getProportionateScreenHeight(20)),

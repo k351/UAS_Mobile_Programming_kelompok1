@@ -1,28 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:uas_flutter/auth/model/auth_model.dart';
 
-class UserProvider extends ChangeNotifier {
+class AuthService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-  AuthModel _user = AuthModel(name: "", email: "", dob: "", phone: "");
-  bool _isLoading = false;
-
-  AuthModel get user => _user;
-  bool get isLoading => _isLoading;
-
-  Future<void> signUp(
+  Future<AuthModel> signUp(
     String username,
     String email,
     String dob,
     String phoneNumber,
     String password,
   ) async {
-    _isLoading = true;
-    notifyListeners();
-
     try {
       // Buat pengguna baru dengan email dan password
       UserCredential userCredential =
@@ -51,15 +43,12 @@ class UserProvider extends ChangeNotifier {
         "saldo": 0,
       });
 
-      await firebaseFirestore
-          .collection("carts")
-          .doc()
-          .set({
+      await firebaseFirestore.collection("carts").doc().set({
         "userId": userCredential.user!.uid,
         "cartList": [],
       });
 
-      _user = authModel;
+      return authModel;
     } on FirebaseAuthException catch (e) {
       if (e.code == "invalid-email") {
         throw Exception("Invalid email address format.");
@@ -68,9 +57,6 @@ class UserProvider extends ChangeNotifier {
       } else {
         throw Exception("An error occurred: ${e.message}");
       }
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 
@@ -83,20 +69,16 @@ class UserProvider extends ChangeNotifier {
 
       var userData = userDoc.data();
       if (userData != null) {
-        _user = AuthModel.fromMap(userData);
-        notifyListeners();
+        return AuthModel.fromMap(userData);
+      } else {
+        throw Exception("User data not found.");
       }
-
-      return _user;
     } catch (e) {
       throw Exception("Failed to get user data: ${e.toString()}");
     }
   }
 
   Future<void> login(String email, String password) async {
-    _isLoading = true;
-    notifyListeners();
-
     try {
       await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -108,9 +90,38 @@ class UserProvider extends ChangeNotifier {
       } else {
         throw Exception("An error occurred: ${e.message}");
       }
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+    }
+  }
+
+  signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+
+      // Check if the user canceled the sign-in
+      if (gUser == null) {
+        // Show a snackbar instead of throwing an exception
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Google sign-in was canceled.")),
+        );
+        return;
+      }
+
+      final GoogleSignInAuthentication gAuth = await gUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: gAuth.accessToken,
+        idToken: gAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      // Catch the exception and handle it (e.g., show a message to the user)
+      print("Error during Google sign-in: ${e.toString()}");
+
+      // Show a snackbar with the error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text("Failed to sign in with Google: ${e.toString()}")),
+      );
     }
   }
 }

@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/auth/login.dart';
+import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/provider/provider.dart';
 import 'package:uas_flutter/routes.dart';
 
 void main() async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/tabbar/tab_bar_views.dart';
+import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
@@ -45,7 +46,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     SizeConfig.init(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Search Results: ${widget.isiSearch}")),
+      appBar: AppBar(title: Text("Search Results: ${widget.isiSearch}",style: const TextStyle(fontFamily: AppConstants.fontInterRegular),)),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _searchResults.isEmpty

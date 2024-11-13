@@ -26,7 +26,7 @@ class IsiTabs extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 9,
             mainAxisSpacing: 12,
-            childAspectRatio: getProportionateScreenHeight(1.2),
+            childAspectRatio: getProportionateScreenHeight(0.75),
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {
@@ -54,7 +54,8 @@ class IsiCategory extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No products available in this category'));
+          return const Center(
+              child: Text('No products available in this category'));
         }
         List<Map<String, dynamic>> products = snapshot.data!;
         return GridView.builder(

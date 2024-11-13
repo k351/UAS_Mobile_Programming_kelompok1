@@ -209,38 +209,38 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 SizedBox(height: getProportionateScreenHeight(20)),
-                SocialLoginButton(
-                  onTap: () async {
-                    try {
-                      // Sign in with Google
-                      UserCredential userCredential =
-                          await AuthService().signInWithGoogle(context);
+                // SocialLoginButton(
+                //   onTap: () async {
+                //     try {
+                //       // Sign in with Google
+                //       UserCredential userCredential =
+                //           await AuthService().signInWithGoogle(context);
 
-                      // Check if userCredential is not null and has a valid user
-                      if (userCredential.user != null) {
-                        Navigator.pushReplacementNamed(context, '/myhomepage');
-                      } else {
-                        // If userCredential is null, show an error message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'Google sign-in failed. Please try again.'),
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      // Catch the exception and show a notification
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                              Text('Google sign-in failed: ${e.toString()}'),
-                        ),
-                      );
-                    }
-                  },
-                  image: AppConstants.imgGoogle,
-                  text: AppConstants.googleLogin,
-                ),
+                //       // Check if userCredential is not null and has a valid user
+                //       if (userCredential.user != null) {
+                //         Navigator.pushReplacementNamed(context, '/myhomepage');
+                //       } else {
+                //         // If userCredential is null, show an error message
+                //         ScaffoldMessenger.of(context).showSnackBar(
+                //           SnackBar(
+                //             content: Text(
+                //                 'Google sign-in failed. Please try again.'),
+                //           ),
+                //         );
+                //       }
+                //     } catch (e) {
+                //       // Catch the exception and show a notification
+                //       ScaffoldMessenger.of(context).showSnackBar(
+                //         SnackBar(
+                //           content:
+                //               Text('Google sign-in failed: ${e.toString()}'),
+                //         ),
+                //       );
+                //     }
+                //   },
+                //   image: AppConstants.imgGoogle,
+                //   text: AppConstants.googleLogin,
+                // ),
                 SizedBox(height: getProportionateScreenHeight(20)),
                 SocialLoginButton(
                     onTap: () {},

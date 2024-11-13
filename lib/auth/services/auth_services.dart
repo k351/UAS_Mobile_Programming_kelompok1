@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:uas_flutter/auth/model/auth_model.dart';
 
 class AuthService {
@@ -93,35 +93,35 @@ class AuthService {
     }
   }
 
-  signInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+  // signInWithGoogle(BuildContext context) async {
+  //   try {
+  //     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
-      // Check if the user canceled the sign-in
-      if (gUser == null) {
-        // Show a snackbar instead of throwing an exception
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Google sign-in was canceled.")),
-        );
-        return;
-      }
+  //     // Check if the user canceled the sign-in
+  //     if (gUser == null) {
+  //       // Show a snackbar instead of throwing an exception
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text("Google sign-in was canceled.")),
+  //       );
+  //       return;
+  //     }
 
-      final GoogleSignInAuthentication gAuth = await gUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: gAuth.accessToken,
-        idToken: gAuth.idToken,
-      );
+  //     final GoogleSignInAuthentication gAuth = await gUser.authentication;
+  //     final credential = GoogleAuthProvider.credential(
+  //       accessToken: gAuth.accessToken,
+  //       idToken: gAuth.idToken,
+  //     );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
-    } catch (e) {
-      // Catch the exception and handle it (e.g., show a message to the user)
-      print("Error during Google sign-in: ${e.toString()}");
+  //     await FirebaseAuth.instance.signInWithCredential(credential);
+  //   } catch (e) {
+  //     // Catch the exception and handle it (e.g., show a message to the user)
+  //     print("Error during Google sign-in: ${e.toString()}");
 
-      // Show a snackbar with the error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("Failed to sign in with Google: ${e.toString()}")),
-      );
-    }
-  }
+  //     // Show a snackbar with the error message
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //           content: Text("Failed to sign in with Google: ${e.toString()}")),
+  //     );
+  //   }
+  // }
 }

@@ -93,6 +93,23 @@ class AuthService {
     }
   }
 
+  Future<void> updateUserProfile({
+    required String name,
+    required String email,
+    required String dob,
+    required String phone,
+  }) async {
+    final user = firebaseAuth.currentUser;
+    if (user != null) {
+      await firebaseFirestore.collection('users').doc(user.uid).update({
+        'name': name,
+        'email': email,
+        'dob': dob,
+        'phone': phone,
+      });
+    }
+  }
+
   // signInWithGoogle(BuildContext context) async {
   //   try {
   //     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
+import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/constants.dart';
 
@@ -103,6 +104,10 @@ class SettingsPageState extends State<SettingsPage> {
                               color: AppConstants.clrBackground),
                           onPressed: () {
                             // Navigasi ke halaman edit profil
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const EditProfilePage()),
+                            );
                           },
                         ),
                       ],

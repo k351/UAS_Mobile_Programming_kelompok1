@@ -8,6 +8,7 @@ import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/routes.dart';
+import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => Cartprovider()),
+        ChangeNotifierProvider(create: (context) => EditProfileProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

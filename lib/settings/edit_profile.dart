@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
+import 'package:uas_flutter/settings/models/edit_profile_model.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({Key? key}) : super(key: key);
@@ -17,61 +18,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        final userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        if (userDoc.exists) {
-          final data = userDoc.data()!;
-          _usernameController.text = data['name'] ?? '';
-          _emailController.text = data['email'] ?? '';
-          _dobController.text = data['dob'] ?? '';
-          _phoneController.text = data['phone'] ?? '';
+  
+    Future.microtask(() {
+      final provider = Provider.of<EditProfileProvider>(context, listen: false);
+      provider.loadUserProfile().then((_) {
+        final profile = provider.profile;
+        if (profile != null) {
+          _usernameController.text = profile.username;
+          _emailController.text = profile.email;
+          _dobController.text = profile.dob;
+          _phoneController.text = profile.phone;
         }
-      }
-    } catch (e) {
-      // Tampilkan pesan error jika data tidak dapat dimuat
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load user data: $e')),
-      );
-    }
-  }
-
-  Future<void> _updateUserData() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        await _firestore.collection('users').doc(user.uid).update({
-          'name': _usernameController.text,
-          'email': _emailController.text,
-          'dob': _dobController.text,
-          'phone': _phoneController.text,
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
-        );
-      }
-    } catch (e) {
-      // Tampilkan pesan error jika data gagal diperbarui
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update profile: $e')),
-      );
-    }
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<EditProfileProvider>(context);
+
     SizeConfig.init(context);
 
     return Scaffold(
@@ -82,62 +51,87 @@ class _EditProfilePageState extends State<EditProfilePage> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(getProportionateScreenWidth(16)),
-        child: Column(
-          children: [
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: getProportionateScreenWidth(40),
-                    backgroundColor: AppConstants.greyColor4,
-                    child: IconButton(
-                      icon: const Icon(Icons.camera_alt, color: Colors.white),
+      body: provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.all(getProportionateScreenWidth(16)),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Center(
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: getProportionateScreenWidth(40),
+                            backgroundColor: AppConstants.greyColor4,
+                            child: IconButton(
+                              icon: const Icon(Icons.camera_alt,
+                                  color: Colors.white),
+                              onPressed: () {
+                                // logic ganti profile(kemungkinan gabisa)
+                              },
+                            ),
+                          ),
+                          SizedBox(height: getProportionateScreenHeight(10)),
+                          TextButton(
+                            onPressed: () {
+                              // Logic updateny
+                            },
+                            child: const Text(
+                              'Change Profile Picture',
+                              style: TextStyle(color: AppConstants.mainColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: getProportionateScreenHeight(20)),
+                    _buildTextField(
+                        _usernameController, 'Username', 'Enter your username'),
+                    _buildTextField(
+                        _emailController, 'Email', 'Enter your email',
+                        inputType: TextInputType.emailAddress),
+                    _buildTextField(_dobController, 'Date of Birth',
+                        'Select your date of birth',
+                        readOnly: true, onTap: _selectDate),
+                    _buildTextField(_phoneController, 'Phone Number',
+                        'Enter your phone number',
+                        inputType: TextInputType.phone),
+                    SizedBox(height: getProportionateScreenHeight(20)),
+                    ElevatedButton(
                       onPressed: () {
-                        // Implement change profile picture logic
+                        final updatedProfile = EditProfileModel(
+                          username: _usernameController.text,
+                          email: _emailController.text,
+                          dob: _dobController.text,
+                          phone: _phoneController.text,
+                        );
+                        provider.updateUserProfile(updatedProfile).then((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Profile updated successfully')),
+                          );
+                        }).catchError((error) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Error updating profile: $error')),
+                          );
+                        });
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppConstants.mainColor,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(40),
+                          vertical: getProportionateScreenHeight(12),
+                        ),
+                      ),
+                      child: const Text('Save Changes'),
                     ),
-                  ),
-                  SizedBox(height: getProportionateScreenHeight(10)),
-                  TextButton(
-                    onPressed: () {
-                      // Logic to update profile picture
-                    },
-                    child: const Text(
-                      'Change Profile Picture',
-                      style: TextStyle(color: AppConstants.mainColor),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(20)),
-            _buildTextField(
-                _usernameController, 'Username', 'Enter your username'),
-            _buildTextField(_emailController, 'Email', 'Enter your email',
-                inputType: TextInputType.emailAddress),
-            _buildTextField(
-                _dobController, 'Date of Birth', 'Select your date of birth',
-                readOnly: true, onTap: _selectDate),
-            _buildTextField(
-                _phoneController, 'Phone Number', 'Enter your phone number',
-                inputType: TextInputType.phone),
-            SizedBox(height: getProportionateScreenHeight(20)),
-            ElevatedButton(
-              onPressed: _updateUserData,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppConstants.mainColor,
-                padding: EdgeInsets.symmetric(
-                  horizontal: getProportionateScreenWidth(40),
-                  vertical: getProportionateScreenHeight(12),
+                  ],
                 ),
               ),
-              child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
             ),
-          ],
-        ),
-      ),
     );
   }
 

@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uas_flutter/auth/login.dart';
-import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
+import 'package:uas_flutter/bottom_navigator.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -28,8 +30,18 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<EditProfileProvider>(context, listen: false)
+          .loadUserProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+    final provider = Provider.of<EditProfileProvider>(context);
 
     return Scaffold(
       backgroundColor: AppConstants.clrBackground,
@@ -54,66 +66,12 @@ class SettingsPageState extends State<SettingsPage> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                  child: Container(
-                    color: AppConstants.mainColor,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(16),
-                      vertical: getProportionateScreenHeight(16),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: getProportionateScreenWidth(30),
-                          backgroundColor: AppConstants.clrBackground,
-                          child: Icon(
-                            Icons.person,
-                            size: getProportionateScreenHeight(30),
-                            color: AppConstants.mainColor,
-                          ),
-                        ),
-                        SizedBox(width: getProportionateScreenWidth(16)),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Kelompok 1',
-                                style: TextStyle(
-                                  color: AppConstants.clrBackground,
-                                  fontSize: getProportionateScreenHeight(18),
-                                  fontFamily: AppConstants.fontInterBold,
-                                ),
-                              ),
-                              Text(
-                                'Kelompok1@example.com',
-                                style: TextStyle(
-                                  color: AppConstants.greyColor4,
-                                  fontFamily: AppConstants.fontInterRegular,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.edit,
-                              color: AppConstants.clrBackground),
-                          onPressed: () {
-                            // Navigasi ke halaman edit profil
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const EditProfilePage()),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                if (provider.isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                else
+                  _buildHeader(provider),
                 SizedBox(height: getProportionateScreenHeight(20)),
                 Padding(
                   padding: EdgeInsets.all(getProportionateScreenWidth(16.0)),
@@ -227,6 +185,75 @@ class SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildHeader(EditProfileProvider provider) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(20),
+        bottomRight: Radius.circular(20),
+      ),
+      child: Container(
+        color: AppConstants.mainColor,
+        padding: EdgeInsets.symmetric(
+          horizontal: getProportionateScreenWidth(16),
+          vertical: getProportionateScreenHeight(16),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: getProportionateScreenWidth(30),
+              backgroundColor: AppConstants.clrBackground,
+              child: Icon(
+                Icons.person,
+                size: getProportionateScreenHeight(30),
+                color: AppConstants.mainColor,
+              ),
+            ),
+            SizedBox(width: getProportionateScreenWidth(16)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    provider.profile?.username ?? 'No Name',
+                    style: TextStyle(
+                      color: AppConstants.clrBackground,
+                      fontSize: getProportionateScreenHeight(18),
+                      fontFamily: AppConstants.fontInterBold,
+                    ),
+                  ),
+                  Text(
+                    provider.profile?.email ?? 'No Email',
+                    style: TextStyle(
+                      color: AppConstants.clrBackground,
+                      fontFamily: AppConstants.fontInterRegular,
+                    ),
+                  ),
+                  Text(
+                    provider.profile?.phone ?? 'No Number',
+                    style: TextStyle(
+                      color: AppConstants.clrBackground,
+                      fontFamily: AppConstants.fontInterRegular,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.edit, color: AppConstants.clrBackground),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const EditProfilePage()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSettingsItem(IconData icon, String title, String subtitle) {
     return ListTile(
       leading: Icon(icon, color: AppConstants.mainColor),
@@ -294,75 +321,50 @@ class SettingsPageState extends State<SettingsPage> {
                 style: TextStyle(
                   fontFamily: AppConstants.fontInterSemiBold,
                   fontSize: 20,
-                  color: Colors.black87,
                 ),
               ),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Divider(color: Colors.grey.shade300, thickness: 1),
-              const SizedBox(height: 10),
-              const Text(
-                "Are you sure you want to logout?",
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: AppConstants.fontInterRegular,
-                  fontSize: 16,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          content: const Text(
+            "Are you sure you want to log out from your account?",
+            style: TextStyle(
+              fontFamily: AppConstants.fontInterMedium,
+              fontSize: 16,
+            ),
           ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            ElevatedButton(
+          actions: <Widget>[
+            TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey.shade300,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: getProportionateScreenWidth(24),
-                  vertical: getProportionateScreenHeight(12),
-                ),
-              ),
-              child: const Text(
+              child: Text(
                 "Cancel",
                 style: TextStyle(
+                  color: AppConstants.mainColor,
                   fontFamily: AppConstants.fontInterMedium,
                 ),
               ),
             ),
             ElevatedButton(
-              onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.of(context).pop();
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    (Route<dynamic> route) =>
-                        false, // Menghapus semua rute sebelumnya
-                  );
-              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: getProportionateScreenWidth(24),
-                  vertical: getProportionateScreenHeight(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                }
+              },
               child: const Text(
-                "Confirm",
+                "Logout",
                 style: TextStyle(
                   fontFamily: AppConstants.fontInterMedium,
                 ),

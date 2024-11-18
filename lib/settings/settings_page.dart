@@ -1,10 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/bottom_navigator.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/auth/login.dart';
+import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
+import 'package:uas_flutter/bottom_navigator.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
-  static const String routeName = '/SettingsPage';
+  const SettingsPage({Key? key}) : super(key: key);
+  static String routeName = '/settingspage';
 
   @override
   SettingsPageState createState() => SettingsPageState();
@@ -24,164 +30,150 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<EditProfileProvider>(context, listen: false)
+          .loadUserProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    SizeConfig.init(context);
+    final provider = Provider.of<EditProfileProvider>(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            color: Colors.blue,
-            padding:
-                const EdgeInsets.only(top: 20, left: 16, right: 16, bottom: 16),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: const Text(
-                          'Account',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+      backgroundColor: AppConstants.clrBackground,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: AppConstants.mainColor,
+            expandedHeight: getProportionateScreenHeight(90),
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text(
+                'Account',
+                style: TextStyle(
+                  color: AppConstants.clrBackground,
+                  fontSize: getProportionateScreenHeight(20),
+                  fontFamily: AppConstants.fontInterBold,
                 ),
-                SizedBox(height: getProportionateScreenHeight(20)),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 30, color: Colors.blue),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Kelompok 1',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Kelompok1@example.com',
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Colors.white),
-                      onPressed: () {
-                        //buat profil, nanti lanjut lagi
-                      },
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Account Settings',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildSettingsItem(
-                      Icons.location_on,
-                      'My Addresses',
-                      'Set shopping delivery address',
-                    ),
-                    _buildSettingsItem(Icons.shopping_cart, 'My Cart',
-                        'Add, remove products and move to checkout'),
-                    _buildSettingsItem(Icons.shopping_bag, 'My Orders',
-                        'In-progress and Completed Orders'),
-                    _buildSettingsItem(Icons.account_balance, 'Bank Account',
-                        'Withdraw balance to registered bank account'),
-                    _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
-                        'List of all the discounted coupons'),
-                    _buildSettingsItem(Icons.notifications, 'Notifications',
-                        'Set any kind of notification message'),
-                    _buildSettingsItem(Icons.privacy_tip, 'Account Privacy',
-                        'Manage data usage and connected accounts'),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'App Settings',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildSettingsItem(Icons.cloud, 'Load Data',
-                        'Upload Data to your Cloud Firebase'),
-                    const SizedBox(height: 10),
-                    _buildSwitchItem(
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                if (provider.isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                else
+                  _buildHeader(provider),
+                SizedBox(height: getProportionateScreenHeight(20)),
+                Padding(
+                  padding: EdgeInsets.all(getProportionateScreenWidth(16.0)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Account Settings',
+                        style: TextStyle(
+                          fontSize: getProportionateScreenHeight(18),
+                          fontFamily: AppConstants.fontInterSemiBold,
+                        ),
+                      ),
+                      SizedBox(height: getProportionateScreenHeight(10)),
+                      _buildSettingsItem(Icons.location_on, 'My Addresses',
+                          'Set shopping delivery address'),
+                      _buildSettingsItem(Icons.shopping_cart, 'My Cart',
+                          'Add, remove products and move to checkout'),
+                      _buildSettingsItem(Icons.shopping_bag, 'My Orders',
+                          'In-progress and Completed Orders'),
+                      _buildSettingsItem(Icons.account_balance, 'Bank Account',
+                          'Withdraw balance to registered bank account'),
+                      _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
+                          'List of all the discounted coupons'),
+                      _buildSettingsItem(Icons.notifications, 'Notifications',
+                          'Set any kind of notification message'),
+                      _buildSettingsItem(Icons.privacy_tip, 'Account Privacy',
+                          'Manage data usage and connected accounts'),
+                      SizedBox(height: getProportionateScreenHeight(20)),
+                      Text(
+                        'App Settings',
+                        style: TextStyle(
+                          fontSize: getProportionateScreenHeight(18),
+                          fontFamily: AppConstants.fontInterSemiBold,
+                        ),
+                      ),
+                      SizedBox(height: getProportionateScreenHeight(10)),
+                      _buildSettingsItem(Icons.cloud, 'Load Data',
+                          'Upload Data to your Cloud Firebase'),
+                      SizedBox(height: getProportionateScreenHeight(10)),
+                      _buildSwitchItem(
                         Icons.location_on,
                         'Geolocation',
                         'Set recommendation based on location',
-                        isGeolocationEnabled, (value) {
-                      setState(() {
-                        isGeolocationEnabled = value;
-                      });
-                    }),
-                    _buildSwitchItem(
+                        isGeolocationEnabled,
+                        (value) {
+                          setState(() {
+                            isGeolocationEnabled = value;
+                          });
+                        },
+                      ),
+                      _buildSwitchItem(
                         Icons.shield,
                         'Safe Mode',
                         'Search result is safe for all ages',
-                        isSafeModeEnabled, (value) {
-                      setState(() {
-                        isSafeModeEnabled = value;
-                      });
-                    }),
-                    _buildSwitchItem(
+                        isSafeModeEnabled,
+                        (value) {
+                          setState(() {
+                            isSafeModeEnabled = value;
+                          });
+                        },
+                      ),
+                      _buildSwitchItem(
                         Icons.dark_mode,
                         'Dark Mode',
                         'Switch between light and dark themes for a more comfortable viewing experience in low light',
-                        isHDImageQualityEnabled, (value) {
-                      setState(() {
-                        isHDImageQualityEnabled = value;
-                      });
-                    }),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: OutlinedButton(
-                        onPressed: () {
-                          _showLogoutDialog(context);
+                        isHDImageQualityEnabled,
+                        (value) {
+                          setState(() {
+                            isHDImageQualityEnabled = value;
+                          });
                         },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 12),
-                          side: BorderSide(color: Colors.red),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      ),
+                      SizedBox(height: getProportionateScreenHeight(20)),
+                      Center(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            _showLogoutDialog(context);
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: getProportionateScreenWidth(40),
+                              vertical: getProportionateScreenHeight(12),
+                            ),
+                            side: const BorderSide(color: Colors.red),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontFamily: AppConstants.fontInterMedium,
+                            ),
                           ),
                         ),
-                        child: const Text(
-                          'Logout',
-                          style: TextStyle(color: Colors.red),
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -193,14 +185,93 @@ class SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildHeader(EditProfileProvider provider) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(20),
+        bottomRight: Radius.circular(20),
+      ),
+      child: Container(
+        color: AppConstants.mainColor,
+        padding: EdgeInsets.symmetric(
+          horizontal: getProportionateScreenWidth(16),
+          vertical: getProportionateScreenHeight(16),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: getProportionateScreenWidth(30),
+              backgroundColor: AppConstants.clrBackground,
+              child: Icon(
+                Icons.person,
+                size: getProportionateScreenHeight(30),
+                color: AppConstants.mainColor,
+              ),
+            ),
+            SizedBox(width: getProportionateScreenWidth(16)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    provider.profile?.username ?? 'No Name',
+                    style: TextStyle(
+                      color: AppConstants.clrBackground,
+                      fontSize: getProportionateScreenHeight(18),
+                      fontFamily: AppConstants.fontInterBold,
+                    ),
+                  ),
+                  Text(
+                    provider.profile?.email ?? 'No Email',
+                    style: TextStyle(
+                      color: AppConstants.clrBackground,
+                      fontFamily: AppConstants.fontInterRegular,
+                    ),
+                  ),
+                  Text(
+                    provider.profile?.phone ?? 'No Number',
+                    style: TextStyle(
+                      color: AppConstants.clrBackground,
+                      fontFamily: AppConstants.fontInterRegular,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.edit, color: AppConstants.clrBackground),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const EditProfilePage()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSettingsItem(IconData icon, String title, String subtitle) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(subtitle),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      leading: Icon(icon, color: AppConstants.mainColor),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: AppConstants.fontInterMedium,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontFamily: AppConstants.fontInterRegular),
+      ),
+      trailing:
+          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: () {
-        // buat navigasi, tujuannya nanti masukin di sized box
+        // Logic navigasi
       },
     );
   }
@@ -208,13 +279,22 @@ class SettingsPageState extends State<SettingsPage> {
   Widget _buildSwitchItem(IconData icon, String title, String subtitle,
       bool value, ValueChanged<bool> onChanged) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(subtitle),
+      leading: Icon(icon, color: AppConstants.mainColor),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: AppConstants.fontInterMedium,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontFamily: AppConstants.fontInterRegular),
+      ),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: Colors.blue,
+        activeColor: AppConstants.mainColor,
       ),
       onTap: () {
         onChanged(!value);
@@ -227,40 +307,67 @@ class SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: AppConstants.clrBackground,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           elevation: 5,
           title: const Row(
             children: [
-              Icon(Icons.logout, color: Colors.red, size: 24),
+              Icon(Icons.logout, color: Colors.red, size: 28),
               SizedBox(width: 10),
-              Text("Confirm Logout"),
+              Text(
+                "Logout Confirmation",
+                style: TextStyle(
+                  fontFamily: AppConstants.fontInterSemiBold,
+                  fontSize: 20,
+                ),
+              ),
             ],
           ),
           content: const Text(
-            "Are you sure you want to logout?",
-            style: TextStyle(color: Colors.black54),
+            "Are you sure you want to log out from your account?",
+            style: TextStyle(
+              fontFamily: AppConstants.fontInterMedium,
+              fontSize: 16,
+            ),
           ),
-          actions: [
+          actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
-              child: const Text(
+              child: Text(
                 "Cancel",
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(
+                  color: AppConstants.mainColor,
+                  fontFamily: AppConstants.fontInterMedium,
+                ),
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // kalau mau bisa log out logicnya disini
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                    (Route<dynamic> route) => false,
+                  );
+                }
               },
               child: const Text(
-                "Confirm",
-                style: TextStyle(color: Colors.red),
+                "Logout",
+                style: TextStyle(
+                  fontFamily: AppConstants.fontInterMedium,
+                ),
               ),
             ),
           ],

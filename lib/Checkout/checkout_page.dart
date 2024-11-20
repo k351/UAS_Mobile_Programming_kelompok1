@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Checkout/custom_divider.dart';
+import 'package:uas_flutter/Checkout/productitem.dart';
+import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
 import 'package:uas_flutter/Checkout/toolbar.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:intl/intl.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = "/checkout";
@@ -17,6 +22,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    Cartprovider cartprovider = context.watch<Cartprovider>();
+    CheckoutProvider checkoutProvider = context.watch<CheckoutProvider>();
+    List<Map<String, dynamic>> checkedItems = cartprovider.checkedItems;
+
+    num subTotal = cartprovider.total;
+    num totalBarang = checkedItems.length;
+
+    // Calculate total using the CheckoutProvider's method
+    double totalBelanja = checkoutProvider.calculateTotal(subTotal.toDouble());
+
     return Scaffold(
       appBar: const Toolbar(title: 'Pengiriman'),
       body: SingleChildScrollView(
@@ -114,51 +129,26 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        'assets/product/electronics/earbuds.png',
-                        width: 100,
-                        height: 100,
-                      ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Portable Kepala Gas Torch BBQ Blow Torch Flame Gun Korek',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                            Text(
-                              '1 Tabung Gas',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppConstants.greyColor,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 6,
-                            ),
-                            Text(
-                              '1 x Rp21.888',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: checkedItems.length,
+                      itemBuilder: (context, index) {
+                        return ProductItem(
+                          item: checkedItems[index],
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const Divider(
+                          color: Colors.grey, // or any other color you prefer
+                          thickness: 1, // Adjust thickness if necessary
+                        );
+                      },
+                    ),
                   ),
+
                   // Updated Row layout
                   Row(
                     children: [
@@ -203,14 +193,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           setState(() {
                             isChecked = value ?? false;
                           });
+                          checkoutProvider.toggleProtection(isChecked);
                         },
                         fillColor: WidgetStateProperty.resolveWith<Color>(
                           (Set<WidgetState> states) {
                             if (states.contains(WidgetState.selected)) {
-                              return const Color(
-                                  0xFF40B22F); // Green when checked
+                              return const Color(0xFF40B22F);
                             }
-                            return Colors.white; // White when unchecked
+                            return Colors.white;
                           },
                         ),
                         checkColor: Colors.white,
@@ -244,31 +234,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15),
                                   )
-                                  // Text(
-                                  //   'BEBAS ONGKIR',
-                                  //   style: TextStyle(
-                                  //     color: Colors.green,
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  // ),
-                                  // SizedBox(width: 4),
-                                  // Text(
-                                  //   '(Rp0)',
-                                  //   style: TextStyle(
-                                  //     color: Colors.black,
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  // ),
                                 ],
                               ),
-                              // SizedBox(height: 4),
-                              // Text(
-                              //   'Estimasi tiba 12 - 15 Nov',
-                              //   style: TextStyle(
-                              //     color: Colors.grey,
-                              //     fontSize: 13,
-                              //   ),
-                              // ),
                             ],
                           ),
                           Icon(
@@ -352,26 +319,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
             const CustomDivider(),
             // Summary Section
-            const Padding(
-              padding: EdgeInsets.all(15),
+            Padding(
+              padding: const EdgeInsets.all(15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Cek ringkasan belanjamu, yuk',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total Harga (1 Barang)'),
-                      Text('Rp21.888',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Total Harga ($totalBarang Barang)'),
+                      Text(
+                        'Rp ${NumberFormat("#,##0", "id_ID").format(subTotal)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      )
                     ],
                   ),
-                  SizedBox(height: 5),
-                  Row(
+                  const SizedBox(height: 5),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total Biaya Proteksi (1 Polis)'),
@@ -379,12 +348,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           style: TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  Divider(),
+                  const Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total Belanja'),
-                      Text('-', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                          'Rp ${NumberFormat("#,##0", "id_ID").format(totalBelanja)}',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],

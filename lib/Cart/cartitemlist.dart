@@ -37,11 +37,15 @@ class _CartitemlistState extends State<Cartitemlist> {
       });
       final cartProvider = Provider.of<Cartprovider>(context, listen: false);
       List<Map<String, dynamic>> filteredItems = items.map((item) {
+        print(item);
         return {
+          'title': item['title'],
+          'image': item['image'],
           'id': item['id'],
           'check': item['check'],
           'price': item['price'],
-          'quantity': item['cartQuantity']
+          'quantity': item['cartQuantity'],
+          'description': item['description'],
         };
       }).toList();
       cartProvider.setCartItems(filteredItems);

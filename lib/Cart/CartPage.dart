@@ -27,8 +27,7 @@ class Cartpage extends StatelessWidget {
                 child: Cartitemlist(),
               ),
             ),
-            Cartcheckout(
-            ),
+            Cartcheckout(),
           ],
         ),
       ),

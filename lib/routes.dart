@@ -5,7 +5,7 @@ import 'package:uas_flutter/auth/forgotpassword_screen.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/signup.dart';
 import 'package:uas_flutter/Wishlist/WishlistPage.dart';
-import 'package:uas_flutter/history/history_screen.dart';
+import 'package:uas_flutter/history/history_page.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';

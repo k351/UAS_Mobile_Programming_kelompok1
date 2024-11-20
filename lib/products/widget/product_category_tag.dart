@@ -22,7 +22,7 @@ class ProductCategoryTag extends StatelessWidget {
       ),
       child: Text(
         category,
-        style: TextStyle(
+        style: const TextStyle(
           color: AppConstants.clrBlack,
           fontWeight: FontWeight.w600,
         ),

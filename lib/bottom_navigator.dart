@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/Wishlist/WishlistPage.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/history/history_screen.dart';
+import 'package:uas_flutter/history/history_page.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 
 class NavigationUtils {
@@ -27,10 +26,7 @@ class NavigationUtils {
         routeName = Myhomepage.routeName;
     }
 
-    Navigator.pushNamed(
-      context,
-      routeName,
-    );
+    Navigator.pushNamed(context, routeName);
   }
 }
 

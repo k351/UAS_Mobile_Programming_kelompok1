@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
-import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/products/widget/image_slider.dart';
 import 'package:uas_flutter/products/widget/product_detail_appbar.dart';

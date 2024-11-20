@@ -7,7 +7,6 @@ import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 
-
 class ItemTabs extends StatelessWidget {
   final Product product;
   final String productId;
@@ -95,8 +94,9 @@ class ItemTabs extends StatelessWidget {
                       "Rp ${product.price}",
                       style: TextStyle(
                           fontSize: getProportionateScreenWidth(16),
-                          color: const Color.fromARGB(255, 255, 7, 7),
-                          fontFamily: AppConstants.fontInterRegular),
+                          color: AppConstants.clrBlack,
+                          fontFamily: AppConstants.fontInterRegular,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   Spacer(),

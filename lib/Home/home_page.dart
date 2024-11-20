@@ -165,12 +165,6 @@ class _MyhomepageState extends State<Myhomepage>
                             Navigator.pushNamed(context, Cartpage.routeName),
                         child: const Icon(Icons.shopping_cart_sharp),
                       ),
-                      SizedBox(width: getProportionateScreenWidth(10)),
-                      InkWell(
-                        onTap: () => Navigator.pushNamed(
-                            context, SettingsPage.routeName),
-                        child: const Icon(Icons.settings),
-                      ),
                     ],
                   ),
                 ],

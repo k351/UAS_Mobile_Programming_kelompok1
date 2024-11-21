@@ -22,7 +22,8 @@ class CheckoutPage extends StatefulWidget {
   _CheckoutPageState createState() => _CheckoutPageState();
 }
 
-Future<void> makePayment(BuildContext context, double totalBelanja) async {
+Future<void> makePayment(BuildContext context, double totalBelanja,
+    List<Map<String, dynamic>> cartItems) async {
   try {
     double saldoUser = await FirebaseTopup.getSaldoFromFirestore();
 
@@ -36,8 +37,19 @@ Future<void> makePayment(BuildContext context, double totalBelanja) async {
       return;
     }
 
+    // Deduct balance from Firestore and update SaldoProvider
     await FirebaseTopup.updateSaldoInFirestore(saldoUser - totalBelanja);
     context.read<SaldoProvider>().updateSaldo(saldoUser - totalBelanja);
+
+    // Call decreaseQuantitiesAfterCheckout to update stock quantities
+    await decreaseQuantitiesAfterCheckout(cartItems);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Pembayaran berhasil!'),
+        backgroundColor: Colors.green,
+      ),
+    );
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -48,13 +60,14 @@ Future<void> makePayment(BuildContext context, double totalBelanja) async {
   }
 }
 
-Future<void> decreaseQuantitiesAfterCheckout(List<CartItem> cartItems) async {
+Future<void> decreaseQuantitiesAfterCheckout(
+    List<Map<String, dynamic>> cartItems) async {
   try {
     // Loop through each cart item to decrease the stock
     for (var item in cartItems) {
       // Decrease the quantity of each product by the quantity in the cart
       await ProductDatabaseService()
-          .decreaseProductQuantity(item.productId, item.cartQuantity);
+          .decreaseProductQuantity(item['productId'], item['quantity']);
     }
     // After decreasing quantities, proceed with other actions, such as order confirmation
     print("All quantities updated successfully.");
@@ -72,6 +85,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     Cartprovider cartprovider = context.watch<Cartprovider>();
     CheckoutProvider checkoutProvider = context.watch<CheckoutProvider>();
     List<Map<String, dynamic>> checkedItems = cartprovider.checkedItems;
+    print(checkedItems);
 
     num subTotal = cartprovider.total;
     num totalBarang = checkedItems.length;
@@ -420,7 +434,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () {
-                    makePayment(context, totalBelanja);
+                    makePayment(context, totalBelanja, checkedItems);
                     Navigator.pushNamed(context, Myhomepage.routeName);
                   },
                   child: const Row(

@@ -103,6 +103,7 @@ class CartDatabaseService {
 
           cartItemsWithDetails.add({
             'id': doc.id,
+            'productId': cartItem.productId,
             'description': product.description,
             'title': product.title,
             'image': product.image,

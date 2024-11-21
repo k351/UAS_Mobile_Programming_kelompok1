@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Checkout/checkout_page.dart';
+import 'package:uas_flutter/Checkout/payment_page.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/auth/forgotpassword_screen.dart';
 import 'package:uas_flutter/auth/login.dart';
@@ -30,5 +31,6 @@ final Map<String, WidgetBuilder> routes = {
   Cartpage.routeName: (context) => Cartpage(),
   HistoryPage.routeName: (context) => const HistoryPage(),
   CheckoutPage.routeName: (context) => const CheckoutPage(),
+  PaymentPage.routeName: (context) => const PaymentPage(),
   EditProfilePage.routeName: (context) => const EditProfilePage(),
 };

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PaymentPage extends StatefulWidget {
+  static const String routeName = '/payment';
+
   const PaymentPage({super.key});
 
   @override
@@ -10,6 +12,6 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold();
   }
 }

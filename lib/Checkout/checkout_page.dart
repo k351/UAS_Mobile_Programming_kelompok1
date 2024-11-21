@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/models/cartitem.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Checkout/custom_divider.dart';
 import 'package:uas_flutter/Checkout/productitem.dart';
 import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
 import 'package:uas_flutter/Checkout/toolbar.dart';
+import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
+import 'package:uas_flutter/Home/home_page.dart';
+import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = "/checkout";
@@ -15,6 +20,48 @@ class CheckoutPage extends StatefulWidget {
   @override
   // ignore: library_private_types_in_public_api
   _CheckoutPageState createState() => _CheckoutPageState();
+}
+
+Future<void> makePayment(BuildContext context, double totalBelanja) async {
+  try {
+    double saldoUser = await FirebaseTopup.getSaldoFromFirestore();
+
+    if (saldoUser < totalBelanja) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Saldo Anda tidak cukup untuk melakukan pembayaran.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    await FirebaseTopup.updateSaldoInFirestore(saldoUser - totalBelanja);
+    context.read<SaldoProvider>().updateSaldo(saldoUser - totalBelanja);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Terjadi kesalahan. Silakan coba lagi.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+Future<void> decreaseQuantitiesAfterCheckout(List<CartItem> cartItems) async {
+  try {
+    // Loop through each cart item to decrease the stock
+    for (var item in cartItems) {
+      // Decrease the quantity of each product by the quantity in the cart
+      await ProductDatabaseService()
+          .decreaseProductQuantity(item.productId, item.cartQuantity);
+    }
+    // After decreasing quantities, proceed with other actions, such as order confirmation
+    print("All quantities updated successfully.");
+  } catch (e) {
+    print("Error during quantity update: $e");
+    // Handle any errors here
+  }
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
@@ -340,22 +387,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total Biaya Proteksi (1 Polis)'),
-                      Text('Rp4.500',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Total Biaya Proteksi'),
+                      Text(isChecked ? 'Rp4.500' : '-',
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
                   const Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total Belanja'),
+                      const Text('Total Belanja'),
                       Text(
                           'Rp ${NumberFormat("#,##0", "id_ID").format(totalBelanja)}',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
@@ -373,11 +420,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () {
-                    // Handle payment action here
+                    makePayment(context, totalBelanja);
+                    Navigator.pushNamed(context, Myhomepage.routeName);
                   },
-                  child: const Text(
-                    'Pilih Pembayaran',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.monetization_on,
+                        color: AppConstants.clrBackground,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        'Bayar Sekarang',
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 ),
               ),

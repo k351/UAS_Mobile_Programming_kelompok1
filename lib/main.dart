@@ -10,6 +10,7 @@ import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/routes.dart';
+import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
 
 void main() async {
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => EditProfileProvider()),
         ChangeNotifierProvider(create: (context) => CheckoutProvider()),
         ChangeNotifierProvider(create: (context) => SaldoProvider()),
+        ChangeNotifierProvider(create: (context) => AddressProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

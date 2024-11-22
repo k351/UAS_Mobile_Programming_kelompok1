@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
+import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
+import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
@@ -34,6 +36,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => Cartprovider()),
         ChangeNotifierProvider(create: (context) => EditProfileProvider()),
+        ChangeNotifierProvider(create: (context) => CheckoutProvider()),
+        ChangeNotifierProvider(create: (context) => SaldoProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

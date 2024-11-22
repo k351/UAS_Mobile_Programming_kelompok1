@@ -79,4 +79,37 @@ class ProductDatabaseService {
       rethrow;
     }
   }
+
+  Future<void> decreaseProductQuantity(
+      String productId, int quantityToDecrease) async {
+    try {
+      // Fetch the product document by ID
+      DocumentSnapshot<Product> doc = await _productsRef.doc(productId).get();
+
+      if (doc.exists) {
+        Product product = doc.data()!;
+
+        print(
+            "Current quantity for product ID $productId: ${product.quantity}");
+
+        // Ensure the quantity doesn't go below 0
+        if (product.quantity - quantityToDecrease >= 0) {
+          product =
+              product.copyWith(quantity: product.quantity - quantityToDecrease);
+
+          // Update the product with the new quantity in Firestore
+          await _productsRef.doc(productId).set(product);
+          print(
+              "Updated quantity for product ID $productId: ${product.quantity}");
+        } else {
+          throw Exception("Insufficient quantity to decrease");
+        }
+      } else {
+        throw Exception("Product not found with ID: $productId");
+      }
+    } catch (e) {
+      print("Error in decreasing product quantity: $e");
+      rethrow;
+    }
+  }
 }

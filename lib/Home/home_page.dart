@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/cartpage.dart';
+import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/Home/tabbar/product_tabbar.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
@@ -77,9 +79,7 @@ class _MyhomepageState extends State<Myhomepage>
   // user saldo firebase
   Future<void> _getUserSaldo() async {
     final saldoUser = await FirebaseTopup.getSaldoFromFirestore();
-    setState(() {
-      saldo = saldoUser;
-    });
+    Provider.of<SaldoProvider>(context, listen: false).updateSaldo(saldoUser);
   }
 
   // Bottom navigator
@@ -92,17 +92,16 @@ class _MyhomepageState extends State<Myhomepage>
 
   //Update Saldo
   Future<void> _navigateToMethodTopUpPage() async {
+    final saldoProvider = Provider.of<SaldoProvider>(context, listen: false);
     final updatedSaldo = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MethodTopUps(initialSaldo: saldo),
+        builder: (context) => MethodTopUps(initialSaldo: saldoProvider.saldo),
       ),
     );
 
     if (updatedSaldo != null) {
-      setState(() {
-        saldo = updatedSaldo;
-      });
+      saldoProvider.updateSaldo(updatedSaldo);
       _updateUserSaldo(updatedSaldo);
     }
   }
@@ -114,6 +113,8 @@ class _MyhomepageState extends State<Myhomepage>
 
   @override
   Widget build(BuildContext context) {
+    final saldoProvider = Provider.of<SaldoProvider>(context);
+    saldo = saldoProvider.saldo;
     SizeConfig.init(context);
     return Scaffold(
       body: SafeArea(

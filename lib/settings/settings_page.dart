@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/CartPage.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
@@ -276,6 +277,9 @@ class SettingsPageState extends State<SettingsPage> {
       onTap: () {
         if (title == 'My Addresses') {
           Navigator.pushNamed(context, MyAddressesPage.routeName);
+        }
+        if (title == 'My Cart') {
+          Navigator.pushNamed(context, Cartpage.routeName);
         }
         // Tambahkan navigasi lain jika diperlukan
       },

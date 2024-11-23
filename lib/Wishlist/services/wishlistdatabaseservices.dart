@@ -1,50 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WishlistDatabaseServices {
-  final CollectionReference _wishlistCollection =
-      FirebaseFirestore.instance.collection('wishlist');
+  final CollectionReference _userCollection =
+      FirebaseFirestore.instance.collection('users');
 
   Future<void> addToWishlist(String userId, String productId) async {
-    // Cek apakah produk sudah ada di wishlist
-    QuerySnapshot existingWishlist = await _wishlistCollection
-        .where('userId', isEqualTo: userId)
-        .where('productId', isEqualTo: productId)
-        .get();
+    final userDoc = _userCollection.doc(userId);
 
-    if (existingWishlist.docs.isEmpty) {
-      // Tambahkan ke wishlist jika belum ada
-      await _wishlistCollection.add({
-        'userId': userId,
-        'productId': productId,
-      });
-    }
+    await userDoc.set({
+      'wishlist': FieldValue.arrayUnion([productId]),
+    }, SetOptions(merge: true));
   }
 
   Future<void> removeFromWishlist(String userId, String productId) async {
-    QuerySnapshot snapshot = await _wishlistCollection
-        .where('userId', isEqualTo: userId)
-        .where('productId', isEqualTo: productId)
-        .get();
+    final userDoc = _userCollection.doc(userId);
 
-    for (var doc in snapshot.docs) {
-      await doc.reference.delete();
-    }
+    await userDoc.update({
+      'wishlist': FieldValue.arrayRemove([productId]),
+    });
   }
 
   Future<List<String>> getUserWishlist(String userId) async {
-    QuerySnapshot snapshot = await _wishlistCollection
-        .where('userId', isEqualTo: userId)
-        .get();
+    final userDoc = await _userCollection.doc(userId).get();
 
-    return snapshot.docs.map((doc) => doc['productId'] as String).toList();
-  }
-
-  Future<bool> isProductInWishlist(String userId, String productId) async {
-    QuerySnapshot snapshot = await _wishlistCollection
-        .where('userId', isEqualTo: userId)
-        .where('productId', isEqualTo: productId)
-        .get();
-
-    return snapshot.docs.isNotEmpty;
+    if (userDoc.exists) {
+      final data = userDoc.data() as Map<String, dynamic>;
+      return List<String>.from(data['wishlist'] ?? []);
+    }
+    return [];
   }
 }

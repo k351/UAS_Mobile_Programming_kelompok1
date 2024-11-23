@@ -1,107 +1,135 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Utils.dart';
-import 'package:uas_flutter/bottom_navigator.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/products/models/product.dart';
+import 'package:uas_flutter/bottom_navigator.dart';
 
-class WishlistPage extends StatefulWidget {
-  const WishlistPage({super.key});
-  static const String routeName = '/wishlistpage';
-
-  @override
-  _WishlistPageState createState() => _WishlistPageState();
-}
-
-class _WishlistPageState extends State<WishlistPage> {
-  int _selectedIndex = 1;
-  List<bool> likedStatus = List.generate(books.length, (_) => true); // Initialize all as liked
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    NavigationUtils.navigateToPage(context, index);
-  }
-
-  void _toggleLike(int index) {
-    setState(() {
-      likedStatus[index] = !likedStatus[index];
-    });
-  }
+class WishlistPage extends StatelessWidget {
+  static const String routeName = '/wishlist'; // Route name untuk navigasi
+  const WishlistPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig.init(context);
+    final wishlistProvider = Provider.of<WishlistProvider>(context);
+    final productDatabaseService = ProductDatabaseService();
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Wishlist",
-                style: TextStyle(
-                    fontSize: 23,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: AppConstants.fontInterRegular),
-              ),
-              SizedBox(height: getProportionateScreenHeight(20)),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: books.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            books[index]['image'],
-                            width: 80,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          SizedBox(width: getProportionateScreenWidth(20)),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      books[index]['title'],
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: AppConstants.fontInterRegular),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.favorite,
-                                        color: likedStatus[index] ? Colors.red : Colors.black,
-                                      ),
-                                      onPressed: () => _toggleLike(index),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 5),
-                                Text('Rating: ${books[index]['rating']}'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+      backgroundColor: AppConstants.clrBackground, // Warna background
+      appBar: AppBar(
+        title: const Text(
+          'Wishlist',
+          style: TextStyle(
+            color: AppConstants.clrBlackFont, // Warna font hitam
+            fontFamily: AppConstants.fontInterSemiBold, // Font semi-bold
           ),
         ),
+        centerTitle: true,
+        backgroundColor: AppConstants.clrAppBar, // Warna AppBar
+        iconTheme: const IconThemeData(color: AppConstants.mainColor), // Ikon
+      ),
+      body: FutureBuilder(
+        future: wishlistProvider.fetchWishlist(userId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (wishlistProvider.wishlistItems.isEmpty) {
+            return const Center(
+              child: Text(
+                'Your wishlist is empty.',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppConstants.greyColor3, // Warna abu-abu
+                ),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: wishlistProvider.wishlistItems.length,
+            itemBuilder: (context, index) {
+              final productId = wishlistProvider.wishlistItems[index];
+
+              return FutureBuilder<Product?>(
+                future: productDatabaseService.fetchProductById(productId),
+                builder: (context, productSnapshot) {
+                  if (productSnapshot.connectionState == ConnectionState.waiting) {
+                    return const ListTile(
+                      title: Text(
+                        'Loading...',
+                        style: TextStyle(color: AppConstants.greyColor4), // Warna teks loading
+                      ),
+                      leading: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (!productSnapshot.hasData || productSnapshot.data == null) {
+                    return const ListTile(
+                      title: Text(
+                        'Failed to load product details',
+                        style: TextStyle(color: AppConstants.clrRed), // Warna merah
+                      ),
+                    );
+                  }
+
+                  final product = productSnapshot.data!;
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    color: AppConstants.greyColor1, // Warna background card
+                    child: ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8), // Sudut membulat pada gambar
+                        child: Image.network(
+                          product.image,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      title: Text(
+                        product.title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontFamily: AppConstants.fontInterMedium,
+                          color: AppConstants.clrBlackFont, // Warna teks hitam
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Rp ${product.price}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontFamily: AppConstants.fontInterRegular,
+                          color: AppConstants.greyColor3, // Warna subtitle
+                        ),
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: AppConstants.clrRed), // Ikon merah
+                        onPressed: () async {
+                          await wishlistProvider.removeFromWishlist(userId, productId);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Item removed from wishlist')),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
       bottomNavigationBar: NavigasiBar(
-        selectedIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        selectedIndex: 1, // Index Wishlist
+        onTap: (index) {
+          NavigationUtils.navigateToPage(context, index);
+        },
       ),
     );
   }

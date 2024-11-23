@@ -6,10 +6,14 @@ import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
+import 'package:uas_flutter/Wishlist/services/wishlistdatabaseservices.dart';
+import 'package:provider/provider.dart';
 
 class ItemTabs extends StatelessWidget {
   final Product product;
   final String productId;
+
   const ItemTabs({super.key, required this.product, required this.productId});
 
   Future<void> addCartItemToCart(BuildContext context) async {
@@ -25,9 +29,29 @@ class ItemTabs extends StatelessWidget {
     }
   }
 
+  Future<void> toggleWishlist(BuildContext context) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
+
+      if (wishlistProvider.isInWishlist(productId)) {
+        await wishlistProvider.removeFromWishlist(userId, productId);
+        print('Removed from wishlist');
+      } else {
+        await wishlistProvider.addToWishlist(userId, productId);
+        print('Added to wishlist');
+      }
+    } catch (e) {
+      print('Failed to toggle wishlist: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+    final wishlistProvider = Provider.of<WishlistProvider>(context);
+    final isInWishlist = wishlistProvider.isInWishlist(productId);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -38,89 +62,103 @@ class ItemTabs extends StatelessWidget {
           ),
         );
       },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: AppConstants.clrBackground,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 2,
-              offset: const Offset(0, 0),
-              color: AppConstants.clrBlack.withOpacity(0.3),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(3.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: getProportionateScreenHeight(110),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: AssetImage(product.image),
-                    fit: BoxFit.fitHeight,
-                  ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppConstants.clrBackground,
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 2,
+                  offset: const Offset(0, 0),
+                  color: AppConstants.clrBlack.withOpacity(0.3),
                 ),
-              ),
-              SizedBox(height: getProportionateScreenHeight(12)),
-              Text(
-                product.title,
-                style: TextStyle(
-                    fontSize: getProportionateScreenWidth(17),
-                    fontWeight: FontWeight.bold,
-                    fontFamily: AppConstants.fontInterRegular),
-              ),
-              SizedBox(height: getProportionateScreenHeight(7)),
-              Row(
-                children: [
-                  Icon(Icons.star,
-                      size: getProportionateScreenWidth(20),
-                      color: AppConstants.star),
-                  Text(
-                    product.rate.toString(),
-                    style: TextStyle(
-                        fontSize: getProportionateScreenWidth(14),
-                        fontFamily: AppConstants.fontInterRegular),
-                  ),
-                ],
-              ),
-              Row(
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    child: Text(
-                      "Rp ${product.price}",
-                      style: TextStyle(
-                          fontSize: getProportionateScreenWidth(16),
-                          color: AppConstants.clrBlack,
-                          fontFamily: AppConstants.fontInterRegular,
-                          fontWeight: FontWeight.bold),
+                    height: getProportionateScreenHeight(110),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                        image: AssetImage(product.image),
+                        fit: BoxFit.fitHeight,
+                      ),
                     ),
                   ),
-                  Spacer(),
-                  InkWell(
-                    onTap: () => addCartItemToCart(context),
-                    child: Container(
-                      height: getProportionateScreenHeight(34),
-                      width: getProportionateScreenWidth(34),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: AppConstants.mainColor,
+                  SizedBox(height: getProportionateScreenHeight(12)),
+                  Text(
+                    product.title,
+                    style: TextStyle(
+                        fontSize: getProportionateScreenWidth(17),
+                        fontWeight: FontWeight.bold,
+                        fontFamily: AppConstants.fontInterRegular),
+                  ),
+                  SizedBox(height: getProportionateScreenHeight(7)),
+                  Row(
+                    children: [
+                      Icon(Icons.star,
+                          size: getProportionateScreenWidth(20),
+                          color: AppConstants.star),
+                      Text(
+                        product.rate.toString(),
+                        style: TextStyle(
+                            fontSize: getProportionateScreenWidth(14),
+                            fontFamily: AppConstants.fontInterRegular),
                       ),
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.shopping_cart_outlined,
-                        color: Colors.grey[100],
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        child: Text(
+                          "Rp ${product.price}",
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(16),
+                              color: const Color.fromARGB(255, 255, 7, 7),
+                              fontFamily: AppConstants.fontInterRegular),
+                        ),
                       ),
-                    ),
-                  )
+                      Spacer(),
+                      InkWell(
+                        onTap: () => addCartItemToCart(context),
+                        child: Container(
+                          height: getProportionateScreenHeight(34),
+                          width: getProportionateScreenWidth(34),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: AppConstants.mainColor,
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.shopping_cart_outlined,
+                            color: Colors.grey[100],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: IconButton(
+              icon: Icon(
+                isInWishlist ? Icons.favorite : Icons.favorite_border,
+                color: isInWishlist ? Colors.red : Colors.grey,
+              ),
+              onPressed: () => toggleWishlist(context),
+            ),
+          ),
+        ],
       ),
     );
   }

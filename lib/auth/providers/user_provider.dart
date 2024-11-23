@@ -53,12 +53,17 @@ class UserProvider extends ChangeNotifier {
     try {
       await authService.login(email, password);
       _user = await authService.getUserData();
-      notifyListeners();
     } catch (e) {
       throw e;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Reset state after logout
+  void resetState() {
+    _user = AuthModel(name: "", email: "", dob: "", phone: "");
+    notifyListeners();
   }
 }

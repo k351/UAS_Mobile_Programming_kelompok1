@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/Checkout/checkout_page.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class Cartcheckout extends StatefulWidget {
@@ -53,7 +54,14 @@ class CartcheckoutState extends State<Cartcheckout> {
             ),
           ),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              if (cartProvider.checkedItems.isNotEmpty) {
+                Navigator.pushNamed(
+                  context,
+                  CheckoutPage.routeName,
+                );
+              }
+            },
             child: Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),

@@ -11,6 +11,10 @@ class Cartprovider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<Map<String, dynamic>> get checkedItems {
+    return _cartItem.where((item) => item['check'] == true).toList();
+  }
+
   void inititateData(num price) {
     _total = price;
   }

@@ -34,7 +34,7 @@ class ItemTabs extends StatelessWidget {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
 
-      if (wishlistProvider.isInWishlist(productId)) {
+      if (wishlistProvider.isInWishlist(userId,productId)) {
         await wishlistProvider.removeFromWishlist(userId, productId);
         print('Removed from wishlist');
       } else {
@@ -49,8 +49,9 @@ class ItemTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     final wishlistProvider = Provider.of<WishlistProvider>(context);
-    final isInWishlist = wishlistProvider.isInWishlist(productId);
+    final isInWishlist = wishlistProvider.isInWishlist(userId, productId);
 
     return GestureDetector(
       onTap: () {

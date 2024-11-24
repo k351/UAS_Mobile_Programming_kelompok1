@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/models/cartitem.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Checkout/custom_divider.dart';
+import 'package:uas_flutter/Checkout/productitem.dart';
+import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
 import 'package:uas_flutter/Checkout/toolbar.dart';
+import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
+import 'package:uas_flutter/Home/home_page.dart';
+import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:intl/intl.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = "/checkout";
@@ -12,11 +22,77 @@ class CheckoutPage extends StatefulWidget {
   _CheckoutPageState createState() => _CheckoutPageState();
 }
 
+Future<void> makePayment(BuildContext context, double totalBelanja,
+    List<Map<String, dynamic>> cartItems) async {
+  try {
+    double saldoUser = await FirebaseTopup.getSaldoFromFirestore();
+
+    if (saldoUser < totalBelanja) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Saldo Anda tidak cukup untuk melakukan pembayaran.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Deduct balance from Firestore and update SaldoProvider
+    await FirebaseTopup.updateSaldoInFirestore(saldoUser - totalBelanja);
+    context.read<SaldoProvider>().updateSaldo(saldoUser - totalBelanja);
+
+    // Call decreaseQuantitiesAfterCheckout to update stock quantities
+    await decreaseQuantitiesAfterCheckout(cartItems);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Pembayaran berhasil!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Terjadi kesalahan. Silakan coba lagi.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+Future<void> decreaseQuantitiesAfterCheckout(
+    List<Map<String, dynamic>> cartItems) async {
+  try {
+    // Loop through each cart item to decrease the stock
+    for (var item in cartItems) {
+      // Decrease the quantity of each product by the quantity in the cart
+      await ProductDatabaseService()
+          .decreaseProductQuantity(item['productId'], item['quantity']);
+    }
+    // After decreasing quantities, proceed with other actions, such as order confirmation
+    print("All quantities updated successfully.");
+  } catch (e) {
+    print("Error during quantity update: $e");
+    // Handle any errors here
+  }
+}
+
 class _CheckoutPageState extends State<CheckoutPage> {
   bool isChecked = true;
 
   @override
   Widget build(BuildContext context) {
+    Cartprovider cartprovider = context.watch<Cartprovider>();
+    CheckoutProvider checkoutProvider = context.watch<CheckoutProvider>();
+    List<Map<String, dynamic>> checkedItems = cartprovider.checkedItems;
+    print(checkedItems);
+
+    num subTotal = cartprovider.total;
+    num totalBarang = checkedItems.length;
+
+    // Calculate total using the CheckoutProvider's method
+    double totalBelanja = checkoutProvider.calculateTotal(subTotal.toDouble());
+
     return Scaffold(
       appBar: const Toolbar(title: 'Pengiriman'),
       body: SingleChildScrollView(
@@ -114,51 +190,26 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        'assets/product/electronics/earbuds.png',
-                        width: 100,
-                        height: 100,
-                      ),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Portable Kepala Gas Torch BBQ Blow Torch Flame Gun Korek',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                            Text(
-                              '1 Tabung Gas',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppConstants.greyColor,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 6,
-                            ),
-                            Text(
-                              '1 x Rp21.888',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: checkedItems.length,
+                      itemBuilder: (context, index) {
+                        return ProductItem(
+                          item: checkedItems[index],
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const Divider(
+                          color: Colors.grey, // or any other color you prefer
+                          thickness: 1, // Adjust thickness if necessary
+                        );
+                      },
+                    ),
                   ),
+
                   // Updated Row layout
                   Row(
                     children: [
@@ -203,14 +254,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           setState(() {
                             isChecked = value ?? false;
                           });
+                          checkoutProvider.toggleProtection(isChecked);
                         },
                         fillColor: WidgetStateProperty.resolveWith<Color>(
                           (Set<WidgetState> states) {
                             if (states.contains(WidgetState.selected)) {
-                              return const Color(
-                                  0xFF40B22F); // Green when checked
+                              return const Color(0xFF40B22F);
                             }
-                            return Colors.white; // White when unchecked
+                            return Colors.white;
                           },
                         ),
                         checkColor: Colors.white,
@@ -244,31 +295,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15),
                                   )
-                                  // Text(
-                                  //   'BEBAS ONGKIR',
-                                  //   style: TextStyle(
-                                  //     color: Colors.green,
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  // ),
-                                  // SizedBox(width: 4),
-                                  // Text(
-                                  //   '(Rp0)',
-                                  //   style: TextStyle(
-                                  //     color: Colors.black,
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  // ),
                                 ],
                               ),
-                              // SizedBox(height: 4),
-                              // Text(
-                              //   'Estimasi tiba 12 - 15 Nov',
-                              //   style: TextStyle(
-                              //     color: Colors.grey,
-                              //     fontSize: 13,
-                              //   ),
-                              // ),
                             ],
                           ),
                           Icon(
@@ -352,39 +380,43 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
             const CustomDivider(),
             // Summary Section
-            const Padding(
-              padding: EdgeInsets.all(15),
+            Padding(
+              padding: const EdgeInsets.all(15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Cek ringkasan belanjamu, yuk',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total Harga (1 Barang)'),
-                      Text('Rp21.888',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Total Harga ($totalBarang Barang)'),
+                      Text(
+                        'Rp ${NumberFormat("#,##0", "id_ID").format(subTotal)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      )
                     ],
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total Biaya Proteksi (1 Polis)'),
-                      Text('Rp4.500',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Total Biaya Proteksi'),
+                      Text(isChecked ? 'Rp4.500' : '-',
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  Divider(),
+                  const Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Total Belanja'),
-                      Text('-', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Total Belanja'),
+                      Text(
+                          'Rp ${NumberFormat("#,##0", "id_ID").format(totalBelanja)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
@@ -402,11 +434,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () {
-                    // Handle payment action here
+                    makePayment(context, totalBelanja, checkedItems);
+                    Navigator.pushNamed(context, Myhomepage.routeName);
                   },
-                  child: const Text(
-                    'Pilih Pembayaran',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.monetization_on,
+                        color: AppConstants.clrBackground,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        'Bayar Sekarang',
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 ),
               ),

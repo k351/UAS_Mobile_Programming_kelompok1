@@ -21,7 +21,7 @@ class ProductRatingStock extends StatelessWidget {
             vertical: 6,
           ),
           decoration: BoxDecoration(
-            color: AppConstants.clrBlack,
+            color: AppConstants.clrBlue.withOpacity(0.8),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(

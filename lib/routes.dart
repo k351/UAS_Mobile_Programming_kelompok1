@@ -11,6 +11,9 @@ import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/settings/my_address_page.dart';
+import 'package:uas_flutter/settings/notification/email_notif.dart';
+import 'package:uas_flutter/settings/notification/notification_page.dart';
+import 'package:uas_flutter/settings/notification/push_notif.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/Cart/cartpage.dart';
 
@@ -35,4 +38,7 @@ final Map<String, WidgetBuilder> routes = {
   PaymentPage.routeName: (context) => const PaymentPage(),
   EditProfilePage.routeName: (context) => const EditProfilePage(),
   MyAddressesPage.routeName: (context) => const MyAddressesPage(),
+  NotificationPage.routeName: (context) => NotificationPage(),
+  PushNotificationPage.routeName: (context) => const PushNotificationPage(),
+  EmailNotificationPage.routeName: (context) => const EmailNotificationPage(),
 };

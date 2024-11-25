@@ -32,11 +32,11 @@ class _MyhomepageState extends State<Myhomepage>
   int _currentPage = 0; // gambar
   int _selectedIndex = 0; // warna bottom navigator
   List<String> carousel = [
-    "assets/carousel/shinjuku.png",
-    "assets/carousel/theforest.png",
-    "assets/carousel/monster.png",
-    "assets/carousel/paradise.png",
-    "assets/carousel/penthouse.png"
+    "assets/carousel/promohp.jpg",
+    "assets/carousel/promogratisongkir.jpg",
+    "assets/carousel/promobelanja.jpg",
+    "assets/carousel/promotopup.jpg",
+    "assets/carousel/promobaju.jpg"
   ];
 
   @override

@@ -72,11 +72,11 @@ flutter:
     - assets/logos/cartify.png
     - assets/login/google.svg
     - assets/login/facebook.svg
-    - assets/carousel/shinjuku.png
-    - assets/carousel/theforest.png
-    - assets/carousel/monster.png
-    - assets/carousel/paradise.png
-    - assets/carousel/penthouse.png
+    - assets/carousel/promohp.jpg
+    - assets/carousel/promogratisongkir.jpg
+    - assets/carousel/promobelanja.jpg
+    - assets/carousel/promotopup.jpg
+    - assets/carousel/promobaju.jpg
     - assets/product/beauty/bodywash.png
     - assets/product/beauty/eyecream.png
     - assets/product/beauty/hair_serum.png

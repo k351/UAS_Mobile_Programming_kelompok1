@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class Cartprovider extends ChangeNotifier {
   num _total = 0;
-  List<Map<String, dynamic>> _cartItem = [];
+  List<Map<String, dynamic>> _cartItems = [];
   num get total => _total;
-  List<Map<String, dynamic>> get cartItem => _cartItem;
+  List<Map<String, dynamic>> get cartItems => _cartItems;
 
   void setCartItems(List<Map<String, dynamic>> items) {
-    _cartItem = items;
+    _cartItems = items;
     notifyListeners();
   }
 
@@ -16,9 +16,9 @@ class Cartprovider extends ChangeNotifier {
   }
 
   void increase(String id, num price) {
-    final item = _cartItem.firstWhere((item) => item['id'] == id);
+    final item = _cartItems.firstWhere((item) => item['id'] == id);
     if (item != null) {
-      item['quantity'] += 1;
+      item['cartQuantity'] += 1;
       print(item);
       calculateTotal();
       notifyListeners();
@@ -26,10 +26,10 @@ class Cartprovider extends ChangeNotifier {
   }
 
   void decrease(String id, num price) {
-    final item = _cartItem.firstWhere((item) => item['id'] == id);
+    final item = _cartItems.firstWhere((item) => item['id'] == id);
     if (item != null) {
-      if (item['quantity'] > 1) {
-        item['quantity'] -= 1;
+      if (item['cartQuantity'] > 1) {
+        item['cartQuantity'] -= 1;
         print(item);
         calculateTotal();
         notifyListeners();
@@ -38,19 +38,28 @@ class Cartprovider extends ChangeNotifier {
   }
 
   void check(String id, int quantity, num price, bool newcheck) {
-    final index = _cartItem.indexWhere((item) => item['id'] == id);
+    final index = _cartItems.indexWhere((item) => item['id'] == id);
     if (index != -1) {
-      _cartItem[index]['check'] = newcheck;
+      _cartItems[index]['check'] = newcheck;
       calculateTotal();
       notifyListeners();
     }
   }
 
   void calculateTotal() {
-    _total = _cartItem
+    _total = _cartItems
         .where((item) => item['check'] == true)
-        .fold(0, (sum, item) => sum + (item['price'] * item['quantity']));
+        .fold(0, (sum, item) => sum + (item['price'] * item['cartQuantity']));
     notifyListeners();
+  }
+
+  void removeItem(String id) {
+    final index = _cartItems.indexWhere((item) => item['id'] == id);
+    if (index != -1) {
+      _cartItems.removeAt(index);
+      calculateTotal();
+      notifyListeners();
+    }
   }
 
   void updateScreen() {

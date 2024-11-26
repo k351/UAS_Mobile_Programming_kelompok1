@@ -11,7 +11,7 @@ class IsiTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: ProductDatabaseService().fetchProductsWithId(),
+      future: ProductDatabaseService().fetchProducts(true),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -54,7 +54,8 @@ class IsiCategory extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No products available in this category'));
+          return const Center(
+              child: Text('No products available in this category'));
         }
         List<Map<String, dynamic>> products = snapshot.data!;
         return GridView.builder(

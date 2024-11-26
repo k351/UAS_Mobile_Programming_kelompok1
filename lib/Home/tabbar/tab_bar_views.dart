@@ -7,7 +7,6 @@ import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 
-
 class ItemTabs extends StatelessWidget {
   final Product product;
   final String productId;

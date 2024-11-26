@@ -1,8 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/CartPage.dart';
 import 'package:uas_flutter/auth/login.dart';
+import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
+import 'package:uas_flutter/settings/my_address_page.dart';
+import 'package:uas_flutter/settings/notification/notification_page.dart';
+import 'package:uas_flutter/settings/notification/notification_page.dart';
+import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
@@ -92,8 +98,8 @@ class SettingsPageState extends State<SettingsPage> {
                           'Add, remove products and move to checkout'),
                       _buildSettingsItem(Icons.shopping_bag, 'My Orders',
                           'In-progress and Completed Orders'),
-                      _buildSettingsItem(Icons.account_balance, 'Bank Account',
-                          'Withdraw balance to registered bank account'),
+                      _buildSettingsItem(Icons.account_balance, 'Payment Methods',
+                          'Choose payment methods for cheking out'),
                       _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
                           'List of all the discounted coupons'),
                       _buildSettingsItem(Icons.notifications, 'Notifications',
@@ -271,7 +277,19 @@ class SettingsPageState extends State<SettingsPage> {
       trailing:
           const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: () {
-        // Logic navigasi
+        if (title == 'My Addresses') {
+          Navigator.pushNamed(context, MyAddressesPage.routeName);
+        }
+        if (title == 'My Cart') {
+          Navigator.pushNamed(context, Cartpage.routeName);
+        }
+        if (title == 'Payment Methods') {
+          Navigator.pushNamed(context, Cartpage.routeName);
+        }
+        if (title == 'Notifications') {
+          Navigator.pushNamed(context, NotificationPage.routeName);
+        }
+        // Tambahkan navigasi lain jika diperlukan
       },
     );
   }
@@ -353,16 +371,28 @@ class SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                if (context.mounted) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()),
-                    (Route<dynamic> route) => false,
+                try {
+                  // Reset providers
+                  Provider.of<AddressProvider>(context, listen: false)
+                      .resetState();
+                  Provider.of<UserProvider>(context, listen: false)
+                      .resetState();
+
+                  // Logout from Firebase
+                  await FirebaseAuth.instance.signOut();
+
+                  // Navigate to LoginScreen
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, LoginScreen.routeName, (route) => false);
+                } catch (e) {
+                  print("Logout failed: $e");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text("Failed to logout: ${e.toString()}")),
                   );
                 }
               },
+
               child: const Text(
                 "Logout",
                 style: TextStyle(

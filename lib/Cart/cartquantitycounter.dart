@@ -30,7 +30,7 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
   Future<void> _initializeProduct() async {
     try {
       product = await cartDatabaseService
-          .fetchProductByCartId(widget.counterData['id']);
+          .fetchProductByCartItemId(widget.counterData['id']);
       setState(() {});
     } catch (e) {
       print("Gagal mengambil produk: $e");

@@ -11,7 +11,7 @@ class IsiTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: ProductDatabaseService().fetchProductsWithId(),
+      future: ProductDatabaseService().fetchProducts(true),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

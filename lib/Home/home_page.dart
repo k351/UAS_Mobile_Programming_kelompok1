@@ -11,6 +11,7 @@ import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/Home/services/carousel.dart';
 import 'dart:async'; // Ambil Time
 
 class Myhomepage extends StatefulWidget {
@@ -31,13 +32,7 @@ class _MyhomepageState extends State<Myhomepage>
   late Timer timer; // timer
   int _currentPage = 0; // gambar
   int _selectedIndex = 0; // warna bottom navigator
-  List<String> carousel = [
-    "assets/carousel/promohp.jpg",
-    "assets/carousel/promogratisongkir.jpg",
-    "assets/carousel/promobelanja.jpg",
-    "assets/carousel/promotopup.jpg",
-    "assets/carousel/promobaju.jpg"
-  ];
+  List<String> carousel = [];
 
   @override
   void initState() {
@@ -46,6 +41,7 @@ class _MyhomepageState extends State<Myhomepage>
     _scrollController = ScrollController();
     _pageController = PageController(viewportFraction: 1);
     _getUserSaldo(); // user saldo di firebase
+    _loadCarousel();
 
     // Gambar pindah pindah
     timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
@@ -80,6 +76,14 @@ class _MyhomepageState extends State<Myhomepage>
   Future<void> _getUserSaldo() async {
     final saldoUser = await FirebaseTopup.getSaldoFromFirestore();
     Provider.of<SaldoProvider>(context, listen: false).updateSaldo(saldoUser);
+  }
+
+  Future<void> _loadCarousel() async {
+    final fetchedCarousel =
+        await FirebaseCarousel.getHomeCarouselFromFirestore();
+    setState(() {
+      carousel = fetchedCarousel;
+    });
   }
 
   // Bottom navigator

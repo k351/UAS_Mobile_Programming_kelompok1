@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Cart/CartQuantityCounter.dart';
 import 'package:uas_flutter/Cart/cartcheckbox.dart';
+import 'package:uas_flutter/products/product_detail_screen.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class Cartitem extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -43,33 +45,53 @@ class Cartitem extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            data['title'],
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.bold),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: () async {
+                          final productService = ProductDatabaseService();
+
+                          final product = await productService
+                              .fetchProductById(data['productId']);
+
+                          if (product != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailScreen(
+                                  product: product,
+                                  productId: data['productId'],
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: Text(
+                              data['title'],
+                              style: TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
                           ),
-                          Text(
-                            "\$${data['price']}",
-                            style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                          ),
-                          Spacer(),
-                          Icon(
-                            CupertinoIcons.heart_fill,
-                            color: Colors.grey,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      Text(
+                        "\$${data['price']}",
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                      ),
+                      Spacer(),
+                      Icon(
+                        CupertinoIcons.heart_fill,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
                 ),
                 Container(

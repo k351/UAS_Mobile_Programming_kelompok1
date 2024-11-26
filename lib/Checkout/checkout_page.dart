@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uas_flutter/Cart/models/cartitem.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Checkout/custom_divider.dart';
 import 'package:uas_flutter/Checkout/productitem.dart';
 import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
@@ -68,6 +68,8 @@ Future<void> decreaseQuantitiesAfterCheckout(
       // Decrease the quantity of each product by the quantity in the cart
       await ProductDatabaseService()
           .decreaseProductQuantity(item['productId'], item['quantity']);
+      await CartDatabaseService(productDatabase: ProductDatabaseService())
+          .removeCartItem(item['id']);
     }
     // After decreasing quantities, proceed with other actions, such as order confirmation
     print("All quantities updated successfully.");
@@ -85,7 +87,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     Cartprovider cartprovider = context.watch<Cartprovider>();
     CheckoutProvider checkoutProvider = context.watch<CheckoutProvider>();
     List<Map<String, dynamic>> checkedItems = cartprovider.checkedItems;
-    print(checkedItems);
 
     num subTotal = cartprovider.total;
     num totalBarang = checkedItems.length;

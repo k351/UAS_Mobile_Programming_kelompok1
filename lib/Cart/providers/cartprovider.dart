@@ -23,7 +23,6 @@ class Cartprovider extends ChangeNotifier {
     final item = _cartItems.firstWhere((item) => item['id'] == id);
     if (item != null) {
       item['cartQuantity'] += 1;
-      print(item);
       calculateTotal();
       notifyListeners();
     }

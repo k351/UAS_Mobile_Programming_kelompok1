@@ -121,7 +121,7 @@ class WishlistPage extends StatelessWidget {
         },
       ),
       bottomNavigationBar: NavigasiBar(
-        selectedIndex: 1,
+        selectedIndex: 2,
         onTap: (index) {
           NavigationUtils.navigateToPage(context, index);
         },

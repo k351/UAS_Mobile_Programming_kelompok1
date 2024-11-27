@@ -6,6 +6,8 @@ import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/settings/my_address_page.dart';
+import 'package:uas_flutter/settings/notification/notification_page.dart';
+import 'package:uas_flutter/settings/notification/notification_page.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/size_config.dart';
 import 'package:uas_flutter/constants.dart';
@@ -96,8 +98,8 @@ class SettingsPageState extends State<SettingsPage> {
                           'Add, remove products and move to checkout'),
                       _buildSettingsItem(Icons.shopping_bag, 'My Orders',
                           'In-progress and Completed Orders'),
-                      _buildSettingsItem(Icons.account_balance, 'Bank Account',
-                          'Withdraw balance to registered bank account'),
+                      _buildSettingsItem(Icons.account_balance, 'Payment Methods',
+                          'Choose payment methods for cheking out'),
                       _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
                           'List of all the discounted coupons'),
                       _buildSettingsItem(Icons.notifications, 'Notifications',
@@ -280,6 +282,12 @@ class SettingsPageState extends State<SettingsPage> {
         }
         if (title == 'My Cart') {
           Navigator.pushNamed(context, Cartpage.routeName);
+        }
+        if (title == 'Payment Methods') {
+          Navigator.pushNamed(context, Cartpage.routeName);
+        }
+        if (title == 'Notifications') {
+          Navigator.pushNamed(context, NotificationPage.routeName);
         }
         // Tambahkan navigasi lain jika diperlukan
       },

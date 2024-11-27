@@ -19,11 +19,6 @@ class CartcheckoutState extends State<Cartcheckout> {
   @override
   void initState() {
     super.initState();
-    initiateData();
-  }
-
-  void initiateData() async {
-    final cartProvider = Provider.of<Cartprovider>(context, listen: false);
   }
 
   @override

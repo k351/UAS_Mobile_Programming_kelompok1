@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
-import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/products/widget/image_slider.dart';
 import 'package:uas_flutter/products/widget/product_detail_appbar.dart';
 import 'package:uas_flutter/products/models/product.dart';
@@ -30,9 +29,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> addCartItemToCart(BuildContext context) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      final cartDatabaseService = CartDatabaseService(
-        productDatabase: ProductDatabaseService(),
-      );
+      final cartDatabaseService = CartDatabaseService();
       await cartDatabaseService.addCartItemToCart(
           userId, widget.productId, quantity);
       print('Item added to cart successfully');

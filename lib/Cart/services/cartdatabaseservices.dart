@@ -11,9 +11,9 @@ class CartDatabaseService {
   final _firestore = FirebaseFirestore.instance;
   late final CollectionReference<Cart> _cartsRef;
   late final CollectionReference<CartItem> _cartItemsRef;
-  final ProductDatabaseService productDatabase;
+  late ProductDatabaseService productDatabase;
 
-  CartDatabaseService({required this.productDatabase}) {
+  CartDatabaseService() {
     _cartsRef = _firestore.collection(CARTS_COLLECTION_REF).withConverter<Cart>(
           fromFirestore: (snapshots, _) => Cart.fromJson(snapshots.data()!),
           toFirestore: (cart, _) => cart.toJson(),
@@ -25,6 +25,8 @@ class CartDatabaseService {
           fromFirestore: (snapshots, _) => CartItem.fromJson(snapshots.data()!),
           toFirestore: (cartItem, _) => cartItem.toJson(),
         );
+
+    productDatabase = ProductDatabaseService();
   }
 
   Future<List<Cart>> fetchCarts() async {
@@ -231,6 +233,16 @@ class CartDatabaseService {
       } else {
         throw Exception("Product not found.");
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateCheckStatus(String cartItemId, bool newCheckValue) async {
+    try {
+      await _cartItemsRef.doc(cartItemId).update({
+        'check': newCheckValue,
+      });
     } catch (e) {
       rethrow;
     }

@@ -68,8 +68,7 @@ Future<void> decreaseQuantitiesAfterCheckout(
       // Decrease the quantity of each product by the quantity in the cart
       await ProductDatabaseService()
           .decreaseProductQuantity(item['productId'], item['quantity']);
-      await CartDatabaseService(productDatabase: ProductDatabaseService())
-          .removeCartItem(item['id']);
+      await CartDatabaseService().removeCartItem(item['id']);
     }
     // After decreasing quantities, proceed with other actions, such as order confirmation
     print("All quantities updated successfully.");

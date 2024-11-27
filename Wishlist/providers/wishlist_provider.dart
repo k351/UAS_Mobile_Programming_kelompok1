@@ -9,6 +9,7 @@ class WishlistProvider with ChangeNotifier {
 
   // Mendapatkan wishlist untuk pengguna tertentu
   List<String> getWishlist(String userId) {
+    print(_userWishlist[userId]);
     return _userWishlist[userId] ?? [];
   }
 
@@ -40,8 +41,8 @@ class WishlistProvider with ChangeNotifier {
   // Menghapus produk dari wishlist pengguna tertentu
   Future<void> removeFromWishlist(String userId, String productId) async {
     await _wishlistService.removeFromWishlist(userId, productId);
-    if (_userWishlist[userId] != null &&
-        _userWishlist[userId]!.contains(productId)) {
+
+    if (_userWishlist[userId] != null && _userWishlist[userId]!.contains(productId)) {
       _userWishlist[userId]!.remove(productId);
       notifyListeners();
     }

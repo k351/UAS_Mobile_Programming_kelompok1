@@ -3,7 +3,6 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/size_config.dart';
-import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
@@ -19,9 +18,7 @@ class ItemTabs extends StatelessWidget {
   Future<void> addCartItemToCart(BuildContext context) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      final cartDatabaseService = CartDatabaseService(
-        productDatabase: ProductDatabaseService(),
-      );
+      final cartDatabaseService = CartDatabaseService();
       await cartDatabaseService.addCartItemToCart(userId, productId, 1);
       print('Item added to cart successfully');
     } catch (e) {
@@ -32,9 +29,10 @@ class ItemTabs extends StatelessWidget {
   Future<void> toggleWishlist(BuildContext context) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
+      final wishlistProvider =
+          Provider.of<WishlistProvider>(context, listen: false);
 
-      if (wishlistProvider.isInWishlist(userId,productId)) {
+      if (wishlistProvider.isInWishlist(userId, productId)) {
         await wishlistProvider.removeFromWishlist(userId, productId);
         print('Removed from wishlist');
       } else {

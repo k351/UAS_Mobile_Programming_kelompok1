@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
+import 'package:uas_flutter/products/product_detail_screen.dart';
 
 class WishlistPage extends StatefulWidget {
   static const String routeName = '/wishlist';
@@ -60,6 +61,9 @@ class _WishlistPageState extends State<WishlistPage> {
           label: 'Undo',
           onPressed: () {
             wishlistProvider.addToWishlist(userId, productId);
+            setState(() {
+              _wishlistFuture = _fetchWishlistProducts();
+            });
           },
         ),
       ),
@@ -147,6 +151,15 @@ class _WishlistPageState extends State<WishlistPage> {
                           const Icon(Icons.delete, color: AppConstants.clrRed),
                       onPressed: () => _removeFromWishlist(productId),
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailScreen(
+                              product: product, productId: productId),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
@@ -155,11 +168,36 @@ class _WishlistPageState extends State<WishlistPage> {
         },
       ),
       bottomNavigationBar: NavigasiBar(
-        selectedIndex: 2,
+        selectedIndex: 2, // Set sesuai index untuk wishlist
         onTap: (index) {
           NavigationUtils.navigateToPage(context, index);
         },
       ),
     );
   }
+}
+
+Future<List<Map<String, dynamic>>> _fetchWishlistProducts(
+  String userId,
+  WishlistProvider wishlistProvider,
+  ProductDatabaseService productDatabaseService,
+) async {
+  final productIds = wishlistProvider.getWishlist(userId);
+
+  // Fetch products using their IDs
+  final productsData = await Future.wait(
+    productIds.map((id) async {
+      final product = await productDatabaseService.fetchProductById(id);
+      return {
+        'id': id,
+        'product': product
+      }; // Return Map with id and product data
+    }),
+  );
+
+  // Filter valid products (non-null)
+  final validProducts =
+      productsData.where((element) => element['product'] != null).toList();
+  print(validProducts);
+  return validProducts;
 }

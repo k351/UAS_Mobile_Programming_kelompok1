@@ -16,7 +16,8 @@ class ProductDatabaseService {
         );
   }
 
-  Future<List<Map<String, dynamic>>> fetchProducts([bool withId = false]) async {
+  Future<List<Map<String, dynamic>>> fetchProducts(
+      [bool withId = false]) async {
     try {
       if (withId == true) {
         QuerySnapshot<Product> snapshot = await _productsRef.get();
@@ -84,7 +85,7 @@ class ProductDatabaseService {
     try {
       // Fetch the product document by ID
       DocumentSnapshot<Product> doc = await _productsRef.doc(productId).get();
-
+    
       if (doc.exists) {
         Product product = doc.data()!;
 

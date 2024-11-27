@@ -46,7 +46,7 @@ class ProductItem extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                '${item['quantity']} x Rp ${NumberFormat("#,##0", "id_ID").format(item['price'])}',
+                '${item['cartQuantity']} x Rp ${NumberFormat("#,##0", "id_ID").format(item['price'])}',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

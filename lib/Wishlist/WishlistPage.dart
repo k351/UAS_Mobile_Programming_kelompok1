@@ -8,6 +8,7 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/products/product_detail_screen.dart';
 
 class WishlistPage extends StatelessWidget {
   static const String routeName = '/wishlist';
@@ -39,7 +40,7 @@ class WishlistPage extends StatelessWidget {
         backgroundColor: AppConstants.clrAppBar,
         iconTheme: const IconThemeData(color: AppConstants.mainColor),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(  
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchWishlistProducts(userId, wishlistProvider, productDatabaseService),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -114,6 +115,14 @@ class WishlistPage extends StatelessWidget {
                       );
                     },
                   ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailScreen(product: product, productId: productId),
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -121,7 +130,7 @@ class WishlistPage extends StatelessWidget {
         },
       ),
       bottomNavigationBar: NavigasiBar(
-        selectedIndex: 2,
+        selectedIndex: 2, // Set sesuai index untuk wishlist
         onTap: (index) {
           NavigationUtils.navigateToPage(context, index);
         },
@@ -141,7 +150,7 @@ Future<List<Map<String, dynamic>>> _fetchWishlistProducts(
   final productsData = await Future.wait(
     productIds.map((id) async {
       final product = await productDatabaseService.fetchProductById(id);
-      return {'id': id, 'product': product};  // Return Map with id and product data
+      return {'id': id, 'product': product}; // Return Map with id and product data
     }),
   );
 

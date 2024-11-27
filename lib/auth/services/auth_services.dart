@@ -13,7 +13,7 @@ class AuthService {
     String phoneNumber,
     String password,
   ) async {
-    try { 
+    try {
       // Buat pengguna baru dengan email dan password
       UserCredential userCredential =
           await firebaseAuth.createUserWithEmailAndPassword(

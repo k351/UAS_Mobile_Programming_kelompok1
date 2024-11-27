@@ -1,15 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/products/widget/image_slider.dart';
 import 'package:uas_flutter/products/widget/product_detail_appbar.dart';
 import 'package:uas_flutter/products/models/product.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/products/widget/product_category_tag.dart';
 import 'package:uas_flutter/products/widget/product_title_price.dart';
 import 'package:uas_flutter/products/widget/product_rating_stock.dart';
 import 'package:uas_flutter/products/widget/product_description.dart';
 import 'package:uas_flutter/products/widget/add_to_cart_button.dart';
+import 'package:uas_flutter/utils/snackbar.dart';
 
 class DetailScreen extends StatefulWidget {
   static const String routeName = 'details';
@@ -33,8 +36,11 @@ class _DetailScreenState extends State<DetailScreen> {
       await cartDatabaseService.addCartItemToCart(
           userId, widget.productId, quantity);
       print('Item added to cart successfully');
+      SnackbarUtils.showSnackbarAtTop(context, 'Item added to cart');
     } catch (e) {
       print('Failed to add item to cart: $e');
+      SnackbarUtils.showSnackbarAtTop(context, 'Failed to add item to cart',
+          backgroundColor: AppConstants.clrRed);
     }
   }
 
@@ -149,7 +155,6 @@ class _DetailScreenState extends State<DetailScreen> {
             AddToCartButton(
               onPressed: () {
                 addCartItemToCart(context);
-                print("aku ditekan");
               },
             ),
           ],

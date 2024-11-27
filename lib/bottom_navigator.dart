@@ -49,7 +49,7 @@ class NavigasiBar extends StatelessWidget {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.receipt),
+          icon: Icon(Icons.shopping_bag),
           label: 'Transaction',
         ),
         BottomNavigationBarItem(

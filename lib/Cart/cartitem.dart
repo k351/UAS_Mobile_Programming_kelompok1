@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/CartQuantityCounter.dart';
 import 'package:uas_flutter/Cart/cartcheckbox.dart';
+import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
@@ -15,25 +18,30 @@ class Cartitem extends StatelessWidget {
     required this.onDelete,
   });
 
+  void toggleWishlist(WishlistProvider wishlistProvider, String userId) {
+    if (wishlistProvider.isInWishlist(userId, data['productId'])) {
+      wishlistProvider.removeFromWishlist(userId, data['productId']);
+    } else {
+      wishlistProvider.addToWishlist(userId, data['productId']);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final wishlistProvider = Provider.of<WishlistProvider>(context);
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     return Column(
       children: [
         ListTile(
           subtitle: Container(
-            height: 110,
+            height: 130,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(10)),
             child: Row(
               children: [
                 Cartcheckbox(
-                  checkbox: {
-                    'id': data['id'],
-                    'check': data['check'],
-                    'cartQuantity': data['cartQuantity'],
-                    'price': data['price'],
-                  },
+                  id: data['id'],
                 ),
                 Container(
                   height: 70,
@@ -87,9 +95,16 @@ class Cartitem extends StatelessWidget {
                             color: Colors.grey),
                       ),
                       Spacer(),
-                      Icon(
-                        CupertinoIcons.heart_fill,
-                        color: Colors.grey,
+                      IconButton(
+                        onPressed: () =>
+                            toggleWishlist(wishlistProvider, userId),
+                        icon: Icon(
+                          wishlistProvider.isInWishlist(
+                                  userId, data['productId'])
+                              ? CupertinoIcons.heart_fill
+                              : CupertinoIcons.heart,
+                          color: Colors.red,
+                        ),
                       ),
                     ],
                   ),
@@ -109,11 +124,7 @@ class Cartitem extends StatelessWidget {
                       ),
                       Spacer(),
                       Cartquantitycounter(
-                        counterData: {
-                          'id': data['id'],
-                          'cartQuantity': data['cartQuantity'],
-                          'price': data['price'],
-                        },
+                          id: data['id'],
                       )
                     ],
                   ),

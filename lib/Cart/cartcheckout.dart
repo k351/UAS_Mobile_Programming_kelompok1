@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Checkout/checkout_page.dart';
-import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+
 
 class Cartcheckout extends StatefulWidget {
   const Cartcheckout({super.key});
@@ -14,7 +14,7 @@ class Cartcheckout extends StatefulWidget {
 
 class CartcheckoutState extends State<Cartcheckout> {
   final CartDatabaseService cartDatabaseService =
-      CartDatabaseService(productDatabase: ProductDatabaseService());
+      CartDatabaseService();
   num total = 0;
   @override
   void initState() {

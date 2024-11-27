@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/cartitem.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
-import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 
 class Cartitemlist extends StatefulWidget {
   const Cartitemlist({
@@ -16,8 +15,7 @@ class Cartitemlist extends StatefulWidget {
 }
 
 class _CartitemlistState extends State<Cartitemlist> {
-  final CartDatabaseService cartDatabaseService =
-      CartDatabaseService(productDatabase: ProductDatabaseService());
+  final CartDatabaseService cartDatabaseService = CartDatabaseService();
 
   late Future<void> _cartItemsFuture;
 

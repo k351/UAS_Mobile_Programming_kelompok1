@@ -19,28 +19,38 @@ class Cartprovider extends ChangeNotifier {
     _total = price;
   }
 
-  void increase(String id, num price) {
+  bool getCheckStatusById(String id) {
+    final cartItem = _cartItems.firstWhere(
+      (item) => item['id'] == id,
+    );
+    return cartItem['check'];
+  }
+
+  Map<String, int> getQuantityById(String id) {
+    final cartItem = _cartItems.firstWhere((item) => item['id'] == id);
+    return {
+      'quantity': cartItem['quantity'],
+      'cartQuantity': cartItem['cartQuantity']
+    };
+  }
+
+  void increase(String id) {
     final item = _cartItems.firstWhere((item) => item['id'] == id);
-    if (item != null) {
-      item['cartQuantity'] += 1;
+    item['cartQuantity'] += 1;
+    calculateTotal();
+    notifyListeners();
+  }
+
+  void decrease(String id) {
+    final item = _cartItems.firstWhere((item) => item['id'] == id);
+    if (item['cartQuantity'] > 1) {
+      item['cartQuantity'] -= 1;
       calculateTotal();
       notifyListeners();
     }
   }
 
-  void decrease(String id, num price) {
-    final item = _cartItems.firstWhere((item) => item['id'] == id);
-    if (item != null) {
-      if (item['cartQuantity'] > 1) {
-        item['cartQuantity'] -= 1;
-        print(item);
-        calculateTotal();
-        notifyListeners();
-      }
-    }
-  }
-
-  void check(String id, int quantity, num price, bool newcheck) {
+  void check(String id, bool newcheck) {
     final index = _cartItems.indexWhere((item) => item['id'] == id);
     if (index != -1) {
       _cartItems[index]['check'] = newcheck;

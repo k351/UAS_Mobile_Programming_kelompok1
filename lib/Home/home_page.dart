@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/Home/tabbar/product_tabbar.dart';
+import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/Home/search/search_page.dart';
 import 'package:uas_flutter/Home/tabbar/tabs.dart';
@@ -40,7 +42,10 @@ class _MyhomepageState extends State<Myhomepage>
     _pageController = PageController(viewportFraction: 1);
     _getUserSaldo(); // user saldo di firebase
     _loadCarousel();
-
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final wishlistProvider =
+        Provider.of<WishlistProvider>(context, listen: false);
+    wishlistProvider.fetchWishlist(userId);
     // Gambar pindah pindah
     timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage < carousel.length - 1) {

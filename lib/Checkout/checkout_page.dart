@@ -115,8 +115,7 @@ Future<void> decreaseQuantitiesAfterCheckout(
             .decreaseProductQuantity(item['productId'], item['cartQuantity']);
 
         // Remove the item from the cart
-        await CartDatabaseService(productDatabase: ProductDatabaseService())
-            .removeCartItem(item['id']);
+        await CartDatabaseService().removeCartItem(item['id']);
       } catch (e) {
         // Throw an error if one item fails
         throw Exception('Failed to update product ${item['productId']}: $e');

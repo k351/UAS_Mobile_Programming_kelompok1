@@ -20,9 +20,7 @@ class ItemTabs extends StatelessWidget {
   Future<void> addCartItemToCart(BuildContext context) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      final cartDatabaseService = CartDatabaseService(
-        productDatabase: ProductDatabaseService(),
-      );
+      final cartDatabaseService = CartDatabaseService();
       await cartDatabaseService.addCartItemToCart(userId, productId, 1);
       SnackbarUtils.showSnackbar(
         context,
@@ -42,7 +40,10 @@ class ItemTabs extends StatelessWidget {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final wishlistProvider =
           Provider.of<WishlistProvider>(context, listen: false);
+      final wishlistProvider =
+          Provider.of<WishlistProvider>(context, listen: false);
 
+      if (wishlistProvider.isInWishlist(userId, productId)) {
       if (wishlistProvider.isInWishlist(userId, productId)) {
         await wishlistProvider.removeFromWishlist(userId, productId);
         SnackbarUtils.showSnackbar(
@@ -233,4 +234,5 @@ class ItemTabs extends StatelessWidget {
       ),
     );
   }
+}
 }

@@ -32,9 +32,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> addCartItemToCart(BuildContext context) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      final cartDatabaseService = CartDatabaseService(
-        productDatabase: ProductDatabaseService(),
-      );
+      final cartDatabaseService = CartDatabaseService();
       await cartDatabaseService.addCartItemToCart(
           userId, widget.productId, quantity);
       print('Item added to cart successfully');

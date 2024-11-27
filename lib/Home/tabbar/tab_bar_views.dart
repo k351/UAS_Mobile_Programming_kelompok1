@@ -5,7 +5,6 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/utils/size_config.dart';
-import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
@@ -40,10 +39,7 @@ class ItemTabs extends StatelessWidget {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final wishlistProvider =
           Provider.of<WishlistProvider>(context, listen: false);
-      final wishlistProvider =
-          Provider.of<WishlistProvider>(context, listen: false);
 
-      if (wishlistProvider.isInWishlist(userId, productId)) {
       if (wishlistProvider.isInWishlist(userId, productId)) {
         await wishlistProvider.removeFromWishlist(userId, productId);
         SnackbarUtils.showSnackbar(
@@ -234,5 +230,4 @@ class ItemTabs extends StatelessWidget {
       ),
     );
   }
-}
 }

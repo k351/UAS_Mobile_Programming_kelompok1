@@ -9,8 +9,7 @@ import 'package:uas_flutter/Home/search/search_page.dart';
 import 'package:uas_flutter/Home/tabbar/tabs.dart';
 import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/settings/settings_page.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/Home/services/carousel.dart';
 import 'dart:async'; // Ambil Time
 
@@ -31,7 +30,6 @@ class _MyhomepageState extends State<Myhomepage>
   final TextEditingController _searchController = TextEditingController();
   late Timer timer; // timer
   int _currentPage = 0; // gambar
-  int _selectedIndex = 0; // warna bottom navigator
   List<String> carousel = [];
 
   @override
@@ -84,14 +82,6 @@ class _MyhomepageState extends State<Myhomepage>
     setState(() {
       carousel = fetchedCarousel;
     });
-  }
-
-  // Bottom navigator
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    NavigationUtils.navigateToPage(context, index);
   }
 
   //Update Saldo
@@ -314,8 +304,10 @@ class _MyhomepageState extends State<Myhomepage>
         ),
       ),
       bottomNavigationBar: NavigasiBar(
-        selectedIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        selectedIndex: 0, // Set sesuai index untuk wishlist
+        onTap: (index) {
+          NavigationUtils.navigateToPage(context, index);
+        },
       ),
     );
   }

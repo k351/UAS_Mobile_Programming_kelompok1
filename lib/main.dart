@@ -9,6 +9,7 @@ import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/routes.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => EditProfileProvider()),
         ChangeNotifierProvider(create: (context) => WishlistProvider()),
         ChangeNotifierProvider(create: (context) => CheckoutProvider()),
+        ChangeNotifierProvider(create: (context) => TransactionProvider()),
         ChangeNotifierProvider(create: (context) => SaldoProvider()),
         ChangeNotifierProvider(create: (context) => AddressProvider()),
       ],

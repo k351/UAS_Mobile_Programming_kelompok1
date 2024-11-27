@@ -6,7 +6,7 @@ import 'package:uas_flutter/auth/widget/phonenumberfield.dart';
 import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/auth/login.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

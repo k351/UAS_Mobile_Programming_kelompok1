@@ -97,12 +97,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Text(
+                    const Text(
                       'Welcome Back!',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: AppConstants.clrBlack,
                         letterSpacing: 0.5,
                       ),
                       textAlign: TextAlign.center,
@@ -236,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           elevation: 3,
                         ),
-                        child: Text(
+                        child: const Text(
                           'Login',
                           style: TextStyle(
                             fontSize: 18,

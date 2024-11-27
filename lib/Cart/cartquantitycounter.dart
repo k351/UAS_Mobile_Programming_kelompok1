@@ -78,22 +78,22 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
       children: [
         GestureDetector(
           onTap: decreaseQuantity,
-          child: Icon(
+          child: const Icon(
             Icons.remove_circle_outline,
             size: 22,
             color: Colors.grey,
           ),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             '$quantity',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
         GestureDetector(
           onTap: increaseQuantity,
-          child: Icon(
+          child: const Icon(
             Icons.add_circle_outline,
             size: 22,
             color: Colors.grey,

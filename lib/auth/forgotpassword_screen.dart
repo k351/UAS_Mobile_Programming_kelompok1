@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/auth/widget/textfield.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
+import 'package:uas_flutter/utils/snackbar.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -25,13 +26,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> resetPassword() async {
     try {
       await _auth.sendPasswordResetEmail(email: emailController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password reset email sent! Check your inbox.')),
+      SnackbarUtils.showSnackbar(
+        context,
+        'Password reset email sent! Check your inbox.',
       );
     } catch (e) {
       print("Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+      SnackbarUtils.showSnackbar(
+        context,
+        'Error: ${e.toString()}',
+        backgroundColor: AppConstants.clrRed,
       );
     }
   }
@@ -103,9 +107,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     if (emailController.text.isNotEmpty) {
                       resetPassword();
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text('Please enter your email address')),
+                      SnackbarUtils.showSnackbar(
+                        context,
+                        'Please enter your email address',
+                        backgroundColor: AppConstants.clrRed,
                       );
                     }
                   },

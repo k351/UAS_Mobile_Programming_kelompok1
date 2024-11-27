@@ -39,7 +39,7 @@ class _CartcheckboxState extends State<Cartcheckbox> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 5),
+      margin: const EdgeInsets.only(right: 5),
       child: InkWell(
         onTap: () {
           toggleCheck();

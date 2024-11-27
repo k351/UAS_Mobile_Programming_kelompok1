@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class AppTabs extends StatelessWidget {
   final String text;

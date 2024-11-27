@@ -13,12 +13,12 @@ class Cartappbar extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 size: 30,
                 color: Colors.grey,
               )),
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(left: 30),
             child: Text(
               "Cart",
@@ -28,12 +28,12 @@ class Cartappbar extends StatelessWidget {
                   color: Colors.grey),
             ),
           ),
-          Spacer(),
+          const Spacer(),
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, SettingsPage.routeName);
             },
-            child: Icon(
+            child: const Icon(
               Icons.settings,
               size: 23,
               color: Colors.grey,

@@ -4,6 +4,7 @@ import 'package:uas_flutter/Cart/CartQuantityCounter.dart';
 import 'package:uas_flutter/Cart/cartcheckbox.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:uas_flutter/utils/currency_formatter.dart';
 
 class Cartitem extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -22,7 +23,7 @@ class Cartitem extends StatelessWidget {
         ListTile(
           subtitle: Container(
             height: 110,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(10)),
             child: Row(
@@ -73,21 +74,21 @@ class Cartitem extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 5),
                             child: Text(
                               data['title'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 13, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
                       ),
                       Text(
-                        "\$${data['price']}",
-                        style: TextStyle(
+                        formatCurrency(data['price']),
+                        style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: Colors.grey),
                       ),
-                      Spacer(),
-                      Icon(
+                      const Spacer(),
+                      const Icon(
                         CupertinoIcons.heart_fill,
                         color: Colors.grey,
                       ),

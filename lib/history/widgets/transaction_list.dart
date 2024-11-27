@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/history/history_detail_page.dart';
 import '../models/transaction.dart';
 import 'transaction_card.dart';
 
-class TransactionList extends StatelessWidget {
-  final List<Transaction> transactions;
+class TransactionListWidget extends StatelessWidget {
+  final List<Transactions> transactions;
 
-  const TransactionList({
+  const TransactionListWidget({
     super.key,
     required this.transactions,
   });
@@ -16,7 +17,20 @@ class TransactionList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemCount: transactions.length,
       itemBuilder: (context, index) {
-        return TransactionCard(transaction: transactions[index]);
+        final transaction = transactions[index]; // Corrected variable name
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    HistoryDetailPage(transaction: transaction),
+              ),
+            );
+          },
+          child:
+              TransactionCard(transaction: transaction), // Corrected this line
+        );
       },
     );
   }

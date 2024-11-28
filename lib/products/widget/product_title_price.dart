@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/utils/currency_formatter.dart';
 
 class ProductTitlePrice extends StatelessWidget {
   final String title;
@@ -26,9 +27,9 @@ class ProductTitlePrice extends StatelessWidget {
           ),
         ),
         Text(
-          "\$$price",
+          formatCurrency(price),
           style: const TextStyle(
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppConstants.clrBlack,
           ),

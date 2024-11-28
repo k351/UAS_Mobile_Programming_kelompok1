@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/notification/notification_page.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
 import 'package:provider/provider.dart';
 

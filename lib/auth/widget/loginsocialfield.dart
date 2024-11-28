@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class SocialLoginButton extends StatelessWidget {
   final String image;

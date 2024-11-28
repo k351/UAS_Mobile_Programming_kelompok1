@@ -16,27 +16,47 @@ class SearchResultsPage extends StatefulWidget {
 
 class _SearchResultsPageState extends State<SearchResultsPage> {
   final ProductDatabaseService _productService = ProductDatabaseService();
+  List<Map<String, dynamic>> _allProducts = [];
   List<Map<String, dynamic>> _searchResults = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchSearchResults();
+    _fetchAllProducts();
   }
 
-  Future<void> _fetchSearchResults() async {
+  Future<void> _fetchAllProducts() async {
     try {
-      List<Map<String, dynamic>> results =
-          await _productService.fetchProductByTitle(widget.isiSearch);
+      List<Map<String, dynamic>> products =
+          await _productService.fetchProducts(true);
       setState(() {
-        _searchResults = results;
+        _allProducts = products;
+        _applySearch(widget.isiSearch);
         _isLoading = false;
       });
     } catch (e) {
-      // Handle any errors here
       setState(() {
         _isLoading = false;
+      });
+    }
+  }
+
+  void _applySearch(String query) {
+    try {
+      final regex = RegExp(query, caseSensitive: false);
+
+      final filteredResults = _allProducts.where((productData) {
+        final product = productData['product'] as Product;
+        return regex.hasMatch(product.title); 
+      }).toList();
+
+      setState(() {
+        _searchResults = filteredResults;
+      });
+    } catch (e) {
+      setState(() {
+        _searchResults = [];
       });
     }
   }
@@ -46,7 +66,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     SizeConfig.init(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text("Search Results: ${widget.isiSearch}",style: const TextStyle(fontFamily: AppConstants.fontInterRegular),)),
+      appBar: AppBar(
+        title: Text(
+          "Search Results: ${widget.isiSearch}",
+          style: const TextStyle(fontFamily: AppConstants.fontInterRegular),
+        ),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _searchResults.isEmpty

@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uas_flutter/Cart/models/cartitem.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/Checkout/coupon_page.dart';
 import 'package:uas_flutter/Checkout/custom_divider.dart';
 import 'package:uas_flutter/Checkout/productitem.dart';
 import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
@@ -11,7 +14,11 @@ import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:uas_flutter/history/models/transaction.dart';
+import 'package:uas_flutter/history/models/transaction_list.dart';
+import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:uas_flutter/utils/snackbar.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = "/checkout";
@@ -25,67 +32,112 @@ class CheckoutPage extends StatefulWidget {
 Future<void> makePayment(BuildContext context, double totalBelanja,
     List<Map<String, dynamic>> cartItems) async {
   try {
+    // Fetch user's balance
     double saldoUser = await FirebaseTopup.getSaldoFromFirestore();
 
+    // Check if balance is sufficient
     if (saldoUser < totalBelanja) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Saldo Anda tidak cukup untuk melakukan pembayaran.'),
+          content: Text('Insufficient balance'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    // Deduct balance from Firestore and update SaldoProvider
+    // Add transaction to Firebase
+    final transactionProvider = context.read<TransactionProvider>();
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      // Handle the case where userId is null, for example by showing an error message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User is not authenticated.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final transaction = Transactions(
+      userId: userId,
+      date: DateTime.now().toString(),
+      amount: totalBelanja,
+      quantity: cartItems.length,
+      transactionList: cartItems.map((item) {
+        return TransactionList(
+          productId: item['productId'],
+          title: item['title'],
+          image: item['image'],
+          price: item['price'],
+          quantity: item['cartQuantity'],
+        );
+      }).toList(),
+    );
+
+    await transactionProvider.addTransaction(transaction);
+
+    // Deduct balance and update Firestore and UI
+
     await FirebaseTopup.updateSaldoInFirestore(saldoUser - totalBelanja);
     context.read<SaldoProvider>().updateSaldo(saldoUser - totalBelanja);
 
-    // Call decreaseQuantitiesAfterCheckout to update stock quantities
+    // Attempt to update stock quantities
     await decreaseQuantitiesAfterCheckout(cartItems);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Pembayaran berhasil!'),
-        backgroundColor: Colors.green,
-      ),
+    // Show success message
+    SnackbarUtils.showSnackbar(
+      context,
+      'Payment successful',
+      backgroundColor: AppConstants.clrBlue,
     );
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Terjadi kesalahan. Silakan coba lagi.'),
-        backgroundColor: Colors.red,
-      ),
+    // Show error message if anything fails
+    SnackbarUtils.showSnackbar(
+      context,
+      'An error occured, please try again',
+      backgroundColor: AppConstants.clrRed,
     );
+    print(e);
   }
 }
 
 Future<void> decreaseQuantitiesAfterCheckout(
     List<Map<String, dynamic>> cartItems) async {
   try {
-    // Loop through each cart item to decrease the stock
+    // Loop through each cart item and update stock
     for (var item in cartItems) {
-      // Decrease the quantity of each product by the quantity in the cart
-      await ProductDatabaseService()
-          .decreaseProductQuantity(item['productId'], item['quantity']);
+      try {
+        // Decrease the product quantity
+        await ProductDatabaseService()
+            .decreaseProductQuantity(item['productId'], item['cartQuantity']);
+
+        // Remove the item from the cart
+        await CartDatabaseService().removeCartItem(item['id']);
+      } catch (e) {
+        // Throw an error if one item fails
+        throw Exception('Failed to update product ${item['productId']}: $e');
+      }
     }
-    // After decreasing quantities, proceed with other actions, such as order confirmation
+
     print("All quantities updated successfully.");
   } catch (e) {
+    // Re-throw the error to propagate it to the calling function
     print("Error during quantity update: $e");
-    // Handle any errors here
+    rethrow;
   }
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  bool isChecked = true;
+  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
     Cartprovider cartprovider = context.watch<Cartprovider>();
     CheckoutProvider checkoutProvider = context.watch<CheckoutProvider>();
     List<Map<String, dynamic>> checkedItems = cartprovider.checkedItems;
-    print(checkedItems);
 
     num subTotal = cartprovider.total;
     num totalBarang = checkedItems.length;
@@ -338,46 +390,105 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
             const CustomDivider(),
-            Container(
-              color: AppConstants.clrBackground,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.discount_outlined,
-                      color: Colors.amber,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+
+            // Promo Section
+            SizedBox(
+              height: 55,
+              child: Container(
+                color: AppConstants.clrBackground,
+                child: GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      builder: (BuildContext context) {
+                        return const CouponPage();
+                      },
+                    );
+                  },
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'Yuk, pakai promonya! ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
+                        const Icon(
+                          Icons.discount_outlined,
+                          color: Colors.amber,
                         ),
-                        Text(
-                          'Hemat sampai Rp30.000',
-                          style: TextStyle(fontSize: 10, color: Colors.green),
+                        const SizedBox(width: 6),
+                        if (checkoutProvider.isCouponApplied)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Kupon promo berhasil dipakai!',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                  text: 'Yay, kamu hemat ',
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.black),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          'Rp${NumberFormat("#,##0", "id_ID").format(checkoutProvider.discountValue)}',
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green),
+                                    ),
+                                    const TextSpan(
+                                      text: ' 🎉',
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Yuk, pakai kode promonya!',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              Text(
+                                'Hemat sampai Rp30.000',
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.green),
+                              ),
+                            ],
+                          ),
+                        const Spacer(),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 18,
+                          color: Colors.grey,
                         ),
                       ],
                     ),
-                    Spacer(),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 18,
-                      color: Colors.grey,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
+
             const CustomDivider(),
             // Summary Section
             Padding(

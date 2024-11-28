@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/utils/currency_formatter.dart';
+import 'package:uas_flutter/utils/snackbar.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class TopUpBanks extends StatefulWidget {
   final double initialSaldo;
@@ -86,10 +88,16 @@ class TopUpBanksState extends State<TopUpBanks> {
           'saldo': saldo.toDouble(),
         });
 
+        SnackbarUtils.showSnackbar(
+          context,
+          'Balance has been added to your account',
+          backgroundColor: AppConstants.clrBlue,
+        );
+
         Navigator.pop(context, saldo);
       } else {
         setState(() {
-          error = "Minimum charge is Rp3000!!!";
+          error = "Minimum charge is Rp3000!";
         });
       }
     } catch (e) {
@@ -110,158 +118,256 @@ class TopUpBanksState extends State<TopUpBanks> {
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     return Scaffold(
+      backgroundColor: AppConstants.clrBackground,
       appBar: AppBar(
-        title: const Text(
-          "M-Banking",
-          style: TextStyle(fontFamily: AppConstants.fontInterRegular),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: Text(
+          "Top Up M-Banking",
+          style: TextStyle(
+            fontFamily: AppConstants.fontInterBold,
+            color: AppConstants.clrBlack,
+            fontSize: getProportionateScreenWidth(20),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: AppConstants.clrBlack),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Your Saldo: Rp${saldo.toStringAsFixed(0)}",
-              style: TextStyle(
-                fontSize: getProportionateScreenWidth(15),
-                fontWeight: FontWeight.w500,
-                fontFamily: AppConstants.fontInterBold,
-              ),
-            ),
-            const Divider(color: AppConstants.greyColor),
-            SizedBox(height: getProportionateScreenHeight(12)),
-            Text(
-              "Choose Bank",
-              style: TextStyle(
-                fontSize: getProportionateScreenWidth(20),
-                fontWeight: FontWeight.w600,
-                fontFamily: AppConstants.fontInterRegular,
-              ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(10)),
-            SizedBox(
-              height: getProportionateScreenHeight(105),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: banks.length,
-                itemBuilder: (context, index) {
-                  final bank = banks[index];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedBank = bank['name'];
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: selectedBank == bank['name']
-                            ? AppConstants.clrBlue
-                            : AppConstants.clrBackground,
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 2,
-                            offset: const Offset(0, 0),
-                            color: AppConstants.clrBlack.withOpacity(0.3),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            bank['logo']!,
-                            width: getProportionateScreenWidth(50),
-                            height: getProportionateScreenHeight(50),
-                          ),
-                          Text(
-                            bank['name']!,
-                            style: TextStyle(
-                              fontSize: getProportionateScreenWidth(14),
-                              fontFamily: AppConstants.fontInterRegular,
-                              color: selectedBank == bank['name']
-                                  ? AppConstants.clrBackground
-                                  : AppConstants.clrBlack,
-                            ),
-                          ),
-                        ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(20),
+            vertical: getProportionateScreenHeight(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Saldo Card
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(getProportionateScreenWidth(15)),
+                decoration: BoxDecoration(
+                  color: AppConstants.clrBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Current Balance",
+                      style: TextStyle(
+                        fontSize: getProportionateScreenWidth(16),
+                        color: AppConstants.clrBlack.withOpacity(0.7),
+                        fontFamily: AppConstants.fontInterRegular,
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(12)),
-            Text(
-              "Nominal Top Up",
-              style: TextStyle(
-                fontSize: getProportionateScreenWidth(20),
-                fontWeight: FontWeight.w600,
-                color: AppConstants.greyColor,
-                fontFamily: AppConstants.fontInterRegular,
-              ),
-            ),
-            Row(
-              children: [
-                Text(
-                  "Rp",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: getProportionateScreenWidth(25),
-                    fontFamily: AppConstants.fontInterRegular,
-                  ),
-                ),
-                SizedBox(width: getProportionateScreenWidth(12)),
-                Expanded(
-                  child: TextFormField(
-                    controller: _topupController,
-                    decoration: const InputDecoration(
-                      hintText: "Enter nominal",
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: AppConstants.clrBlue),
+                    SizedBox(height: getProportionateScreenHeight(8)),
+                    Text(
+                      formatCurrency(saldo),
+                      style: TextStyle(
+                        fontSize: getProportionateScreenWidth(18),
+                        fontWeight: FontWeight.w700,
+                        fontFamily: AppConstants.fontInterBold,
+                        color: AppConstants.clrBlue,
                       ),
                     ),
-                    keyboardType: TextInputType.number,
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            SizedBox(height: getProportionateScreenHeight(12)),
-            Text(
-              "+ Rp2.500 cost top up",
-              style: TextStyle(
-                fontSize: getProportionateScreenWidth(18),
-                color: AppConstants.greyColor,
-                fontFamily: AppConstants.fontInterRegular,
               ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(5)),
-            Text(
-              error,
-              style: TextStyle(
-                color: AppConstants.clrRed,
-                fontSize: getProportionateScreenWidth(14),
-                fontWeight: FontWeight.w600,
-                fontFamily: AppConstants.fontInterBold,
-              ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(10)),
-            ElevatedButton(
-              onPressed: _topUpSaldo,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppConstants.clrBlue,
-              ),
-              child: const Text(
-                "Confirmation Top Up",
+
+              SizedBox(height: getProportionateScreenHeight(20)),
+
+              // Bank Selection
+              Text(
+                "Choose Bank",
                 style: TextStyle(
-                  color: AppConstants.clrAppBar,
+                  fontSize: getProportionateScreenWidth(18),
+                  fontWeight: FontWeight.w600,
                   fontFamily: AppConstants.fontInterRegular,
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: getProportionateScreenHeight(10)),
+              SizedBox(
+                height: getProportionateScreenHeight(110),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: banks.length,
+                  itemBuilder: (context, index) {
+                    final bank = banks[index];
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedBank = bank['name'];
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: selectedBank == bank['name']
+                              ? AppConstants.clrBlue
+                              : AppConstants.clrBackground,
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                              color: AppConstants.clrBlack.withOpacity(0.1),
+                            ),
+                          ],
+                          border: Border.all(
+                            color: selectedBank == bank['name']
+                                ? Colors.transparent
+                                : AppConstants.greyColor.withOpacity(0.3),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              bank['logo']!,
+                              width: getProportionateScreenWidth(60),
+                              height: getProportionateScreenHeight(55),
+                              fit: BoxFit.contain,
+                            ),
+                            SizedBox(height: getProportionateScreenHeight(8)),
+                            Text(
+                              bank['name']!,
+                              style: TextStyle(
+                                fontSize: getProportionateScreenWidth(14),
+                                fontFamily: AppConstants.fontInterRegular,
+                                color: selectedBank == bank['name']
+                                    ? AppConstants.clrBackground
+                                    : AppConstants.clrBlack,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              SizedBox(height: getProportionateScreenHeight(20)),
+
+              // Top Up Amount
+              Text(
+                "Top Up Amount",
+                style: TextStyle(
+                  fontSize: getProportionateScreenWidth(18),
+                  fontWeight: FontWeight.w600,
+                  color: AppConstants.clrBlack,
+                  fontFamily: AppConstants.fontInterRegular,
+                ),
+              ),
+              SizedBox(height: getProportionateScreenHeight(10)),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: getProportionateScreenWidth(15),
+                  vertical: getProportionateScreenHeight(5),
+                ),
+                decoration: BoxDecoration(
+                  color: AppConstants.clrBackground,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: AppConstants.greyColor.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      "Rp",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: getProportionateScreenWidth(22),
+                        fontFamily: AppConstants.fontInterRegular,
+                      ),
+                    ),
+                    SizedBox(width: getProportionateScreenWidth(12)),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _topupController,
+                        style: TextStyle(
+                          fontSize: getProportionateScreenWidth(18),
+                          fontFamily: AppConstants.fontInterRegular,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: "Enter amount",
+                          hintStyle: TextStyle(
+                            color: AppConstants.greyColor,
+                            fontFamily: AppConstants.fontInterRegular,
+                          ),
+                          border: InputBorder.none,
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: getProportionateScreenHeight(10)),
+              Text(
+                "+ Rp2.500 top up fee",
+                style: TextStyle(
+                  fontSize: getProportionateScreenWidth(14),
+                  color: AppConstants.greyColor,
+                  fontFamily: AppConstants.fontInterRegular,
+                ),
+              ),
+
+              // Error Text
+              if (error.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: getProportionateScreenHeight(10),
+                  ),
+                  child: Text(
+                    error,
+                    style: TextStyle(
+                      color: AppConstants.clrRed,
+                      fontSize: getProportionateScreenWidth(14),
+                      fontWeight: FontWeight.w600,
+                      fontFamily: AppConstants.fontInterBold,
+                    ),
+                  ),
+                ),
+
+              SizedBox(height: getProportionateScreenHeight(20)),
+
+              // Confirmation Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _topUpSaldo,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppConstants.clrBlue,
+                    padding: EdgeInsets.symmetric(
+                      vertical: getProportionateScreenHeight(15),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 5,
+                  ),
+                  child: Text(
+                    "Confirm Top Up",
+                    style: TextStyle(
+                      color: AppConstants.clrBackground,
+                      fontFamily: AppConstants.fontInterBold,
+                      fontSize: getProportionateScreenWidth(16),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

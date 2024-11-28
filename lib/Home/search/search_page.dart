@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/tabbar/tab_bar_views.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 

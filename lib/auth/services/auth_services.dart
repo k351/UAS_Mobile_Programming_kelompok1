@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:uas_flutter/auth/model/auth_model.dart';
 
 class AuthService {
@@ -14,7 +13,7 @@ class AuthService {
     String phoneNumber,
     String password,
   ) async {
-    try { 
+    try {
       // Buat pengguna baru dengan email dan password
       UserCredential userCredential =
           await firebaseAuth.createUserWithEmailAndPassword(

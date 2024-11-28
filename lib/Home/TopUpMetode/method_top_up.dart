@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/TopUpMetode/top_up_bank.dart';
 import 'package:uas_flutter/Home/TopUpMetode/top_up_marketplace.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class MethodTopUps extends StatelessWidget {
   final double initialSaldo;

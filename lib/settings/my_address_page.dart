@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/settings/models/address_model.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/constants.dart';
 
 class MyAddressesPage extends StatefulWidget {

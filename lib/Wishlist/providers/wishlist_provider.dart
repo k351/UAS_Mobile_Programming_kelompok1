@@ -12,10 +12,10 @@ class WishlistProvider with ChangeNotifier {
     return _userWishlist[userId] ?? [];
   }
 
-bool isWishlistFetched(String userId) {
-  // Check if the wishlist for the given user is non-empty
-  return _userWishlist[userId]?.isNotEmpty ?? false;
-}
+  bool isWishlistFetched(String userId) {
+    // Check if the wishlist for the given user is non-empty
+    return _userWishlist[userId]?.isNotEmpty ?? false;
+  }
 
   // Mengambil data wishlist dari database untuk pengguna tertentu
   Future<void> fetchWishlist(String userId) async {
@@ -40,8 +40,8 @@ bool isWishlistFetched(String userId) {
   // Menghapus produk dari wishlist pengguna tertentu
   Future<void> removeFromWishlist(String userId, String productId) async {
     await _wishlistService.removeFromWishlist(userId, productId);
-
-    if (_userWishlist[userId] != null && _userWishlist[userId]!.contains(productId)) {
+    if (_userWishlist[userId] != null &&
+        _userWishlist[userId]!.contains(productId)) {
       _userWishlist[userId]!.remove(productId);
       notifyListeners();
     }

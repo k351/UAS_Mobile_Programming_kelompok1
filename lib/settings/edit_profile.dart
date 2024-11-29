@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
 import 'package:uas_flutter/settings/models/edit_profile_model.dart';
@@ -126,7 +126,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           vertical: getProportionateScreenHeight(12),
                         ),
                       ),
-                      child: const Text('Save Changes'),
+                      child: const Text('Save Changes', style: TextStyle(color: AppConstants.clrBackground),),
                     ),
                   ],
                 ),

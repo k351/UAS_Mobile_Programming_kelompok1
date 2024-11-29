@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
@@ -12,7 +14,11 @@ import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:uas_flutter/history/models/transaction.dart';
+import 'package:uas_flutter/history/models/transaction_list.dart';
+import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:uas_flutter/utils/snackbar.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = "/checkout";
@@ -33,35 +39,68 @@ Future<void> makePayment(BuildContext context, double totalBelanja,
     if (saldoUser < totalBelanja) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Saldo Anda tidak cukup untuk melakukan pembayaran.'),
+          content: Text('Insufficient balance'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    // Attempt to update stock quantities
-    await decreaseQuantitiesAfterCheckout(cartItems);
+    // Add transaction to Firebase
+    final transactionProvider = context.read<TransactionProvider>();
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      // Handle the case where userId is null, for example by showing an error message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User is not authenticated.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final transaction = Transactions(
+      userId: userId,
+      date: DateTime.now().toString(),
+      amount: totalBelanja,
+      quantity: cartItems.length,
+      transactionList: cartItems.map((item) {
+        return TransactionList(
+          productId: item['productId'],
+          title: item['title'],
+          image: item['image'],
+          price: item['price'],
+          quantity: item['cartQuantity'],
+        );
+      }).toList(),
+    );
+
+    await transactionProvider.addTransaction(transaction);
 
     // Deduct balance and update Firestore and UI
+
     await FirebaseTopup.updateSaldoInFirestore(saldoUser - totalBelanja);
     context.read<SaldoProvider>().updateSaldo(saldoUser - totalBelanja);
 
+    // Attempt to update stock quantities
+    await decreaseQuantitiesAfterCheckout(cartItems);
+
     // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Pembayaran berhasil!'),
-        backgroundColor: Colors.green,
-      ),
+    SnackbarUtils.showSnackbar(
+      context,
+      'Payment successful',
+      backgroundColor: AppConstants.clrBlue,
     );
   } catch (e) {
     // Show error message if anything fails
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Terjadi kesalahan: $e. Silakan coba lagi.'),
-        backgroundColor: Colors.red,
-      ),
+    SnackbarUtils.showSnackbar(
+      context,
+      'An error occured, please try again',
+      backgroundColor: AppConstants.clrRed,
     );
+    print(e);
   }
 }
 
@@ -76,8 +115,7 @@ Future<void> decreaseQuantitiesAfterCheckout(
             .decreaseProductQuantity(item['productId'], item['cartQuantity']);
 
         // Remove the item from the cart
-        await CartDatabaseService(productDatabase: ProductDatabaseService())
-            .removeCartItem(item['id']);
+        await CartDatabaseService().removeCartItem(item['id']);
       } catch (e) {
         // Throw an error if one item fails
         throw Exception('Failed to update product ${item['productId']}: $e');

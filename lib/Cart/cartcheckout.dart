@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Checkout/checkout_page.dart';
-import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:uas_flutter/utils/currency_formatter.dart';
 
 class Cartcheckout extends StatefulWidget {
   const Cartcheckout({super.key});
@@ -14,7 +14,7 @@ class Cartcheckout extends StatefulWidget {
 
 class CartcheckoutState extends State<Cartcheckout> {
   final CartDatabaseService cartDatabaseService =
-      CartDatabaseService(productDatabase: ProductDatabaseService());
+      CartDatabaseService();
   num total = 0;
   @override
   void initState() {
@@ -39,8 +39,8 @@ class CartcheckoutState extends State<Cartcheckout> {
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
                 Text(
-                  cartProvider.total.toStringAsFixed(2),
-                  style: TextStyle(
+                  formatCurrency(cartProvider.total),
+                  style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 15,
                       fontWeight: FontWeight.bold),
@@ -64,7 +64,7 @@ class CartcheckoutState extends State<Cartcheckout> {
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.blue,
               ),
-              child: Text(
+              child: const Text(
                 "Checkout",
                 style: TextStyle(
                   color: Colors.white,

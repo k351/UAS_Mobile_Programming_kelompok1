@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Checkout/checkout_page.dart';
-import 'package:uas_flutter/Checkout/payment_page.dart';
+import 'package:uas_flutter/checkout/checkout_page.dart';
+import 'package:uas_flutter/checkout/payment_page.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/auth/forgotpassword_screen.dart';
 import 'package:uas_flutter/auth/login.dart';
@@ -11,6 +11,7 @@ import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/settings/my_address_page.dart';
+import 'package:uas_flutter/settings/my_coupon_page.dart';
 import 'package:uas_flutter/settings/notification/email_notif.dart';
 import 'package:uas_flutter/settings/notification/notification_page.dart';
 import 'package:uas_flutter/settings/notification/push_notif.dart';
@@ -38,7 +39,8 @@ final Map<String, WidgetBuilder> routes = {
   PaymentPage.routeName: (context) => const PaymentPage(),
   EditProfilePage.routeName: (context) => const EditProfilePage(),
   MyAddressesPage.routeName: (context) => const MyAddressesPage(),
-  NotificationPage.routeName: (context) => NotificationPage(),
+  NotificationPage.routeName: (context) => const NotificationPage(),
   PushNotificationPage.routeName: (context) => const PushNotificationPage(),
   EmailNotificationPage.routeName: (context) => const EmailNotificationPage(),
+  MyCouponsPage.routeName: (context) => const MyCouponsPage(),
 };

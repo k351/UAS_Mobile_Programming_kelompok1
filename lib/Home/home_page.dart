@@ -1,16 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/Home/tabbar/product_tabbar.dart';
+import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/Home/search/search_page.dart';
 import 'package:uas_flutter/Home/tabbar/tabs.dart';
 import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/settings/settings_page.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/Home/services/carousel.dart';
 import 'dart:async'; // Ambil Time
 
@@ -31,7 +32,6 @@ class _MyhomepageState extends State<Myhomepage>
   final TextEditingController _searchController = TextEditingController();
   late Timer timer; // timer
   int _currentPage = 0; // gambar
-  int _selectedIndex = 0; // warna bottom navigator
   List<String> carousel = [];
 
   @override
@@ -42,7 +42,10 @@ class _MyhomepageState extends State<Myhomepage>
     _pageController = PageController(viewportFraction: 1);
     _getUserSaldo(); // user saldo di firebase
     _loadCarousel();
-
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final wishlistProvider =
+        Provider.of<WishlistProvider>(context, listen: false);
+    wishlistProvider.fetchWishlist(userId);
     // Gambar pindah pindah
     timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage < carousel.length - 1) {
@@ -84,14 +87,6 @@ class _MyhomepageState extends State<Myhomepage>
     setState(() {
       carousel = fetchedCarousel;
     });
-  }
-
-  // Bottom navigator
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    NavigationUtils.navigateToPage(context, index);
   }
 
   //Update Saldo
@@ -314,8 +309,10 @@ class _MyhomepageState extends State<Myhomepage>
         ),
       ),
       bottomNavigationBar: NavigasiBar(
-        selectedIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        selectedIndex: 0, // Set sesuai index untuk wishlist
+        onTap: (index) {
+          NavigationUtils.navigateToPage(context, index);
+        },
       ),
     );
   }

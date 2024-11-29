@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/Home/tabbar/tab_bar_views.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class IsiTabs extends StatelessWidget {
   const IsiTabs({super.key});
@@ -21,12 +21,11 @@ class IsiTabs extends StatelessWidget {
         }
         List<Map<String, dynamic>> products = snapshot.data!;
         return GridView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 9,
-            mainAxisSpacing: 12,
-            childAspectRatio: getProportionateScreenHeight(0.75),
+            crossAxisSpacing: 3,
+            childAspectRatio: getProportionateScreenHeight(0.74),
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {

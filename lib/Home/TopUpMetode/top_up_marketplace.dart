@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/size_config.dart';
+import 'package:uas_flutter/utils/size_config.dart';
+import 'package:uas_flutter/utils/currency_formatter.dart';
+import 'package:uas_flutter/utils/snackbar.dart';
 
 class TopupsMarketplace extends StatefulWidget {
   final double initialSaldo;
@@ -27,7 +29,6 @@ class TopupsMarketplaceState extends State<TopupsMarketplace> {
     _getUserSaldo();
   }
 
-  // Ambil user saldo di firebase
   Future<void> _getUserSaldo() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -39,18 +40,15 @@ class TopupsMarketplaceState extends State<TopupsMarketplace> {
 
       if (userDoc.exists) {
         setState(() {
-          // Mengambil saldo dengan nilai default 0.0 dan konversi ke double
           final dynamic saldoData =
               (userDoc.data() as Map<String, dynamic>)['saldo'];
           saldo = (saldoData is int) ? saldoData.toDouble() : saldoData ?? 0.0;
         });
       } else {
-        // Inisialisasi saldo kalau belum terisi 0
         setState(() {
           saldo = 0.0;
         });
 
-        // Buat saldo di users
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'saldo': saldo,
         });
@@ -58,7 +56,6 @@ class TopupsMarketplaceState extends State<TopupsMarketplace> {
     }
   }
 
-  // Top up saldo
   Future<void> _topUpSaldo() async {
     try {
       final double topUpAmount = double.parse(_topupController.text);
@@ -70,7 +67,6 @@ class TopupsMarketplaceState extends State<TopupsMarketplace> {
         });
         _topupController.clear();
 
-        // Update saldo ke firestore
         await FirebaseFirestore.instance
             .collection('users')
             .doc(_auth.currentUser!.uid)
@@ -78,10 +74,16 @@ class TopupsMarketplaceState extends State<TopupsMarketplace> {
           'saldo': saldo.toDouble(),
         });
 
+        SnackbarUtils.showSnackbar(
+          context,
+          'Balance has been added to your account',
+          backgroundColor: AppConstants.clrBlue,
+        );
+
         Navigator.pop(context, saldo);
       } else {
         setState(() {
-          error = "Minimum charge is Rp3000!!!";
+          error = "Minimum charge is Rp3000!";
         });
       }
     } catch (e) {
@@ -95,113 +97,172 @@ class TopupsMarketplaceState extends State<TopupsMarketplace> {
   Widget build(BuildContext context) {
     SizeConfig.init(context);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Market Place",
-          style: TextStyle(fontFamily: AppConstants.fontInterRegular),
+        elevation: 1,
+        backgroundColor: Colors.white,
+        title: Text(
+          "Top Up Marketplace",
+          style: TextStyle(
+            fontFamily: AppConstants.fontInterBold,
+            color: Colors.black87,
+            fontSize: getProportionateScreenWidth(18),
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  "Your saldo: Rp${saldo.toStringAsFixed(0)}",
-                  style: TextStyle(
-                      fontSize: getProportionateScreenWidth(15),
-                      fontWeight: FontWeight.w500,
-                      fontFamily: AppConstants.fontInterBold),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(20),
+            vertical: getProportionateScreenHeight(15),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(getProportionateScreenWidth(15)),
+                decoration: BoxDecoration(
+                  color: AppConstants.clrBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
-            ),
-            SizedBox(
-              width: getProportionateScreenWidth(378),
-              height: getProportionateScreenHeight(1),
-              child: const DecoratedBox(
-                decoration: BoxDecoration(color: AppConstants.greyColor),
-              ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(12)),
-            Row(
-              children: [
-                Text(
-                  "Nominal Top Up",
-                  style: TextStyle(
-                      fontSize: getProportionateScreenWidth(24),
-                      fontWeight: FontWeight.w600,
-                      color: AppConstants.greyColor,
-                      fontFamily: AppConstants.fontInterRegular),
-                ),
-              ],
-            ),
-            SizedBox(height: getProportionateScreenHeight(9)),
-            Row(
-              children: [
-                Text(
-                  "Rp",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: getProportionateScreenWidth(25),
-                      fontFamily: AppConstants.fontInterRegular),
-                ),
-                SizedBox(width: getProportionateScreenWidth(12)),
-                Expanded(
-                  child: TextFormField(
-                    controller: _topupController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: "Enter nominal",
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: AppConstants.clrBlue),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Current Balance",
+                      style: TextStyle(
+                        fontSize: getProportionateScreenWidth(16),
+                        color: AppConstants.clrBlack.withOpacity(0.7),
+                        fontFamily: AppConstants.fontInterRegular,
                       ),
                     ),
-                  ),
+                    SizedBox(height: getProportionateScreenHeight(8)),
+                    Text(
+                      formatCurrency(saldo),
+                      style: TextStyle(
+                        fontSize: getProportionateScreenWidth(18),
+                        fontWeight: FontWeight.w700,
+                        fontFamily: AppConstants.fontInterBold,
+                        color: AppConstants.clrBlue,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            SizedBox(height: getProportionateScreenHeight(12)),
-            Row(
-              children: [
-                Text(
-                  "+ Rp2.500 cost top up",
-                  style: TextStyle(
-                      fontSize: getProportionateScreenWidth(18),
-                      color: AppConstants.greyColor,
-                      fontFamily: AppConstants.fontInterRegular),
+              ),
+              SizedBox(height: getProportionateScreenHeight(20)),
+              Text(
+                "Top Up Amount",
+                style: TextStyle(
+                  fontSize: getProportionateScreenWidth(16),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontFamily: AppConstants.fontInterRegular,
                 ),
-              ],
-            ),
-            SizedBox(
-              height: getProportionateScreenHeight(5),
-            ),
-            Row(
-              children: [
+              ),
+              SizedBox(height: getProportionateScreenHeight(10)),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: getProportionateScreenWidth(15),
+                        right: getProportionateScreenWidth(10),
+                      ),
+                      child: Text(
+                        "Rp",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: getProportionateScreenWidth(20),
+                          fontFamily: AppConstants.fontInterRegular,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _topupController,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                          fontSize: getProportionateScreenWidth(16),
+                          fontFamily: AppConstants.fontInterRegular,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: "Enter amount",
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontFamily: AppConstants.fontInterRegular,
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: getProportionateScreenHeight(10)),
+              Text(
+                "+ Rp2.500 top up fee",
+                style: TextStyle(
+                  fontSize: getProportionateScreenWidth(14),
+                  color: Colors.grey,
+                  fontFamily: AppConstants.fontInterRegular,
+                ),
+              ),
+              SizedBox(height: getProportionateScreenHeight(10)),
+              if (error.isNotEmpty)
                 Text(
                   error,
                   style: TextStyle(
-                      color: AppConstants.clrRed,
-                      fontSize: getProportionateScreenWidth(14),
-                      fontWeight: FontWeight.w600,
-                      fontFamily: AppConstants.fontInterBold),
+                    color: AppConstants.clrRed,
+                    fontSize: getProportionateScreenWidth(14),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: AppConstants.fontInterBold,
+                  ),
                 ),
-              ],
-            ),
-            SizedBox(height: getProportionateScreenHeight(7)),
-            ElevatedButton(
-              onPressed: _topUpSaldo,
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppConstants.clrBlue),
-              child: const Text(
-                "Confirmation Top Up",
-                style: TextStyle(
-                    color: AppConstants.clrAppBar,
-                    fontFamily: AppConstants.fontInterRegular),
+              SizedBox(height: getProportionateScreenHeight(20)),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _topUpSaldo,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppConstants.clrBlue,
+                    padding: EdgeInsets.symmetric(
+                      vertical: getProportionateScreenHeight(15),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: Text(
+                    "Confirm Top Up",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: getProportionateScreenWidth(16),
+                      fontFamily: AppConstants.fontInterBold,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

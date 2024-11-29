@@ -37,7 +37,6 @@ class AddressProvider with ChangeNotifier {
     }
   }
 
-
   /// Add new address
   Future<void> addAddress(AddressModel address) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -67,6 +66,28 @@ class AddressProvider with ChangeNotifier {
     } catch (e) {
       print("Error deleting address: $e");
       throw Exception("Failed to delete address: ${e.toString()}");
+    }
+  }
+
+  Future<void> updateAddress(AddressModel address) async {
+    try {
+      final docRef = addressCollection.doc(address.id);
+      await docRef.update({
+        'fullAddress': address.fullAddress,
+        'postalCode': address.postalCode,
+        'recipientName': address.recipientName,
+        'addressLabel': address.addressLabel,
+      });
+
+      // Perbarui data di _addresses
+      final index = _addresses.indexWhere((addr) => addr.id == address.id);
+      if (index != -1) {
+        _addresses[index] = address;
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error updating address: $e");
+      throw Exception("Failed to update address: ${e.toString()}");
     }
   }
 

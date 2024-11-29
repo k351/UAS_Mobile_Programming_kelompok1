@@ -6,12 +6,16 @@ import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/settings/my_address_page.dart';
+import 'package:uas_flutter/settings/my_coupon_page.dart';
 import 'package:uas_flutter/settings/notification/notification_page.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
+import 'package:uas_flutter/Home/TopUpMetode/method_top_up.dart';
+import 'package:uas_flutter/Home/services/firebase_topup.dart';
+import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -32,6 +36,25 @@ class SettingsPageState extends State<SettingsPage> {
       _selectedIndex = index;
     });
     NavigationUtils.navigateToPage(context, index);
+  }
+
+  Future<void> _navigateToMethodTopUpPage() async {
+    final saldoProvider = Provider.of<SaldoProvider>(context, listen: false);
+    final updatedSaldo = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MethodTopUps(initialSaldo: saldoProvider.saldo),
+      ),
+    );
+
+    if (updatedSaldo != null) {
+      saldoProvider.updateSaldo(updatedSaldo);
+      await _updateUserSaldo(updatedSaldo);
+    }
+  }
+
+  Future<void> _updateUserSaldo(double newSaldo) async {
+    await FirebaseTopup.updateSaldoInFirestore(newSaldo);
   }
 
   @override
@@ -97,7 +120,9 @@ class SettingsPageState extends State<SettingsPage> {
                           'Add, remove products and move to checkout'),
                       _buildSettingsItem(Icons.shopping_bag, 'My Orders',
                           'In-progress and Completed Orders'),
-                      _buildSettingsItem(Icons.account_balance, 'Payment Methods',
+                      _buildSettingsItem(
+                          Icons.account_balance,
+                          'Payment Methods',
                           'Choose payment methods for cheking out'),
                       _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
                           'List of all the discounted coupons'),
@@ -283,10 +308,13 @@ class SettingsPageState extends State<SettingsPage> {
           Navigator.pushNamed(context, Cartpage.routeName);
         }
         if (title == 'Payment Methods') {
-          Navigator.pushNamed(context, Cartpage.routeName);
+          _navigateToMethodTopUpPage();
         }
         if (title == 'Notifications') {
           Navigator.pushNamed(context, NotificationPage.routeName);
+        }
+        if (title == 'My Coupons') {
+          Navigator.pushNamed(context, MyCouponsPage.routeName);
         }
         // Tambahkan navigasi lain jika diperlukan
       },
@@ -391,7 +419,6 @@ class SettingsPageState extends State<SettingsPage> {
                   );
                 }
               },
-
               child: const Text(
                 "Logout",
                 style: TextStyle(

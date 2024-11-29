@@ -13,22 +13,22 @@ import 'package:uas_flutter/products/widget/product_rating_stock.dart';
 import 'package:uas_flutter/products/widget/product_description.dart';
 import 'package:uas_flutter/products/widget/add_to_cart_button.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
-
+ 
 class DetailScreen extends StatefulWidget {
   static const String routeName = 'details';
   final Product product;
   final String productId;
   const DetailScreen(
       {super.key, required this.product, required this.productId});
-
+ 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
 }
-
+ 
 class _DetailScreenState extends State<DetailScreen> {
   int currentImage = 0;
   int quantity = 1;
-
+ 
   Future<void> addCartItemToCart(BuildContext context) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
@@ -43,7 +43,7 @@ class _DetailScreenState extends State<DetailScreen> {
           backgroundColor: AppConstants.clrRed);
     }
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
@@ -57,7 +57,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const DetailAppBar(),
+                    DetailAppBar(productId: widget.productId),
                     ImageSlider(
                       onChange: (index) {
                         setState(() {

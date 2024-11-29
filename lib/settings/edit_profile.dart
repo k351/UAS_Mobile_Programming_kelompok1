@@ -126,7 +126,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           vertical: getProportionateScreenHeight(12),
                         ),
                       ),
-                      child: const Text('Save Changes'),
+                      child: const Text('Save Changes', style: TextStyle(color: AppConstants.clrBackground),),
                     ),
                   ],
                 ),

@@ -54,18 +54,287 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
     );
   }
 
+
+  void _showEditAddressDialog(AddressModel address) {
+    final recipientNameController =
+        TextEditingController(text: address.recipientName);
+    final fullAddressController =
+        TextEditingController(text: address.fullAddress);
+    final postalCodeController =
+        TextEditingController(text: address.postalCode);
+    final addressLabelController =
+        TextEditingController(text: address.addressLabel);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(getProportionateScreenHeight(16)),
+        ),
+        title: Text(
+          "Edit Address",
+          style: TextStyle(
+            fontSize: getProportionateScreenHeight(18),
+            fontWeight: FontWeight.bold,
+            color: AppConstants.clrBlackFont,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: getProportionateScreenWidth(8),
+              vertical: getProportionateScreenHeight(8),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTextField(
+                  controller: recipientNameController,
+                  label: "Recipient Name",
+                ),
+                SizedBox(height: getProportionateScreenHeight(12)),
+                _buildTextField(
+                  controller: fullAddressController,
+                  label: "Full Address",
+                ),
+                SizedBox(height: getProportionateScreenHeight(12)),
+                _buildTextField(
+                  controller: postalCodeController,
+                  label: "Postal Code",
+                  isNumber: true,
+                ),
+                SizedBox(height: getProportionateScreenHeight(12)),
+                _buildTextField(
+                  controller: addressLabelController,
+                  label: "Address Label",
+                ),
+              ],
+            ),
+          ),
+        ),
+        actionsPadding: EdgeInsets.symmetric(
+          horizontal: getProportionateScreenWidth(16),
+          vertical: getProportionateScreenHeight(8),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppConstants.greyColor7,
+                    padding: EdgeInsets.symmetric(
+                      vertical: getProportionateScreenHeight(14),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(10)),
+                    ),
+                  ),
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                      fontSize: getProportionateScreenHeight(14),
+                      color: AppConstants.clrBlackFont,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: getProportionateScreenWidth(16)),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final updatedAddress = AddressModel(
+                      id: address.id,
+                      userId: address.userId,
+                      recipientName: recipientNameController.text,
+                      fullAddress: fullAddressController.text,
+                      postalCode: postalCodeController.text,
+                      addressLabel: addressLabelController.text,
+                    );
+                    await Provider.of<AddressProvider>(context, listen: false)
+                        .updateAddress(updatedAddress);
+                    setState(() {
+                      _fetchAddressesFuture =
+                          Provider.of<AddressProvider>(context, listen: false)
+                              .fetchAddressesByUserId(userId ?? "");
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppConstants.mainColor,
+                    padding: EdgeInsets.symmetric(
+                      vertical: getProportionateScreenHeight(14),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(10)),
+                    ),
+                  ),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(
+                      fontSize: getProportionateScreenHeight(14),
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  void _showAddAddressDialog() {
+    final recipientNameController = TextEditingController();
+    final fullAddressController = TextEditingController();
+    final postalCodeController = TextEditingController();
+    final addressLabelController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(getProportionateScreenHeight(16)),
+        ),
+        title: Text(
+          "Add Address",
+          style: TextStyle(
+            fontSize: getProportionateScreenHeight(18),
+            fontWeight: FontWeight.bold,
+            color: AppConstants.clrBlackFont,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: getProportionateScreenWidth(8),
+              vertical: getProportionateScreenHeight(8),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTextField(
+                  controller: recipientNameController,
+                  label: "Recipient Name",
+                ),
+                SizedBox(height: getProportionateScreenHeight(12)),
+                _buildTextField(
+                  controller: fullAddressController,
+                  label: "Full Address",
+                ),
+                SizedBox(height: getProportionateScreenHeight(12)),
+                _buildTextField(
+                  controller: postalCodeController,
+                  label: "Postal Code",
+                  isNumber: true,
+                ),
+                SizedBox(height: getProportionateScreenHeight(12)),
+                _buildTextField(
+                  controller: addressLabelController,
+                  label: "Address Label",
+                ),
+              ],
+            ),
+          ),
+        ),
+        actionsPadding: EdgeInsets.symmetric(
+          horizontal: getProportionateScreenWidth(16),
+          vertical: getProportionateScreenHeight(8),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppConstants.greyColor7,
+                    padding: EdgeInsets.symmetric(
+                      vertical: getProportionateScreenHeight(14),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(10)),
+                    ),
+                  ),
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                      fontSize: getProportionateScreenHeight(14),
+                      color: AppConstants.clrBlackFont,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: getProportionateScreenWidth(16)),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final newAddress = AddressModel(
+                      id: "",
+                      userId: userId ?? "",
+                      recipientName: recipientNameController.text,
+                      fullAddress: fullAddressController.text,
+                      postalCode: postalCodeController.text,
+                      addressLabel: addressLabelController.text,
+                    );
+                    await Provider.of<AddressProvider>(context, listen: false)
+                        .addAddress(newAddress);
+                    setState(() {
+                      _fetchAddressesFuture =
+                          Provider.of<AddressProvider>(context, listen: false)
+                              .fetchAddressesByUserId(userId ?? "");
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppConstants.mainColor,
+                    padding: EdgeInsets.symmetric(
+                      vertical: getProportionateScreenHeight(14),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(10)),
+                    ),
+                  ),
+                  child: Text(
+                    "Add",
+                    style: TextStyle(
+                      fontSize: getProportionateScreenHeight(14),
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    final addressProvider = Provider.of<AddressProvider>(context, listen: true);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppConstants.clrAppBar,
-        title: const Text("My Addresses", 
-        style: TextStyle(
-          fontFamily: AppConstants.fontInterMedium,
+        title: const Text(
+          "My Addresses",
+          style: TextStyle(
+            fontFamily: AppConstants.fontInterMedium,
             fontWeight: FontWeight.bold,
-        ),),
+          ),
+        ),
       ),
       backgroundColor: Colors.grey[100],
       body: FutureBuilder<List<AddressModel>>(
@@ -95,193 +364,139 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
                   borderRadius:
                       BorderRadius.circular(getProportionateScreenHeight(10)),
                 ),
-                child: ListTile(
-                  contentPadding:
-                      EdgeInsets.all(getProportionateScreenHeight(16)),
-                  title: Text(
-                    address.addressLabel,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: getProportionateScreenHeight(18),
-                    ),
-                  ),
-                  subtitle: Text(
-                    "${address.recipientName}\n${address.fullAddress}, ${address.postalCode}",
-                    style:
-                        TextStyle(fontSize: getProportionateScreenHeight(14)),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () async {
-                      await addressProvider.deleteAddress(address.id);
-                      setState(() {
-                        _fetchAddressesFuture = addressProvider
-                            .fetchAddressesByUserId(userId ?? "");
-                      });
-                    },
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: getProportionateScreenHeight(24), // Menambahkan ruang di bawah tombol
-        ),
-        child: Container(
-          color: Colors.transparent, // Pastikan background-nya transparan
-          child: ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  final recipientNameController = TextEditingController();
-                  final fullAddressController = TextEditingController();
-                  final postalCodeController = TextEditingController();
-                  final addressLabelController = TextEditingController();
-
-                  return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(getProportionateScreenHeight(16)),
-                    ),
-                    title: Text(
-                      "Add Address",
-                      style: TextStyle(
-                        fontSize: getProportionateScreenHeight(18),
-                        fontWeight: FontWeight.bold,
-                        color: AppConstants.clrBlackFont,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    content: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(8),
-                          vertical: getProportionateScreenHeight(8),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                child: Padding(
+                  padding: EdgeInsets.all(
+                      getProportionateScreenHeight(16)), // Padding utama
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: getProportionateScreenHeight(12)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildTextField(
-                              controller: recipientNameController,
-                              label: "Recipient Name",
+                            Text(
+                              address.addressLabel,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: getProportionateScreenHeight(16),
+                              ),
                             ),
-                            SizedBox(height: getProportionateScreenHeight(12)),
-                            _buildTextField(
-                              controller: fullAddressController,
-                              label: "Full Address",
-                            ),
-                            SizedBox(height: getProportionateScreenHeight(12)),
-                            _buildTextField(
-                              controller: postalCodeController,
-                              label: "Postal Code",
-                              isNumber: true,
-                            ),
-                            SizedBox(height: getProportionateScreenHeight(12)),
-                            _buildTextField(
-                              controller: addressLabelController,
-                              label: "Address Label",
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () async {
+                                await Provider.of<AddressProvider>(context,
+                                        listen: false)
+                                    .deleteAddress(address.id);
+                                setState(() {
+                                  _fetchAddressesFuture =
+                                      Provider.of<AddressProvider>(context,
+                                              listen: false)
+                                          .fetchAddressesByUserId(userId ?? "");
+                                });
+                              },
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    actionsPadding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(16),
-                      vertical: getProportionateScreenHeight(8),
-                    ),
-                    actions: [
+
+                      // Konten Utama
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: getProportionateScreenHeight(8)),
+                        child: Text(
+                          address.recipientName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: getProportionateScreenHeight(14),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            bottom: getProportionateScreenHeight(12)),
+                        child: Text(
+                          "${address.fullAddress}, ${address.postalCode}",
+                          style: TextStyle(
+                            fontSize: getProportionateScreenHeight(12),
+                          ),
+                        ),
+                      ),
+
+                      // Footer
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppConstants.greyColor7,
-                                padding: EdgeInsets.symmetric(
-                                  vertical: getProportionateScreenHeight(14),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      getProportionateScreenHeight(10)),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.pin_drop,
+                                color: AppConstants.mainColor,
+                                size: 16,
+                              ),
+                              SizedBox(width: getProportionateScreenWidth(4)),
+                              Text(
+                                "Sudah Pinpoint",
+                                style: TextStyle(
+                                  fontSize: getProportionateScreenHeight(12),
+                                  color: AppConstants.mainColor,
                                 ),
                               ),
-                              child: Text(
-                                "Cancel",
-                                style: TextStyle(
-                                  fontSize: getProportionateScreenHeight(14),
-                                  color: AppConstants.clrBlackFont,
-                                ),
+                            ],
+                          ),
+                          OutlinedButton(
+                            onPressed: () => _showEditAddressDialog(address),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: getProportionateScreenWidth(12),
+                                vertical: getProportionateScreenHeight(8),
+                              ),
+                              side: BorderSide(
+                                color: AppConstants.mainColor,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    getProportionateScreenHeight(6)),
                               ),
                             ),
-                          ),
-                          SizedBox(width: getProportionateScreenWidth(16)),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                final newAddress = AddressModel(
-                                  id: "",
-                                  userId: userId ?? "",
-                                  recipientName: recipientNameController.text,
-                                  fullAddress: fullAddressController.text,
-                                  postalCode: postalCodeController.text,
-                                  addressLabel: addressLabelController.text,
-                                );
-                                await addressProvider.addAddress(newAddress);
-                                setState(() {
-                                  _fetchAddressesFuture = addressProvider
-                                      .fetchAddressesByUserId(userId ?? "");
-                                });
-                                Navigator.of(context).pop();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppConstants.mainColor,
-                                padding: EdgeInsets.symmetric(
-                                  vertical: getProportionateScreenHeight(14),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      getProportionateScreenHeight(10)),
-                                ),
-                              ),
-                              child: Text(
-                                "Add",
-                                style: TextStyle(
-                                  fontSize: getProportionateScreenHeight(14),
-                                  color: Colors.white,
-                                ),
+                            child: Text(
+                              "Ubah Alamat",
+                              style: TextStyle(
+                                fontSize: getProportionateScreenHeight(12),
+                                color: AppConstants.mainColor,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ],
-                  );
-                },
+                  ),
+                ),
               );
+
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppConstants.mainColor,
-              padding: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(16),
-                horizontal: getProportionateScreenWidth(16),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(getProportionateScreenHeight(12)),
-              ),
-              elevation: 0,
-              foregroundColor: Colors.white,
-              textStyle: TextStyle(
-                fontSize: getProportionateScreenHeight(16),
-                fontWeight: FontWeight.w600,
-              ),
+          );
+        },
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.all(getProportionateScreenHeight(16)),
+        child: ElevatedButton(
+          onPressed: _showAddAddressDialog,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppConstants.clrBlackFont,
+            padding: EdgeInsets.symmetric(
+              vertical: getProportionateScreenHeight(16),
             ),
-            child: const Text("Add Address"),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(getProportionateScreenHeight(12)),
+            ),
+          ),
+          child: const Text(
+            "Add Address",
+            style: TextStyle(color: AppConstants.clrBlue),
           ),
         ),
       ),

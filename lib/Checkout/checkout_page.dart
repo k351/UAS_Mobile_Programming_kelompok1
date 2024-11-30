@@ -19,6 +19,8 @@ import 'package:uas_flutter/history/models/transaction_list.dart';
 import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
+import 'package:uas_flutter/settings/provider/address_provider.dart';
+import 'package:uas_flutter/settings/models/address_model.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = "/checkout";
@@ -134,9 +136,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
   bool isChecked = false;
 
   @override
+  void initState() {
+    super.initState();
+    final addressProvider = context.read<AddressProvider>();
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      addressProvider.fetchAddressesByUserId(userId);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Cartprovider cartprovider = context.watch<Cartprovider>();
-    CheckoutProvider checkoutProvider = context.watch<CheckoutProvider>();
+    final checkoutProvider = context.watch<CheckoutProvider>();
+    final addressProvider = context.watch<AddressProvider>();
     List<Map<String, dynamic>> checkedItems = cartprovider.checkedItems;
 
     num subTotal = cartprovider.total;
@@ -154,68 +167,165 @@ class _CheckoutPageState extends State<CheckoutPage> {
             // Address Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-              child: GestureDetector(
-                onTap: () {},
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: AppConstants.clrBackground,
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Alamat pengiriman kamu',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+              child: addressProvider.addresses.isEmpty
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Pilih Alamat Pengiriman",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Tampilkan alamat yang dipilih atau informasi default
+                        GestureDetector(
+                          onTap: () {
+                            // Jika ada alamat yang dipilih, buka pilihan alamat
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                return ListView.builder(
+                                  itemCount: addressProvider.addresses.length,
+                                  itemBuilder: (context, index) {
+                                    final address =
+                                        addressProvider.addresses[index];
+                                    return ListTile(
+                                      title: Text(address.fullAddress),
+                                      subtitle: Text(
+                                        "${address.recipientName}, ${address.addressLabel}",
+                                      ),
+                                      onTap: () {
+                                        // Set alamat yang dipilih
+                                        checkoutProvider.setSelectedAddress(
+                                            address.fullAddress);
+                                        Navigator.pop(
+                                            context); // Tutup bottom sheet
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: AppConstants.clrBackground,
                             ),
-                            Row(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Icon(
-                                  Icons.location_on,
-                                  color: Colors.green,
-                                  size: 20,
-                                ),
-                                SizedBox(width: 6),
                                 Expanded(
-                                  child: Text(
-                                    'Rumah • Alvin Kurniawan',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Alamat pengiriman kamu',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Menampilkan alamat yang dipilih jika ada
+                                      checkoutProvider.selectedAddress == null
+                                          ? const Text(
+                                              "Pilih alamat pengiriman",
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: AppConstants.greyColor,
+                                              ),
+                                            )
+                                          : Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Colors.green,
+                                                      size: 20,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    // Address Label yang besar dan bold
+                                                    Text(
+                                                      addressProvider.addresses
+                                                          .firstWhere((address) =>
+                                                              address
+                                                                  .fullAddress ==
+                                                              checkoutProvider
+                                                                  .selectedAddress)
+                                                          .addressLabel,
+                                                      style: const TextStyle(
+                                                        fontSize:
+                                                            16, // Lebih besar
+                                                        fontWeight: FontWeight
+                                                            .bold, // Bold
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 6),
+                                                // Recipient Name yang bold dan sedikit lebih kecil
+                                                Text(
+                                                  addressProvider.addresses
+                                                      .firstWhere((address) =>
+                                                          address.fullAddress ==
+                                                          checkoutProvider
+                                                              .selectedAddress)
+                                                      .recipientName,
+                                                  style: const TextStyle(
+                                                    fontSize:
+                                                        15, // Lebih kecil dari addressLabel
+                                                    fontWeight:
+                                                        FontWeight.bold, // Bold
+                                                    color:
+                                                        AppConstants.clrBlack,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 6),
+                                                // Alamat lengkap yang bold dan sedikit lebih kecil
+                                                Text(
+                                                  addressProvider.addresses
+                                                      .firstWhere((address) =>
+                                                          address.fullAddress ==
+                                                          checkoutProvider
+                                                              .selectedAddress)
+                                                      .fullAddress,
+                                                  style: const TextStyle(
+                                                    fontSize:
+                                                        14, // Lebih kecil dari recipientName
+                                                    fontWeight:
+                                                        FontWeight.bold, // Bold
+                                                    color:
+                                                        AppConstants.clrBlack,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                    ],
                                   ),
+                                ),
+                                const SizedBox(width: 6),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 18,
+                                  color: Colors.grey,
                                 ),
                               ],
                             ),
-                            Text(
-                              'Jalan Jembatan 2 Gang Anggur no.18 (Di seberang kecamatan Tambora)',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppConstants.greyColor,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 6),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                      ],
+                    ),
             ),
             const CustomDivider(),
             // Item Section

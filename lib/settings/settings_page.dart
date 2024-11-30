@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/CartPage.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
+import 'package:uas_flutter/history/history_page.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/settings/my_address_page.dart';
 import 'package:uas_flutter/settings/my_coupon_page.dart';
@@ -118,7 +119,7 @@ class SettingsPageState extends State<SettingsPage> {
                           'Set shopping delivery address'),
                       _buildSettingsItem(Icons.shopping_cart, 'My Cart',
                           'Add, remove products and move to checkout'),
-                      _buildSettingsItem(Icons.shopping_bag, 'My Orders',
+                      _buildSettingsItem(Icons.shopping_bag, 'My Orders And History',
                           'In-progress and Completed Orders'),
                       _buildSettingsItem(
                           Icons.account_balance,
@@ -128,8 +129,6 @@ class SettingsPageState extends State<SettingsPage> {
                           'List of all the discounted coupons'),
                       _buildSettingsItem(Icons.notifications, 'Notifications',
                           'Set any kind of notification message'),
-                      _buildSettingsItem(Icons.privacy_tip, 'Account Privacy',
-                          'Manage data usage and connected accounts'),
                       SizedBox(height: getProportionateScreenHeight(20)),
                       Text(
                         'App Settings',
@@ -315,6 +314,9 @@ class SettingsPageState extends State<SettingsPage> {
         }
         if (title == 'My Coupons') {
           Navigator.pushNamed(context, MyCouponsPage.routeName);
+        }
+        if (title == 'My Orders And History') {
+          Navigator.pushNamed(context, HistoryPage.routeName);
         }
         // Tambahkan navigasi lain jika diperlukan
       },

@@ -6,8 +6,11 @@
     bool _isCouponApplied = false; // Status kupon
     double _discountValue = 0.0;
 
+    String? _selectedAddress;
+
     bool get isCouponApplied => _isCouponApplied;
     double get discountValue => _discountValue;
+    String? get selectedAddress => _selectedAddress;
 
     // Method to toggle protection option
     void toggleProtection(bool value) {
@@ -42,4 +45,10 @@
 
       return total;
     }
+
+    void setSelectedAddress(String address) {
+    _selectedAddress = address;
+    notifyListeners(); // To update UI when the selected address changes
+  }
+
   }

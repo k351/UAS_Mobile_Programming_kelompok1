@@ -4,12 +4,14 @@
     bool isProtectionChecked = false;
     double protectionFee = 4500.0; // The cost of protection
     bool _isCouponApplied = false; // Status kupon
-    double _discountValue = 0.0;
+    num _discountValue = 0.0;
 
     String? _selectedAddress;
+    String? _appliedCouponCode; 
 
     bool get isCouponApplied => _isCouponApplied;
-    double get discountValue => _discountValue;
+    num get discountValue => _discountValue;
+    String? get appliedCouponCode => _appliedCouponCode;
     String? get selectedAddress => _selectedAddress;
 
     // Method to toggle protection option
@@ -19,17 +21,20 @@
     }
 
     // Method to apply a discount
-    void applyDiscount(double discount) {
-      _discountValue = discount;
-      _isCouponApplied = true;
-      notifyListeners(); 
-    }
-
+    void applyDiscount(String couponCode, num discount) {
+        _appliedCouponCode = couponCode;
+        _discountValue = discount;
+        _isCouponApplied = true;
+        notifyListeners();
+      }
+      
     void resetCoupon() {
       _isCouponApplied = false;
       _discountValue = 0.0;
-      notifyListeners(); 
+      _appliedCouponCode = null;
+      notifyListeners();
     }
+
 
     // Method to calculate the total based on the selected protection and discount
     double calculateTotal(double subTotal) {
@@ -41,7 +46,7 @@
       }
 
       // Apply discount if any
-      total -= discountValue;
+      total -= discountValue.toDouble();
 
       return total;
     }

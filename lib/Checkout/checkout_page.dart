@@ -51,7 +51,7 @@ Future<void> makePayment(BuildContext context, double totalBelanja,
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Pembayaran berhasil!'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppConstants.clrBlue,
       ),
     );
   } catch (e) {
@@ -94,6 +94,19 @@ Future<void> decreaseQuantitiesAfterCheckout(
 
 class _CheckoutPageState extends State<CheckoutPage> {
   bool isChecked = false;
+
+  void _showCouponBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return const CouponPage();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +153,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               children: [
                                 Icon(
                                   Icons.location_on,
-                                  color: Colors.green,
+                                  color: AppConstants.clrBlue,
                                   size: 20,
                                 ),
                                 SizedBox(width: 6),
@@ -191,7 +204,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     children: [
                       Icon(
                         Icons.shopping_cart_outlined,
-                        color: Colors.green,
+                        color: AppConstants.clrBlue,
                         size: 18,
                       ),
                       SizedBox(width: 8),
@@ -291,7 +304,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       padding:
                           const EdgeInsets.only(top: 15, left: 15, bottom: 15),
                       decoration: BoxDecoration(
-                        color: AppConstants.clrGreen,
+                        color: const Color.fromARGB(255, 125, 176, 253),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.grey.shade300),
                       ),
@@ -307,7 +320,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     'Pilih Opsi Pengiriman',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 15),
+                                        fontSize: 15,
+                                        color: Colors.white),
                                   )
                                 ],
                               ),
@@ -316,7 +330,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Icon(
                             Icons.arrow_forward_ios,
                             size: 18,
-                            color: Colors.grey,
+                            color: Colors.white,
                           ),
                         ],
                       ),
@@ -393,7 +407,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
-                                  color: Colors.green,
+                                  color: AppConstants.clrBlue,
                                 ),
                               ),
                               RichText(
@@ -408,7 +422,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.green),
+                                          color: AppConstants.clrBlue),
                                     ),
                                     const TextSpan(
                                       text: ' 🎉',
@@ -434,7 +448,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               Text(
                                 'Hemat sampai Rp30.000',
                                 style: TextStyle(
-                                    fontSize: 10, color: Colors.green),
+                                    fontSize: 10, color: AppConstants.clrBlue),
                               ),
                             ],
                           ),
@@ -453,6 +467,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
             const CustomDivider(),
             // Summary Section
+           // Summary Section
             Padding(
               padding: const EdgeInsets.all(15),
               child: Column(
@@ -463,6 +478,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
+                  // Total Harga
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -474,6 +490,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ],
                   ),
                   const SizedBox(height: 5),
+                  // Total Diskon
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Total Diskon'),
+                      Text(
+                        checkoutProvider.isCouponApplied
+                            ? 'Rp ${NumberFormat("#,##0", "id_ID").format(checkoutProvider.discountValue)}'
+                            : '-',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  // Total Biaya Proteksi
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -483,13 +514,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ],
                   ),
                   const Divider(),
+                  // Total Belanja
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Total Belanja'),
                       Text(
-                          'Rp ${NumberFormat("#,##0", "id_ID").format(totalBelanja)}',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                        'Rp ${NumberFormat("#,##0", "id_ID").format(totalBelanja)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ],
@@ -503,7 +536,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppConstants.clrBlue,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () {

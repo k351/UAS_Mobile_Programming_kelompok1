@@ -18,9 +18,9 @@ import 'package:uas_flutter/history/models/transaction.dart';
 import 'package:uas_flutter/history/models/transaction_list.dart';
 import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
-import 'package:uas_flutter/settings/models/address_model.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = "/checkout";
@@ -29,6 +29,13 @@ class CheckoutPage extends StatefulWidget {
   @override
   // ignore: library_private_types_in_public_api
   _CheckoutPageState createState() => _CheckoutPageState();
+}
+
+class PaymentMethod {
+  final String methodName;
+  final IconData icon;
+
+  PaymentMethod(this.methodName, this.icon);
 }
 
 Future<void> makePayment(BuildContext context, double totalBelanja,
@@ -103,7 +110,6 @@ Future<void> makePayment(BuildContext context, double totalBelanja,
       'An error occured, please try again',
       backgroundColor: AppConstants.clrRed,
     );
-    print(e);
   }
 }
 
@@ -135,6 +141,16 @@ Future<void> decreaseQuantitiesAfterCheckout(
 
 class _CheckoutPageState extends State<CheckoutPage> {
   bool isChecked = false;
+  String? selectedPaymentMethod;
+  bool showAllMethods = false;
+
+  List<PaymentMethod> paymentMethods = [
+    PaymentMethod("Cartipay", Icons.account_balance_wallet),
+    PaymentMethod("Kartu Kredit/Debit", Icons.credit_card),
+    PaymentMethod("Virtual Account", Icons.account_balance),
+    PaymentMethod("OVO", Icons.phone_android),
+    PaymentMethod("GoPay", Icons.qr_code_scanner),
+  ];
 
   @override
   void initState() {
@@ -155,6 +171,62 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
       builder: (BuildContext context) {
         return const CouponPage();
+      },
+    );
+  }
+
+  void _showMorePaymentOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Metode Pembayaran Lainnya',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: paymentMethods.length - 2,
+                separatorBuilder: (context, index) =>
+                    const Divider(color: Colors.grey),
+                itemBuilder: (context, index) {
+                  PaymentMethod method = paymentMethods[index + 2];
+                  return ListTile(
+                    leading: Icon(method.icon, color: AppConstants.clrBlue),
+                    title: Text(method.methodName),
+                    trailing: Radio<String>(
+                      value: method.methodName,
+                      groupValue: selectedPaymentMethod,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedPaymentMethod = value;
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                    onTap: () {
+                      setState(() {
+                        selectedPaymentMethod = method.methodName;
+                      });
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -185,162 +257,129 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Pilih Alamat Pengiriman",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Tampilkan alamat yang dipilih atau informasi default
-                        GestureDetector(
-                          onTap: () {
-                            // Jika ada alamat yang dipilih, buka pilihan alamat
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) {
-                                return ListView.builder(
-                                  itemCount: addressProvider.addresses.length,
-                                  itemBuilder: (context, index) {
-                                    final address =
-                                        addressProvider.addresses[index];
-                                    return ListTile(
-                                      title: Text(address.fullAddress),
-                                      subtitle: Text(
-                                        "${address.recipientName}, ${address.addressLabel}",
-                                      ),
-                                      onTap: () {
-                                        // Set alamat yang dipilih
-                                        checkoutProvider.setSelectedAddress(
-                                            address.fullAddress);
-                                        Navigator.pop(
-                                            context); // Tutup bottom sheet
-                                      },
-                                    );
+                  : GestureDetector(
+                      onTap: () {
+                        // Tampilkan pilihan alamat saat bagian ini diklik
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return ListView.builder(
+                              itemCount: addressProvider.addresses.length,
+                              itemBuilder: (context, index) {
+                                final address =
+                                    addressProvider.addresses[index];
+                                return ListTile(
+                                  title: Text(address.fullAddress),
+                                  subtitle: Text(
+                                    "${address.recipientName}, ${address.addressLabel}",
+                                  ),
+                                  onTap: () {
+                                    // Set alamat yang dipilih
+                                    checkoutProvider.setSelectedAddress(
+                                        address.fullAddress);
+                                    Navigator.pop(
+                                        context); // Tutup bottom sheet
                                   },
                                 );
                               },
                             );
                           },
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: AppConstants.clrBackground,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Alamat pengiriman kamu',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // Menampilkan alamat yang dipilih jika ada
-                                      checkoutProvider.selectedAddress == null
-                                          ? const Text(
-                                              "Pilih alamat pengiriman",
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color: AppConstants.greyColor,
-                                              ),
-                                            )
-                                          : Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                        );
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white, // Latar belakang putih
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Judul "Alamat pengiriman kamu"
+                                  const Text(
+                                    "Alamat pengiriman kamu",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  // Tampilkan alamat jika dipilih
+                                  checkoutProvider.selectedAddress == null
+                                      ? const Text(
+                                          "Pilih alamat pengiriman",
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.grey,
+                                          ),
+                                        )
+                                      : Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
                                               children: [
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.location_on,
-                                                      color: Colors.green,
-                                                      size: 20,
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    // Address Label yang besar dan bold
-                                                    Text(
-                                                      addressProvider.addresses
-                                                          .firstWhere((address) =>
-                                                              address
-                                                                  .fullAddress ==
-                                                              checkoutProvider
-                                                                  .selectedAddress)
-                                                          .addressLabel,
-                                                      style: const TextStyle(
-                                                        fontSize:
-                                                            16, // Lebih besar
-                                                        fontWeight: FontWeight
-                                                            .bold, // Bold
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ],
+                                                const Icon(
+                                                  Icons.location_on,
+                                                  color: Colors
+                                                      .green, // Ikon hijau
+                                                  size: 20,
                                                 ),
-                                                const SizedBox(height: 6),
-                                                // Recipient Name yang bold dan sedikit lebih kecil
+                                                const SizedBox(width: 6),
+                                                // Label alamat besar dan bold
                                                 Text(
                                                   addressProvider.addresses
                                                       .firstWhere((address) =>
                                                           address.fullAddress ==
                                                           checkoutProvider
                                                               .selectedAddress)
-                                                      .recipientName,
+                                                      .addressLabel,
                                                   style: const TextStyle(
-                                                    fontSize:
-                                                        15, // Lebih kecil dari addressLabel
-                                                    fontWeight:
-                                                        FontWeight.bold, // Bold
-                                                    color:
-                                                        AppConstants.clrBlack,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
                                                   ),
                                                 ),
-                                                const SizedBox(height: 6),
-                                                // Alamat lengkap yang bold dan sedikit lebih kecil
                                                 Text(
-                                                  addressProvider.addresses
-                                                      .firstWhere((address) =>
-                                                          address.fullAddress ==
-                                                          checkoutProvider
-                                                              .selectedAddress)
-                                                      .fullAddress,
+                                                  " - ${addressProvider.addresses.firstWhere((address) => address.fullAddress == checkoutProvider.selectedAddress).recipientName}",
                                                   style: const TextStyle(
-                                                    fontSize:
-                                                        14, // Lebih kecil dari recipientName
-                                                    fontWeight:
-                                                        FontWeight.bold, // Bold
-                                                    color:
-                                                        AppConstants.clrBlack,
-                                                  ),
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ],
                                             ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 18,
-                                  color: Colors.grey,
-                                ),
-                              ],
+                                            Text(
+                                              addressProvider.addresses
+                                                  .firstWhere((address) =>
+                                                      address.fullAddress ==
+                                                      checkoutProvider
+                                                          .selectedAddress)
+                                                  .fullAddress,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                ],
+                              ),
                             ),
-                          ),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 18,
+                              color: Colors.grey, // Ikon panah abu-abu di kanan
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
             ),
+
             const CustomDivider(),
             // Item Section
             Padding(
@@ -358,7 +397,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        'Dibei Shop',
+                        'CartiShop',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -379,7 +418,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       },
                       separatorBuilder: (context, index) {
                         return const Divider(
-                          color: Colors.grey, // or any other color you prefer
+                          color: Colors.grey,
                           thickness: 1, // Adjust thickness if necessary
                         );
                       },
@@ -489,31 +528,97 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
             const Divider(),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+            // Pilih Metode Pembayaran Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.edit_document,
-                    color: AppConstants.greyColor,
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Pilih Metode Pembayaran',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
-                    width: 4,
+                  const SizedBox(height: 10),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: showAllMethods ? paymentMethods.length : 2,
+                    separatorBuilder: (context, index) =>
+                        const Divider(color: Colors.grey),
+                    itemBuilder: (context, index) {
+                      PaymentMethod method = paymentMethods[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          radius: 24, // Adjust the radius as needed
+                          backgroundColor: Colors.blue.shade100,
+                          child: Icon(
+                            method.icon,
+                            color: AppConstants.clrBlue,
+                            size: 28,
+                          ),
+                        ),
+                        title: Text(method.methodName),
+                        trailing: Radio<String>(
+                          value: method.methodName,
+                          groupValue: selectedPaymentMethod,
+                          onChanged: (String? value) {
+                            setState(() {
+                              selectedPaymentMethod = value;
+                            });
+                          },
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedPaymentMethod = method.methodName;
+                          });
+                        },
+                      );
+                    },
                   ),
-                  Text(
-                    'Pesan untuk penjual',
-                    style: TextStyle(color: AppConstants.greyColor),
-                  ),
-                  Spacer(),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 18,
-                    color: Colors.grey,
-                  ),
+                  // Tombol "Lihat Lebih Banyak" atau "Tutup" tergantung state showAllMethods
+                  if (!showAllMethods) // Hanya tampilkan tombol "Lihat Lebih Banyak"
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            showAllMethods = true; // Tampilkan semua metode
+                          });
+                        },
+                        child: const Text(
+                          'Lihat Lebih Banyak',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppConstants.clrBlue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (showAllMethods) // Tampilkan tombol "Tutup" jika sudah menampilkan semua metode
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            showAllMethods =
+                                false; // Sembunyikan metode tambahan
+                          });
+                        },
+                        child: const Text(
+                          'Tutup',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppConstants.clrBlue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
+            const SizedBox(height: 10),
+
             const CustomDivider(),
 
             // Promo Section
@@ -616,7 +721,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
             const CustomDivider(),
             // Summary Section
-           // Summary Section
+            // Summary Section
             Padding(
               padding: const EdgeInsets.all(15),
               child: Column(
@@ -689,8 +794,31 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () {
-                    makePayment(context, totalBelanja, checkedItems);
-                    Navigator.pushNamed(context, Myhomepage.routeName);
+                    if (selectedPaymentMethod == null) {
+                      // Show a warning to the user
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Pilih Metode Pembayaran'),
+                            content: const Text(
+                                'Silakan pilih metode pembayaran sebelum melanjutkan.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      // Proceed with the payment
+                      makePayment(context, totalBelanja, checkedItems);
+                      Navigator.pushNamed(context, Myhomepage.routeName);
+                    }
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

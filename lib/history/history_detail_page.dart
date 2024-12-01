@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/history/models/transaction.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
-import 'package:uas_flutter/utils/date_formatter.dart'; // Add the import for DateFormatter
+import 'package:uas_flutter/utils/date_formatter.dart';
+import 'package:uas_flutter/utils/size_config.dart'; // Add the import for DateFormatter
 
 class HistoryDetailPage extends StatelessWidget {
   final Transactions transaction;
@@ -74,14 +75,18 @@ class HistoryDetailPage extends StatelessWidget {
                             .withOpacity(0.7),
                       ),
                     ),
-                    Text(
-                      transaction.address,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppConstants.clrBlack,
-                        fontWeight: FontWeight.w600,
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxWidth: getProportionateScreenWidth(340)),
+                      child: Text(
+                        transaction.address,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppConstants.clrBlack,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ],

@@ -11,19 +11,17 @@ class TransactionProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> fetchTransactions(userId) async {
-    if (_transactions.isEmpty) {
-      _isLoading = true;
-      notifyListeners();
+    _isLoading = true;
+    notifyListeners();
 
-      try {
-        _transactions = await _transactionService.fetchTransactions(userId);
-        print(_transactions);
-      } catch (e) {
-        debugPrint('Error fetching transactions: $e');
-      } finally {
-        _isLoading = false;
-        notifyListeners();
-      }
+    try {
+      _transactions = await _transactionService.fetchTransactions(userId);
+      print(_transactions);
+    } catch (e) {
+      debugPrint('Error fetching transactions: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -31,7 +29,6 @@ class TransactionProvider with ChangeNotifier {
     try {
       await _transactionService.addTransaction(transaction);
       _transactions.add(transaction);
-      notifyListeners();
     } catch (e) {
       debugPrint('Error adding transaction: $e');
     }

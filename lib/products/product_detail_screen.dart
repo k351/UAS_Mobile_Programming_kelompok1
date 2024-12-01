@@ -36,11 +36,15 @@ class _DetailScreenState extends State<DetailScreen> {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
       final cartProvider = Provider.of<Cartprovider>(context, listen: false);
-      await cartDatabaseService.addCartItemToCart(
+
+      final message = await cartDatabaseService.addCartItemToCart(
           userId, widget.productId, quantity);
-      cartProvider.increaseCartQuantity(quantity);
+      if (message != "Stock limit Reached") {
+        cartProvider.increaseCartQuantity(quantity);
+      }
+
       print('Item added to cart successfully');
-      SnackbarUtils.showSnackbar(context, 'Item added to cart');
+      SnackbarUtils.showSnackbar(context, message);
     } catch (e) {
       print('Failed to add item to cart: $e');
       SnackbarUtils.showSnackbar(context, 'Failed to add item to cart',

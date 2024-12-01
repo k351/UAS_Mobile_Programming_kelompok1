@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
 import 'package:uas_flutter/constants.dart';
@@ -20,7 +21,9 @@ class ItemTabs extends StatelessWidget {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
+      final cartProvider = Provider.of<Cartprovider>(context, listen: false);
       await cartDatabaseService.addCartItemToCart(userId, productId, 1);
+      cartProvider.increaseCartQuantity(1);
       SnackbarUtils.showSnackbar(
         context,
         'Item added to cart',

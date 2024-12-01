@@ -30,12 +30,12 @@ class AddressCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? Colors.blue.shade100
-              : Colors.white, // Change color if selected
+              : AppConstants.clrBackground, // Change color if selected
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
               color: isSelected
-                  ? Colors.blue.shade600
-                  : Colors.black), // Different border color if selected
+                  ? AppConstants.mainColor
+                  : AppConstants.clrBlack), // Different border color if selected
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,7 +58,7 @@ class AddressCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: AppConstants.clrBlack,
                   ),
                 ),
               ],
@@ -69,7 +69,7 @@ class AddressCard extends StatelessWidget {
               address.fullAddress,
               style: const TextStyle(
                 fontSize: 13,
-                color: Colors.black,
+                color: AppConstants.clrBlack,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

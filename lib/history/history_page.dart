@@ -30,13 +30,13 @@ class _HistoryPageState extends State<HistoryPage> {
       backgroundColor: AppConstants.clrBackground,
       appBar: AppBar(
         elevation: 0,
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
           'Purchase History',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            fontFamily: AppConstants.fontInterMedium,
             color: AppConstants.clrBlackFont,
           ),
         ),

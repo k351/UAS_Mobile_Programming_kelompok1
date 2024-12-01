@@ -29,9 +29,12 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   int currentImage = 0;
   int quantity = 1;
+  bool _isProcessing = false;
   final CartDatabaseService cartDatabaseService = CartDatabaseService();
 
   Future<void> addCartItemToCart(BuildContext context) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
@@ -49,6 +52,8 @@ class _DetailScreenState extends State<DetailScreen> {
       print('Failed to add item to cart: $e');
       SnackbarUtils.showSnackbar(context, 'Failed to add item to cart',
           backgroundColor: AppConstants.clrRed);
+    } finally {
+      _isProcessing = false;
     }
   }
 

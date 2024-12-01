@@ -14,10 +14,13 @@ import 'package:provider/provider.dart';
 class ItemTabs extends StatelessWidget {
   final Product product;
   final String productId;
+  bool _isProcessing = false;
 
-  const ItemTabs({super.key, required this.product, required this.productId});
+  ItemTabs({super.key, required this.product, required this.productId});
 
   Future<void> addCartItemToCart(BuildContext context) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
@@ -38,6 +41,8 @@ class ItemTabs extends StatelessWidget {
         'Failed to add item to cart',
         backgroundColor: AppConstants.clrRed,
       );
+    } finally {
+      _isProcessing = false;
     }
   }
 

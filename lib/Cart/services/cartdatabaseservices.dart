@@ -194,6 +194,9 @@ class CartDatabaseService {
           await ProductDatabaseService().fetchProductById(productId);
 
       if (product != null) {
+        if (product.quantity == 0) {
+          return ('Stock limit Reached');
+        }
         Map<String, dynamic> cart = await fetchCartByUserId(userId, true);
 
         List<Map<String, dynamic>> cartItems =
@@ -238,7 +241,7 @@ class CartDatabaseService {
           return ('Added item to cart');
         }
       } else {
-        throw Exception("Product not found.");
+        return ('Error adding item, try again.');
       }
     } catch (e) {
       rethrow;

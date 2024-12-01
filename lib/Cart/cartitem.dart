@@ -35,7 +35,7 @@ class Cartitem extends StatelessWidget {
       children: [
         ListTile(
           subtitle: Container(
-            height: 110,
+            height: 126,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(10)),
@@ -125,7 +125,7 @@ class Cartitem extends StatelessWidget {
                       ),
                       Spacer(),
                       Cartquantitycounter(
-                          id: data['id'],
+                        id: data['id'],
                       )
                     ],
                   ),

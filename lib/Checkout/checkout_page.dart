@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/Checkout/address_card.dart';
 import 'package:uas_flutter/Checkout/coupon_page.dart';
 import 'package:uas_flutter/Checkout/custom_divider.dart';
 import 'package:uas_flutter/Checkout/productitem.dart';
@@ -18,7 +18,6 @@ import 'package:uas_flutter/history/models/transaction.dart';
 import 'package:uas_flutter/history/models/transaction_list.dart';
 import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
-import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 
@@ -255,40 +254,68 @@ class _CheckoutPageState extends State<CheckoutPage> {
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
               child: addressProvider.addresses.isEmpty
                   ? const Center(
-                      child: CircularProgressIndicator(),
+                      child:
+                          CircularProgressIndicator(), // Show loading when addresses are empty
                     )
                   : GestureDetector(
                       onTap: () {
-                        // Tampilkan pilihan alamat saat bagian ini diklik
                         showModalBottomSheet(
                           context: context,
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
                           builder: (context) {
-                            return ListView.builder(
-                              itemCount: addressProvider.addresses.length,
-                              itemBuilder: (context, index) {
-                                final address =
-                                    addressProvider.addresses[index];
-                                return ListTile(
-                                  title: Text(address.fullAddress),
-                                  subtitle: Text(
-                                    "${address.recipientName}, ${address.addressLabel}",
-                                  ),
-                                  onTap: () {
-                                    // Set alamat yang dipilih
-                                    checkoutProvider.setSelectedAddress(
-                                        address.fullAddress);
-                                    Navigator.pop(
-                                        context); // Tutup bottom sheet
-                                  },
-                                );
-                              },
+                            return SafeArea(
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(height: 24),
+                                    const Text(
+                                      'Pilih Alamat Pengiriman',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppConstants.clrBlue,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    // List of addresses
+                                    Expanded(
+                                      child: ListView.builder(
+                                        itemCount:
+                                            addressProvider.addresses.length,
+                                        itemBuilder: (context, index) {
+                                          final address =
+                                              addressProvider.addresses[index];
+                                          return AddressCard(
+                                            address: address,
+                                            onTap: () {
+                                              // Set the selected address in the provider
+                                              checkoutProvider
+                                                  .setSelectedAddress(
+                                                      address.fullAddress);
+                                              Navigator.pop(
+                                                  context); // Close the bottom sheet after selection
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             );
                           },
                         );
                       },
                       child: Container(
                         decoration: const BoxDecoration(
-                          color: Colors.white, // Latar belakang putih
+                          color: Colors
+                              .white, // White background for the container
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -297,16 +324,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Judul "Alamat pengiriman kamu"
                                   const Text(
-                                    "Alamat pengiriman kamu",
+                                    "Alamat Pengiriman Kamu",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black,
                                     ),
                                   ),
-                                  // Tampilkan alamat jika dipilih
                                   checkoutProvider.selectedAddress == null
                                       ? const Text(
                                           "Pilih alamat pengiriman",
@@ -323,12 +348,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                               children: [
                                                 const Icon(
                                                   Icons.location_on,
-                                                  color: Colors
-                                                      .green, // Ikon hijau
+                                                  color: AppConstants.clrBlue,
                                                   size: 20,
                                                 ),
                                                 const SizedBox(width: 6),
-                                                // Label alamat besar dan bold
+                                                // Address label and recipient name
                                                 Text(
                                                   addressProvider.addresses
                                                       .firstWhere((address) =>
@@ -363,6 +387,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 fontSize: 14,
                                                 color: Colors.grey,
                                               ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ],
                                         ),
@@ -372,7 +398,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             const Icon(
                               Icons.arrow_forward_ios,
                               size: 18,
-                              color: Colors.grey, // Ikon panah abu-abu di kanan
+                              color:
+                                  Colors.grey, // Grey arrow icon on the right
                             ),
                           ],
                         ),
@@ -474,7 +501,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         fillColor: WidgetStateProperty.resolveWith<Color>(
                           (Set<WidgetState> states) {
                             if (states.contains(WidgetState.selected)) {
-                              return const Color(0xFF40B22F);
+                              return AppConstants.clrBlue;
                             }
                             return Colors.white;
                           },
@@ -595,7 +622,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         ),
                       ),
                     ),
-                  if (showAllMethods) // Tampilkan tombol "Tutup" jika sudah menampilkan semua metode
+                  if (showAllMethods)
                     Center(
                       child: TextButton(
                         onPressed: () {
@@ -623,7 +650,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
             // Promo Section
             SizedBox(
-              height: 55,
+              height: 60,
               child: Container(
                 color: AppConstants.clrBackground,
                 child: GestureDetector(
@@ -647,9 +674,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.discount_outlined,
-                          color: Colors.amber,
+                          color: Colors.deepPurple.shade300,
                         ),
                         const SizedBox(width: 6),
                         if (checkoutProvider.isCouponApplied)
@@ -696,13 +723,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 'Yuk, pakai kode promonya!',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                  fontSize: 14,
                                 ),
                               ),
                               Text(
-                                'Hemat sampai Rp30.000',
+                                'Hemat sampai Rp 100.000',
                                 style: TextStyle(
-                                    fontSize: 10, color: AppConstants.clrBlue),
+                                    fontSize: 14, color: AppConstants.clrBlue),
                               ),
                             ],
                           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 
 class Cartappbar extends StatelessWidget {
@@ -16,7 +17,7 @@ class Cartappbar extends StatelessWidget {
               child: const Icon(
                 Icons.arrow_back,
                 size: 30,
-                color: Colors.grey,
+                color: AppConstants.greyColor3,
               )),
           const Padding(
             padding: EdgeInsets.only(left: 30),
@@ -25,7 +26,7 @@ class Cartappbar extends StatelessWidget {
               style: TextStyle(
                   fontSize: 23,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey),
+                  color: AppConstants.greyColor3),
             ),
           ),
           const Spacer(),
@@ -36,7 +37,7 @@ class Cartappbar extends StatelessWidget {
             child: const Icon(
               Icons.settings,
               size: 23,
-              color: Colors.grey,
+              color: AppConstants.greyColor3,
             ),
           ),
         ],

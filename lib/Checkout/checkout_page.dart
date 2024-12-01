@@ -92,7 +92,6 @@ Future<void> makePayment(
     );
 
     await transactionProvider.addTransaction(transaction);
-
     // Deduct balance and update Firestore and UI
 
     await FirebaseTopup.updateSaldoInFirestore(saldoUser - totalBelanja);
@@ -108,6 +107,10 @@ Future<void> makePayment(
         backgroundColor: AppConstants.clrBlue,
       ),
     );
+
+    final cartProvider = Provider.of<Cartprovider>(context, listen: false);
+    final idsToRemove = cartItems.map((item) => item['id'] as String).toList();
+    cartProvider.removeItems(idsToRemove);
   } catch (e) {
     // Show error message if anything fails
     SnackbarUtils.showSnackbar(

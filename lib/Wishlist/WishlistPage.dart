@@ -7,6 +7,8 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
+import 'package:uas_flutter/utils/currency_formatter.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class WishlistPage extends StatefulWidget {
   static const String routeName = '/wishlist';
@@ -57,10 +59,13 @@ class _WishlistPageState extends State<WishlistPage> {
       SnackBar(
         content: const Text('Item removed from wishlist'),
         duration: const Duration(seconds: 2),
+        backgroundColor: AppConstants.clrBlue,
         action: SnackBarAction(
           label: 'Undo',
-          onPressed: () {
+          textColor: AppConstants.clrBackground,
+          onPressed: () async {
             wishlistProvider.addToWishlist(userId, productId);
+            await Future.delayed(const Duration(seconds: 1));
             setState(() {
               _wishlistFuture = _fetchWishlistProducts();
             });
@@ -79,12 +84,12 @@ class _WishlistPageState extends State<WishlistPage> {
           'Wishlist',
           style: TextStyle(
             color: AppConstants.clrBlackFont,
+            fontWeight: FontWeight.bold,
             fontFamily: AppConstants.fontInterSemiBold,
           ),
         ),
         centerTitle: true,
         backgroundColor: AppConstants.clrAppBar,
-        iconTheme: const IconThemeData(color: AppConstants.mainColor),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _wishlistFuture,
@@ -97,14 +102,34 @@ class _WishlistPageState extends State<WishlistPage> {
             );
           } else {
             if (snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text(
-                  'Your wishlist is empty.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppConstants.greyColor3,
-                  ),
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.favorite_border,
+                      size: 100,
+                      color: Colors.grey.shade300,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Your wishlist is empty.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppConstants.greyColor3,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Add products to save them for later!',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: AppConstants.greyColor3,
+                      ),
+                    ),
+                  ],
                 ),
               );
             }
@@ -118,48 +143,75 @@ class _WishlistPageState extends State<WishlistPage> {
 
                 return Card(
                   margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  color: AppConstants.greyColor1,
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image(
-                        image: AssetImage(product.image),
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    title: Text(
-                      product.title,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontFamily: AppConstants.fontInterMedium,
-                        color: AppConstants.clrBlackFont,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Rp ${product.price}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontFamily: AppConstants.fontInterRegular,
-                        color: AppConstants.greyColor3,
-                      ),
-                    ),
-                    trailing: IconButton(
-                      icon:
-                          const Icon(Icons.delete, color: AppConstants.clrRed),
-                      onPressed: () => _removeFromWishlist(productId),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailScreen(
-                              product: product, productId: productId),
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: AppConstants.clrBackground,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
                         ),
-                      );
-                    },
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image(
+                              image: AssetImage(product.image),
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  product.title,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: AppConstants.fontInterMedium,
+                                    color: AppConstants.clrBlackFont,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  formatCurrency(product.price),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: AppConstants.fontInterRegular,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppConstants.greyColor3,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: AppConstants.clrRed,
+                            ),
+                            onPressed: () => _removeFromWishlist(productId),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               },
@@ -175,29 +227,4 @@ class _WishlistPageState extends State<WishlistPage> {
       ),
     );
   }
-}
-
-Future<List<Map<String, dynamic>>> _fetchWishlistProducts(
-  String userId,
-  WishlistProvider wishlistProvider,
-  ProductDatabaseService productDatabaseService,
-) async {
-  final productIds = wishlistProvider.getWishlist(userId);
-
-  // Fetch products using their IDs
-  final productsData = await Future.wait(
-    productIds.map((id) async {
-      final product = await productDatabaseService.fetchProductById(id);
-      return {
-        'id': id,
-        'product': product
-      }; // Return Map with id and product data
-    }),
-  );
-
-  // Filter valid products (non-null)
-  final validProducts =
-      productsData.where((element) => element['product'] != null).toList();
-  print(validProducts);
-  return validProducts;
 }

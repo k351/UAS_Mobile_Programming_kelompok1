@@ -42,18 +42,31 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+        labelStyle: const TextStyle(
+          color: AppConstants.mainColor,
+          fontWeight: FontWeight.w500,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: AppConstants.mainColor.withOpacity(0.3), width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppConstants.mainColor, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 12,
+          vertical: 14,
         ),
       ),
-      style: const TextStyle(fontSize: 14),
+      style: const TextStyle(
+        fontSize: 14,
+        color: AppConstants.clrBlackFont,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
-
 
   void _showEditAddressDialog(AddressModel address) {
     final recipientNameController =
@@ -69,81 +82,69 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(getProportionateScreenHeight(16)),
+          borderRadius: BorderRadius.circular(20),
         ),
-        title: Text(
+        title: const Text(
           "Edit Address",
           style: TextStyle(
-            fontSize: getProportionateScreenHeight(18),
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppConstants.clrBlackFont,
+            color: AppConstants.mainColor,
           ),
           textAlign: TextAlign.center,
         ),
         content: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(8),
-              vertical: getProportionateScreenHeight(8),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTextField(
-                  controller: recipientNameController,
-                  label: "Recipient Name",
-                ),
-                SizedBox(height: getProportionateScreenHeight(12)),
-                _buildTextField(
-                  controller: fullAddressController,
-                  label: "Full Address",
-                ),
-                SizedBox(height: getProportionateScreenHeight(12)),
-                _buildTextField(
-                  controller: postalCodeController,
-                  label: "Postal Code",
-                  isNumber: true,
-                ),
-                SizedBox(height: getProportionateScreenHeight(12)),
-                _buildTextField(
-                  controller: addressLabelController,
-                  label: "Address Label",
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTextField(
+                controller: recipientNameController,
+                label: "Recipient Name",
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: fullAddressController,
+                label: "Full Address",
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: postalCodeController,
+                label: "Postal Code",
+                isNumber: true,
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: addressLabelController,
+                label: "Address Label",
+              ),
+            ],
           ),
-        ),
-        actionsPadding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(16),
-          vertical: getProportionateScreenHeight(8),
         ),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppConstants.greyColor7,
-                    padding: EdgeInsets.symmetric(
-                      vertical: getProportionateScreenHeight(14),
-                    ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppConstants.greyColor3),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          getProportionateScreenHeight(10)),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Cancel",
                     style: TextStyle(
-                      fontSize: getProportionateScreenHeight(14),
+                      fontSize: 14,
                       color: AppConstants.clrBlackFont,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-              SizedBox(width: getProportionateScreenWidth(16)),
+              const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
@@ -166,19 +167,18 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppConstants.mainColor,
-                    padding: EdgeInsets.symmetric(
-                      vertical: getProportionateScreenHeight(14),
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          getProportionateScreenHeight(10)),
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    elevation: 3,
                   ),
-                  child: Text(
+                  child: const Text(
                     "Save",
                     style: TextStyle(
-                      fontSize: getProportionateScreenHeight(14),
+                      fontSize: 14,
                       color: Colors.white,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -190,7 +190,6 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
     );
   }
 
-
   void _showAddAddressDialog() {
     final recipientNameController = TextEditingController();
     final fullAddressController = TextEditingController();
@@ -201,81 +200,69 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(getProportionateScreenHeight(16)),
+          borderRadius: BorderRadius.circular(20),
         ),
-        title: Text(
-          "Add Address",
+        title: const Text(
+          "Add New Address",
           style: TextStyle(
-            fontSize: getProportionateScreenHeight(18),
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppConstants.clrBlackFont,
+            color: AppConstants.mainColor,
           ),
           textAlign: TextAlign.center,
         ),
         content: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(8),
-              vertical: getProportionateScreenHeight(8),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTextField(
-                  controller: recipientNameController,
-                  label: "Recipient Name",
-                ),
-                SizedBox(height: getProportionateScreenHeight(12)),
-                _buildTextField(
-                  controller: fullAddressController,
-                  label: "Full Address",
-                ),
-                SizedBox(height: getProportionateScreenHeight(12)),
-                _buildTextField(
-                  controller: postalCodeController,
-                  label: "Postal Code",
-                  isNumber: true,
-                ),
-                SizedBox(height: getProportionateScreenHeight(12)),
-                _buildTextField(
-                  controller: addressLabelController,
-                  label: "Address Label",
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTextField(
+                controller: recipientNameController,
+                label: "Recipient Name",
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: fullAddressController,
+                label: "Full Address",
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: postalCodeController,
+                label: "Postal Code",
+                isNumber: true,
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: addressLabelController,
+                label: "Address Label",
+              ),
+            ],
           ),
-        ),
-        actionsPadding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(16),
-          vertical: getProportionateScreenHeight(8),
         ),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppConstants.greyColor7,
-                    padding: EdgeInsets.symmetric(
-                      vertical: getProportionateScreenHeight(14),
-                    ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppConstants.greyColor3),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          getProportionateScreenHeight(10)),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Cancel",
                     style: TextStyle(
-                      fontSize: getProportionateScreenHeight(14),
+                      fontSize: 14,
                       color: AppConstants.clrBlackFont,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-              SizedBox(width: getProportionateScreenWidth(16)),
+              const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () async {
@@ -298,19 +285,18 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppConstants.mainColor,
-                    padding: EdgeInsets.symmetric(
-                      vertical: getProportionateScreenHeight(14),
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          getProportionateScreenHeight(10)),
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    elevation: 3,
                   ),
-                  child: Text(
+                  child: const Text(
                     "Add",
                     style: TextStyle(
-                      fontSize: getProportionateScreenHeight(14),
+                      fontSize: 14,
                       color: Colors.white,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -322,184 +308,223 @@ class _MyAddressesPageState extends State<MyAddressesPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppConstants.clrAppBar,
+        backgroundColor: Colors.white,
+        elevation: 1,
         title: const Text(
           "My Addresses",
           style: TextStyle(
             fontFamily: AppConstants.fontInterMedium,
             fontWeight: FontWeight.bold,
+            color: AppConstants.clrBlackFont,
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppConstants.clrBlackFont),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       body: FutureBuilder<List<AddressModel>>(
         future: _fetchAddressesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                color: AppConstants.mainColor,
+              ),
+            );
           }
           if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            return Center(
+              child: Text(
+                "Error: ${snapshot.error}",
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
           }
           final addresses = snapshot.data ?? [];
           if (addresses.isEmpty) {
-            return const Center(child: Text("No addresses found."));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.location_off,
+                    size: 100,
+                    color: AppConstants.greyColor3.withOpacity(0.7),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "No Saved Addresses",
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 18,
+                      color: AppConstants.greyColor3,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
-          return ListView.builder(
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: 16),
             itemCount: addresses.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final address = addresses[index];
-              return Card(
-                margin: EdgeInsets.symmetric(
-                  vertical: getProportionateScreenHeight(8),
-                  horizontal: getProportionateScreenWidth(16),
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(getProportionateScreenHeight(10)),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(
-                      getProportionateScreenHeight(16)), // Padding utama
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      Padding(
-                        padding: EdgeInsets.only(
-                            bottom: getProportionateScreenHeight(12)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              address.addressLabel,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: getProportionateScreenHeight(16),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () async {
-                                await Provider.of<AddressProvider>(context,
-                                        listen: false)
-                                    .deleteAddress(address.id);
-                                setState(() {
-                                  _fetchAddressesFuture =
-                                      Provider.of<AddressProvider>(context,
-                                              listen: false)
-                                          .fetchAddressesByUserId(userId ?? "");
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Konten Utama
-                      Padding(
-                        padding: EdgeInsets.only(
-                            bottom: getProportionateScreenHeight(8)),
-                        child: Text(
-                          address.recipientName,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: getProportionateScreenHeight(14),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            bottom: getProportionateScreenHeight(12)),
-                        child: Text(
-                          "${address.fullAddress}, ${address.postalCode}",
-                          style: TextStyle(
-                            fontSize: getProportionateScreenHeight(12),
-                          ),
-                        ),
-                      ),
-
-                      // Footer
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(
+                              Text(
+                                address.addressLabel,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: AppConstants.mainColor,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red.shade300,
+                                ),
+                                onPressed: () async {
+                                  await Provider.of<AddressProvider>(context,
+                                          listen: false)
+                                      .deleteAddress(address.id);
+                                  setState(() {
+                                    _fetchAddressesFuture =
+                                        Provider.of<AddressProvider>(context,
+                                                listen: false)
+                                            .fetchAddressesByUserId(
+                                                userId ?? "");
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            address.recipientName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${address.fullAddress}, ${address.postalCode}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      height: 1,
+                      color: Colors.grey.shade200,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(
                                 Icons.pin_drop,
                                 color: AppConstants.mainColor,
                                 size: 16,
                               ),
-                              SizedBox(width: getProportionateScreenWidth(4)),
+                              const SizedBox(width: 4),
                               Text(
-                                "Sudah Pinpoint",
+                                "Location Pinpointed",
                                 style: TextStyle(
-                                  fontSize: getProportionateScreenHeight(12),
+                                  fontSize: 12,
                                   color: AppConstants.mainColor,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
                           ),
-                          OutlinedButton(
+                          ElevatedButton(
                             onPressed: () => _showEditAddressDialog(address),
-                            style: OutlinedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(12),
-                                vertical: getProportionateScreenHeight(8),
-                              ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
                               side: BorderSide(
-                                color: AppConstants.mainColor,
+                                color: AppConstants.mainColor.withOpacity(0.7),
+                                width: 1.5,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    getProportionateScreenHeight(6)),
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              elevation: 0,
                             ),
-                            child: Text(
-                              "Ubah Alamat",
+                            child: const Text(
+                              "Edit Address",
                               style: TextStyle(
-                                fontSize: getProportionateScreenHeight(12),
+                                fontSize: 12,
                                 color: AppConstants.mainColor,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
-
             },
           );
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(getProportionateScreenHeight(16)),
-        child: ElevatedButton(
-          onPressed: _showAddAddressDialog,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppConstants.clrBlackFont,
-            padding: EdgeInsets.symmetric(
-              vertical: getProportionateScreenHeight(16),
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(getProportionateScreenHeight(12)),
-            ),
-          ),
-          child: const Text(
-            "Add Address",
-            style: TextStyle(color: AppConstants.clrBlue),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showAddAddressDialog,
+        backgroundColor: AppConstants.mainColor,
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          "Add Address",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

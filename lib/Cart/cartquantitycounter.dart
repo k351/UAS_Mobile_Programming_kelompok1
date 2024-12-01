@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/constants.dart';
 
 class Cartquantitycounter extends StatefulWidget {
   final String id;
@@ -39,6 +40,7 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
       cartProvider.increase(id);
       cartDatabaseService.updateCartQuantity(
           id, quantities['cartQuantity']! + 1);
+      cartProvider.increaseCartQuantity(1);
     }
   }
 
@@ -49,6 +51,7 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
       cartProvider.decrease(id);
       cartDatabaseService.updateCartQuantity(
           id, quantities['cartQuantity']! - 1);
+      cartProvider.decreaseCartQuantity(1);
     }
   }
 
@@ -72,7 +75,7 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
           child: const Icon(
             Icons.remove_circle_outline,
             size: 22,
-            color: Colors.grey,
+            color: AppConstants.greyColor3,
           ),
         ),
         Padding(
@@ -89,7 +92,7 @@ class _CartquantitycounterState extends State<Cartquantitycounter> {
           child: const Icon(
             Icons.add_circle_outline,
             size: 22,
-            color: Colors.grey,
+            color: AppConstants.greyColor3,
           ),
         ),
       ],

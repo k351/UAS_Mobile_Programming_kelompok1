@@ -37,7 +37,7 @@ class HistoryDetailPage extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [
                   AppConstants.clrBlue.withOpacity(0.1),
-                  AppConstants.clrBlue.withOpacity(0.2)
+                  AppConstants.clrBlue.withOpacity(0.2),
                 ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
@@ -65,9 +65,7 @@ class HistoryDetailPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Text(
                       'Full Address',
                       style: TextStyle(
@@ -134,41 +132,54 @@ class HistoryDetailPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    title: Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppConstants.clrBlack,
-                        fontSize: 16,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Column(
+                    title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 4),
                         Text(
-                          formatCurrency(item.price),
+                          item.title,
                           style: const TextStyle(
-                            color: AppConstants.clrBlue,
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            color: AppConstants.clrBlack,
+                            fontSize: 16,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 8),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Icon(
-                              Icons.shopping_basket,
-                              size: 16,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(width: 5),
                             Text(
-                              'Quantity: ${item.quantity}',
-                              style: TextStyle(
-                                color: Colors.grey[700],
+                              formatCurrency(item.price),
+                              style: const TextStyle(
+                                color: AppConstants.clrBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppConstants.clrBlue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.shopping_basket,
+                                    size: 16,
+                                    color: AppConstants.clrBlue,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Qty: ${item.quantity}',
+                                    style: const TextStyle(
+                                      color: AppConstants.clrBlue,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -258,49 +269,24 @@ class HistoryDetailPage extends StatelessWidget {
                     ],
                   ),
 
-                // Existing Total Amount Row
+                // Total Amount Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Total Items',
-                          style: TextStyle(
-                            color: AppConstants.clrBlue,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Text(
-                          '${transaction.transactionList.length}',
-                          style: const TextStyle(
-                            color: AppConstants.clrBlue,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      'Total Amount',
+                      style: TextStyle(
+                        color: AppConstants.clrBlue,
+                        fontSize: 16,
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Text(
-                          'Total Amount',
-                          style: TextStyle(
-                            color: AppConstants.clrBlue,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Text(
-                          formatCurrency(transaction.amount),
-                          style: const TextStyle(
-                            color: AppConstants.clrBlue,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      formatCurrency(transaction.amount),
+                      style: const TextStyle(
+                        color: AppConstants.clrBlue,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),

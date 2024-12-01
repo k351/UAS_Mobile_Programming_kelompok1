@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/cartitem.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
+import 'package:uas_flutter/constants.dart';
+import 'package:uas_flutter/utils/size_config.dart';
 
 class Cartitemlist extends StatefulWidget {
   const Cartitemlist({
@@ -60,8 +62,27 @@ class _CartitemlistState extends State<Cartitemlist> {
             builder: (context, cartProvider, child) {
               final cartItems = cartProvider.cartItems;
               if (cartItems.isEmpty) {
-                return const Center(
-                  child: Text("No items in your cart"),
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.remove_shopping_cart,
+                        size: 100,
+                        color: AppConstants.clrBackground,
+                      ),
+                      SizedBox(height: getProportionateScreenHeight(8)),
+                      const Text(
+                        "Your cart is empty",
+                        style: TextStyle(
+                          fontFamily: AppConstants.fontInterMedium,
+                          fontWeight: FontWeight.bold,
+                          color: AppConstants.greyColor3,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               }
               return ListView.builder(

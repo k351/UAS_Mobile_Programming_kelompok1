@@ -62,7 +62,7 @@ class AddressCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? AppConstants.clrBlue : Colors.black54,
+                      color: isSelected ? AppConstants.clrBlue : AppConstants.clrBlack,
                     ),
                   ),
                 ),
@@ -72,7 +72,7 @@ class AddressCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? AppConstants.clrBlue : Colors.black87,
+                    color: isSelected ? AppConstants.clrBlue : AppConstants.clrBlack,
                   ),
                 ),
               ],

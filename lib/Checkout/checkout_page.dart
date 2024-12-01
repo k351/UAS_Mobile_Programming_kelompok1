@@ -18,6 +18,7 @@ import 'package:uas_flutter/history/models/transaction.dart';
 import 'package:uas_flutter/history/models/transaction_list.dart';
 import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:uas_flutter/settings/my_address_page.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 
@@ -37,8 +38,13 @@ class PaymentMethod {
   PaymentMethod(this.methodName, this.icon);
 }
 
-Future<void> makePayment(BuildContext context, double totalBelanja,
-    List<Map<String, dynamic>> cartItems) async {
+Future<void> makePayment(
+    BuildContext context,
+    double totalBelanja,
+    List<Map<String, dynamic>> cartItems,
+    String selectedAddress,
+    num discountAmount,
+    num protectionFee) async {
   try {
     // Fetch user's balance
     double saldoUser = await FirebaseTopup.getSaldoFromFirestore();
@@ -74,6 +80,9 @@ Future<void> makePayment(BuildContext context, double totalBelanja,
       date: DateTime.now().toString(),
       amount: totalBelanja,
       quantity: cartItems.length,
+      address: selectedAddress,
+      discountAmount: discountAmount,
+      protectionFee: protectionFee,
       transactionList: cartItems.map((item) {
         return TransactionList(
           productId: item['productId'],
@@ -156,9 +165,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
     super.initState();
     final addressProvider = context.read<AddressProvider>();
     final userId = FirebaseAuth.instance.currentUser?.uid;
+    final checkoutProvider =
+        Provider.of<CheckoutProvider>(context, listen: false);
+
     if (userId != null) {
       addressProvider.fetchAddressesByUserId(userId);
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkoutProvider.resetCheckout();
+    });
   }
 
   void _showCouponBottomSheet(BuildContext context) {
@@ -253,9 +268,37 @@ class _CheckoutPageState extends State<CheckoutPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
               child: addressProvider.addresses.isEmpty
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator(), // Show loading when addresses are empty
+                  ? InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(
+                            context, MyAddressesPage.routeName);
+                      },
+                      child: const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.location_on, // Icon related to address
+                              size: 30,
+                              color: AppConstants
+                                  .greyColor3, // Use your specific color constant
+                            ),
+                            SizedBox(width: 10),
+                            const Text(
+                              "Alamat user kosong",
+                              style: TextStyle(
+                                fontFamily: AppConstants
+                                    .fontInterMedium, // Use the desired font family
+                                fontWeight: FontWeight.bold,
+                                color: AppConstants
+                                    .greyColor3, // Adjust to the correct color
+                                fontSize:
+                                    20, // Adjust the size as per your requirement
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     )
                   : GestureDetector(
                       onTap: () {
@@ -408,243 +451,324 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
 
             const CustomDivider(),
+            // GestureDetector(
+            //   onTap: () {},
+            //   child: Container(
+            //     padding:
+            //         const EdgeInsets.only(top: 15, left: 15, bottom: 15),
+            //     decoration: BoxDecoration(
+            //       color: const Color.fromARGB(255, 125, 176, 253),
+            //       borderRadius: BorderRadius.circular(8),
+            //       border: Border.all(color: Colors.grey.shade300),
+            //     ),
+            //     child: const Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             Row(
+            //               children: [
+            //                 Text(
+            //                   'Pilih Opsi Pengiriman',
+            //                   style: TextStyle(
+            //                       fontWeight: FontWeight.bold,
+            //                       fontSize: 15,
+            //                       color: Colors.white),
+            //                 )
+            //               ],
+            //             ),
+            //           ],
+            //         ),
+            //         Icon(
+            //           Icons.arrow_forward_ios,
+            //           size: 18,
+            //           color: Colors.white,
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // )
             // Item Section
             Padding(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  // Header Section with Cart Icon and Title
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.shopping_cart_outlined,
-                        color: AppConstants.clrBlue,
-                        size: 18,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppConstants.clrBlue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          Icons.shopping_cart_outlined,
+                          color: AppConstants.clrBlue,
+                          size: 24,
+                        ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       Text(
                         'CartiShop',
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: checkedItems.length,
-                      itemBuilder: (context, index) {
-                        return ProductItem(
-                          item: checkedItems[index],
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const Divider(
-                          color: Colors.grey,
-                          thickness: 1, // Adjust thickness if necessary
-                        );
-                      },
+
+                  const SizedBox(height: 16),
+
+                  // Product List Container
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade200,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                          spreadRadius: 2,
+                        )
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: checkedItems.length,
+                          separatorBuilder: (context, index) => Divider(
+                            color: Colors.grey.shade200,
+                            height: 1,
+                            indent: 16,
+                            endIndent: 16,
+                          ),
+                          itemBuilder: (context, index) {
+                            return ProductItem(
+                              item: checkedItems[index],
+                            );
+                          },
+                        ),
+                        // Total Items Summary
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Total Items',
+                                style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Text(
+                                '${checkedItems.length} Item',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 
-                  // Updated Row layout
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
+                  // Protection Option
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isChecked
+                          ? AppConstants.clrBlue.withOpacity(0.05)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isChecked
+                            ? AppConstants.clrBlue.withOpacity(0.3)
+                            : Colors.grey.shade200,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isChecked
+                                ? AppConstants.clrBlue.withOpacity(0.1)
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.shield_moon_outlined,
+                            color:
+                                isChecked ? AppConstants.clrBlue : Colors.grey,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.shield_moon_outlined,
-                                    color: AppConstants.greyColor,
-                                  ),
-                                  TextButton(
-                                    onPressed: () {},
-                                    child: const Text(
-                                      'Proteksi Kerusakan +',
-                                      style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        color: AppConstants.greyColor,
-                                      ),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  const Text(
-                                    '(Rp4.500)',
-                                    style: TextStyle(
-                                      color: AppConstants.greyColor,
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                'Proteksi Kerusakan',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: isChecked
+                                      ? Colors.black87
+                                      : Colors.black54,
+                                ),
+                              ),
+                              Text(
+                                'Lindungi barang anda',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isChecked
+                                      ? Colors.black54
+                                      : Colors.grey.shade600,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      Checkbox(
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value ?? false;
-                          });
-                          checkoutProvider.toggleProtection(isChecked);
-                        },
-                        fillColor: WidgetStateProperty.resolveWith<Color>(
-                          (Set<WidgetState> states) {
-                            if (states.contains(WidgetState.selected)) {
-                              return AppConstants.clrBlue;
-                            }
-                            return Colors.white;
+                        Text(
+                          'Rp4.500',
+                          style: TextStyle(
+                            color: isChecked
+                                ? Colors.black87
+                                : Colors.grey.shade700,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Checkbox(
+                          value: isChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isChecked = value ?? false;
+                            });
+                            checkoutProvider.toggleProtection(isChecked);
                           },
+                          activeColor: AppConstants.clrBlue,
+                          checkColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                         ),
-                        checkColor: Colors.white,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding:
-                          const EdgeInsets.only(top: 15, left: 15, bottom: 15),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 125, 176, 253),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'Pilih Opsi Pengiriman',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: Colors.white),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 18,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
-            const Divider(),
-            // Pilih Metode Pembayaran Section
+            const Divider(color: Colors.grey, height: 1),
+            // Payment Method Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'Pilih Metode Pembayaran',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
-                  const SizedBox(height: 10),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: showAllMethods ? paymentMethods.length : 2,
-                    separatorBuilder: (context, index) =>
-                        const Divider(color: Colors.grey),
-                    itemBuilder: (context, index) {
-                      PaymentMethod method = paymentMethods[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 24, // Adjust the radius as needed
-                          backgroundColor: Colors.blue.shade100,
-                          child: Icon(
-                            method.icon,
-                            color: AppConstants.clrBlue,
-                            size: 28,
+                  SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade200,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        )
+                      ],
+                    ),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: showAllMethods ? paymentMethods.length : 2,
+                      separatorBuilder: (context, index) => Divider(
+                        color: Colors.grey.shade300,
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      itemBuilder: (context, index) {
+                        PaymentMethod method = paymentMethods[index];
+                        return ListTile(
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          leading: CircleAvatar(
+                            radius: 28,
+                            backgroundColor: Colors.blue.shade50,
+                            child: Icon(
+                              method.icon,
+                              color: AppConstants.clrBlue,
+                              size: 32,
+                            ),
                           ),
-                        ),
-                        title: Text(method.methodName),
-                        trailing: Radio<String>(
-                          value: method.methodName,
-                          groupValue: selectedPaymentMethod,
-                          onChanged: (String? value) {
+                          title: Text(
+                            method.methodName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          trailing: Radio<String>(
+                            value: method.methodName,
+                            groupValue: selectedPaymentMethod,
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedPaymentMethod = value;
+                              });
+                            },
+                          ),
+                          onTap: () {
                             setState(() {
-                              selectedPaymentMethod = value;
+                              selectedPaymentMethod = method.methodName;
                             });
                           },
-                        ),
-                        onTap: () {
-                          setState(() {
-                            selectedPaymentMethod = method.methodName;
-                          });
-                        },
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                  // Tombol "Lihat Lebih Banyak" atau "Tutup" tergantung state showAllMethods
-                  if (!showAllMethods) // Hanya tampilkan tombol "Lihat Lebih Banyak"
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          setState(() {
-                            showAllMethods = true; // Tampilkan semua metode
-                          });
-                        },
-                        child: const Text(
-                          'Lihat Lebih Banyak',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppConstants.clrBlue,
-                            decoration: TextDecoration.underline,
-                          ),
+                  // Show More/Close Button
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          showAllMethods = !showAllMethods;
+                        });
+                      },
+                      child: Text(
+                        showAllMethods ? 'Tutup' : 'Lihat Lebih Banyak',
+                        style: const TextStyle(
+                          color: AppConstants.clrBlue,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                  if (showAllMethods)
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          setState(() {
-                            showAllMethods =
-                                false; // Sembunyikan metode tambahan
-                          });
-                        },
-                        child: const Text(
-                          'Tutup',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppConstants.clrBlue,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 10),
 
             const CustomDivider(),
 
@@ -820,33 +944,81 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     backgroundColor: AppConstants.clrBlue,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: () {
-                    if (selectedPaymentMethod == null) {
-                      // Show a warning to the user
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Pilih Metode Pembayaran'),
-                            content: const Text(
-                                'Silakan pilih metode pembayaran sebelum melanjutkan.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ],
+                  onPressed: addressProvider.addresses.isEmpty
+                      ? () {
+                          // Tampilkan Snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Isi dulu alamat sebelum melanjutkan.'),
+                            ),
                           );
+                        }
+                      : () {
+                          if (selectedPaymentMethod == null) {
+                            // Show a warning to the user
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Pilih Metode Pembayaran'),
+                                  content: const Text(
+                                      'Silakan pilih metode pembayaran sebelum melanjutkan.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else if (checkoutProvider.selectedAddress == null) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Pilih Alamat Anda'),
+                                  content: const Text(
+                                      'Silakan pilih alamat pengiriman anda sebelum melanjutkan.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            final address = addressProvider.addresses
+                                .firstWhere((address) =>
+                                    address.fullAddress ==
+                                    checkoutProvider.selectedAddress);
+
+                            String result =
+                                '${address.fullAddress}, ${address.postalCode}';
+
+                            final protectionFee =
+                                checkoutProvider.isProtectionChecked
+                                    ? checkoutProvider.protectionFee
+                                    : 0;
+                            // Proceed with the payment
+                            makePayment(
+                              context,
+                              totalBelanja,
+                              checkedItems,
+                              result,
+                              checkoutProvider.discountValue,
+                              protectionFee,
+                            );
+                            Navigator.pushNamed(context, Myhomepage.routeName);
+                          }
                         },
-                      );
-                    } else {
-                      // Proceed with the payment
-                      makePayment(context, totalBelanja, checkedItems);
-                      Navigator.pushNamed(context, Myhomepage.routeName);
-                    }
-                  },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

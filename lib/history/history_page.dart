@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
@@ -18,9 +19,10 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     Future.microtask(() {
       Provider.of<TransactionProvider>(context, listen: false)
-          .fetchTransactions();
+          .fetchTransactions(userId);
     });
   }
 

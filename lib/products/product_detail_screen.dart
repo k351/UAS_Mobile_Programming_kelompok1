@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/constants.dart';
-import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/products/widget/image_slider.dart';
 import 'package:uas_flutter/products/widget/product_detail_appbar.dart';
 import 'package:uas_flutter/products/models/product.dart';
@@ -13,37 +14,49 @@ import 'package:uas_flutter/products/widget/product_rating_stock.dart';
 import 'package:uas_flutter/products/widget/product_description.dart';
 import 'package:uas_flutter/products/widget/add_to_cart_button.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
- 
+
 class DetailScreen extends StatefulWidget {
   static const String routeName = 'details';
   final Product product;
   final String productId;
   const DetailScreen(
       {super.key, required this.product, required this.productId});
- 
+
   @override
   State<DetailScreen> createState() => _DetailScreenState();
 }
- 
+
 class _DetailScreenState extends State<DetailScreen> {
   int currentImage = 0;
   int quantity = 1;
- 
+  bool _isProcessing = false;
+  final CartDatabaseService cartDatabaseService = CartDatabaseService();
+
   Future<void> addCartItemToCart(BuildContext context) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
-      await cartDatabaseService.addCartItemToCart(
+      final cartProvider = Provider.of<Cartprovider>(context, listen: false);
+
+      final message = await cartDatabaseService.addCartItemToCart(
           userId, widget.productId, quantity);
+      if (message != "Stock limit Reached") {
+        cartProvider.increaseCartQuantity(quantity);
+      }
+
       print('Item added to cart successfully');
-      SnackbarUtils.showSnackbarAtTop(context, 'Item added to cart');
+      SnackbarUtils.showSnackbar(context, message);
     } catch (e) {
       print('Failed to add item to cart: $e');
-      SnackbarUtils.showSnackbarAtTop(context, 'Failed to add item to cart',
+      SnackbarUtils.showSnackbar(context, 'Failed to add item to cart',
           backgroundColor: AppConstants.clrRed);
+    } finally {
+      _isProcessing = false;
     }
   }
- 
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);

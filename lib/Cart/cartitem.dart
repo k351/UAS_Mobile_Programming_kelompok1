@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/CartQuantityCounter.dart';
 import 'package:uas_flutter/Cart/cartcheckbox.dart';
 import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
+import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
@@ -35,10 +36,11 @@ class Cartitem extends StatelessWidget {
       children: [
         ListTile(
           subtitle: Container(
-            height: 110,
+            height: 126,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: AppConstants.clrBackground,
+                borderRadius: BorderRadius.circular(10)),
             child: Row(
               children: [
                 Cartcheckbox(
@@ -47,7 +49,7 @@ class Cartitem extends StatelessWidget {
                 Container(
                   height: 70,
                   width: 70,
-                  margin: EdgeInsets.only(right: 10),
+                  margin: const EdgeInsets.only(right: 10),
                   child: Image.asset(
                     data['image'],
                     fit: BoxFit.fitHeight,
@@ -83,7 +85,9 @@ class Cartitem extends StatelessWidget {
                             child: Text(
                               data['title'],
                               style: const TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.bold),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: AppConstants.fontInterMedium),
                             ),
                           ),
                         ),
@@ -93,9 +97,9 @@ class Cartitem extends StatelessWidget {
                         style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey),
+                            color: AppConstants.greyColor4),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       IconButton(
                         onPressed: () =>
                             toggleWishlist(wishlistProvider, userId),
@@ -104,7 +108,7 @@ class Cartitem extends StatelessWidget {
                                   userId, data['productId'])
                               ? CupertinoIcons.heart_fill
                               : CupertinoIcons.heart,
-                          color: Colors.red,
+                          color: AppConstants.clrRed,
                         ),
                       ),
                     ],
@@ -118,14 +122,14 @@ class Cartitem extends StatelessWidget {
                     children: [
                       InkWell(
                         onTap: onDelete,
-                        child: Icon(
+                        child: const Icon(
                           Icons.delete,
-                          color: Colors.red,
+                          color: AppConstants.clrRed,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Cartquantitycounter(
-                          id: data['id'],
+                        id: data['id'],
                       )
                     ],
                   ),

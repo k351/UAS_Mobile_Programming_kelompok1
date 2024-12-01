@@ -80,6 +80,9 @@ class SettingsPageState extends State<SettingsPage> {
             backgroundColor: AppConstants.mainColor,
             expandedHeight: getProportionateScreenHeight(90),
             pinned: true,
+            iconTheme: const IconThemeData(
+              color: Colors.white, // Change back arrow color to white
+            ),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
@@ -119,7 +122,9 @@ class SettingsPageState extends State<SettingsPage> {
                           'Set shopping delivery address'),
                       _buildSettingsItem(Icons.shopping_cart, 'My Cart',
                           'Add, remove products and move to checkout'),
-                      _buildSettingsItem(Icons.shopping_bag, 'My Orders And History',
+                      _buildSettingsItem(
+                          Icons.shopping_bag,
+                          'My Orders And History',
                           'In-progress and Completed Orders'),
                       _buildSettingsItem(
                           Icons.account_balance,
@@ -252,14 +257,14 @@ class SettingsPageState extends State<SettingsPage> {
                   ),
                   Text(
                     provider.profile?.email ?? 'No Email',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppConstants.clrBackground,
                       fontFamily: AppConstants.fontInterRegular,
                     ),
                   ),
                   Text(
                     provider.profile?.phone ?? 'No Number',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppConstants.clrBackground,
                       fontFamily: AppConstants.fontInterRegular,
                     ),
@@ -384,10 +389,10 @@ class SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text(
+              child: const Text(
                 "Cancel",
                 style: TextStyle(
-                  color: AppConstants.mainColor,
+                  color: AppConstants.clrBlack,
                   fontFamily: AppConstants.fontInterMedium,
                 ),
               ),
@@ -424,8 +429,8 @@ class SettingsPageState extends State<SettingsPage> {
               child: const Text(
                 "Logout",
                 style: TextStyle(
-                  fontFamily: AppConstants.fontInterMedium,
-                ),
+                    fontFamily: AppConstants.fontInterMedium,
+                    color: AppConstants.clrBackground),
               ),
             ),
           ],

@@ -49,7 +49,7 @@ class _CouponPageState extends State<CouponPage>
     super.dispose();
   }
 
-    void _applyCoupon() async {
+  void _applyCoupon() async {
     final couponCodeToApply = _manualCouponCode?.isNotEmpty == true
         ? _manualCouponCode
         : _selectedCouponCode;
@@ -99,7 +99,7 @@ class _CouponPageState extends State<CouponPage>
                 'Kupon berhasil diterapkan! Diskon ' +
                     'Rp${NumberFormat("#,##0", "id_ID").format(checkoutProvider.discountValue)}',
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppConstants.clrBlue,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),

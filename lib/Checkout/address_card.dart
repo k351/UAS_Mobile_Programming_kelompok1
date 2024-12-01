@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import Provider to access CheckoutProvider
+import 'package:provider/provider.dart';
 import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/models/address_model.dart';
@@ -16,26 +16,30 @@ class AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the CheckoutProvider to check the selected address
     final checkoutProvider = Provider.of<CheckoutProvider>(context);
-
-    // Check if this address is the selected one
     bool isSelected = checkoutProvider.selectedAddress == address.fullAddress;
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.all(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? Colors.blue.shade100
-              : Colors.white, // Change color if selected
-          borderRadius: BorderRadius.circular(8),
+          color:
+              isSelected ? AppConstants.clrBlue.withOpacity(0.1) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-              color: isSelected
-                  ? Colors.blue.shade600
-                  : Colors.black), // Different border color if selected
+            color: isSelected ? AppConstants.clrBlue : Colors.grey.shade300,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade100,
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            )
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,36 +48,48 @@ class AddressCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Address Label
-                Text(
-                  address.addressLabel,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppConstants.clrBlue,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppConstants.clrBlue.withOpacity(0.2)
+                        : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    address.addressLabel,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? AppConstants.clrBlue : Colors.black54,
+                    ),
                   ),
                 ),
                 // Recipient Name
                 Text(
                   address.recipientName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: isSelected ? AppConstants.clrBlue : Colors.black87,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            // Full Address (Truncated with Ellipsis if needed)
+            const SizedBox(height: 10),
+            // Full Address
             Text(
               address.fullAddress,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.black,
+              style: TextStyle(
+                fontSize: 14,
+                color: isSelected ? Colors.black87 : Colors.black54,
+                height: 1.4,
               ),
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),

@@ -65,6 +65,25 @@ class HistoryDetailPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      'Full Address',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: const Color.fromARGB(255, 22, 15, 15)
+                            .withOpacity(0.7),
+                      ),
+                    ),
+                    Text(
+                      transaction.address,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: AppConstants.clrBlack,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -179,46 +198,109 @@ class HistoryDetailPage extends StatelessWidget {
                 ),
               ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                // Protection Fee Row
+                if (transaction.protectionFee != null &&
+                    transaction.protectionFee > 0)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Protection Fee',
+                            style: TextStyle(
+                              color: AppConstants.clrBlue,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            formatCurrency(transaction.protectionFee ?? 0),
+                            style: const TextStyle(
+                              color: AppConstants.clrBlue,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10), // SizedBox inside if
+                    ],
+                  ),
+
+                // Discount Value Row
+                if (transaction.discountAmount != null &&
+                    transaction.discountAmount > 0)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Discount Value',
+                            style: TextStyle(
+                              color: AppConstants.clrBlue,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            formatCurrency(transaction.discountAmount ?? 0),
+                            style: const TextStyle(
+                              color: AppConstants.clrBlue,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10), // SizedBox inside if
+                    ],
+                  ),
+
+                // Existing Total Amount Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Total Items',
-                      style: TextStyle(
-                        color: AppConstants.clrBlue,
-                        fontSize: 16,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Total Items',
+                          style: TextStyle(
+                            color: AppConstants.clrBlue,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          '${transaction.transactionList.length}',
+                          style: const TextStyle(
+                            color: AppConstants.clrBlue,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${transaction.transactionList.length}',
-                      style: const TextStyle(
-                        color: AppConstants.clrBlue,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'Total Amount',
-                      style: TextStyle(
-                        color: AppConstants.clrBlue,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      formatCurrency(transaction.amount),
-                      style: const TextStyle(
-                        color: AppConstants.clrBlue,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'Total Amount',
+                          style: TextStyle(
+                            color: AppConstants.clrBlue,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          formatCurrency(transaction.amount),
+                          style: const TextStyle(
+                            color: AppConstants.clrBlue,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

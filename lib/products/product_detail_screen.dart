@@ -36,10 +36,10 @@ class _DetailScreenState extends State<DetailScreen> {
       await cartDatabaseService.addCartItemToCart(
           userId, widget.productId, quantity);
       print('Item added to cart successfully');
-      SnackbarUtils.showSnackbarAtTop(context, 'Item added to cart');
+      SnackbarUtils.showSnackbar(context, 'Item added to cart');
     } catch (e) {
       print('Failed to add item to cart: $e');
-      SnackbarUtils.showSnackbarAtTop(context, 'Failed to add item to cart',
+      SnackbarUtils.showSnackbar(context, 'Failed to add item to cart',
           backgroundColor: AppConstants.clrRed);
     }
   }

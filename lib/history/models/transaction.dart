@@ -6,13 +6,19 @@ class Transactions {
   final List<TransactionList> transactionList;
   final num amount;
   final int quantity;
+  final num protectionFee;
+  final num discountAmount;
+  final String address;
 
   Transactions({
     required this.userId,
     required this.date,
     required this.transactionList,
     required this.amount,
-    required this.quantity
+    required this.quantity,
+    required this.address,
+    required this.protectionFee,
+    required this.discountAmount,
   });
 
   factory Transactions.fromJson(Map<String, dynamic> json) {
@@ -23,7 +29,10 @@ class Transactions {
           .map((item) => TransactionList.fromJson(item))
           .toList(),
       amount: json['amount'] as num,
-      quantity: json['quantity'] as int
+      quantity: json['quantity'] as int,
+      address: json['address'] as String,
+      protectionFee: json['protectionFee'] ?? 0,
+      discountAmount: json['discountAmount'] ?? 0,
     );
   }
 
@@ -34,6 +43,9 @@ class Transactions {
       'TransactionList': transactionList.map((item) => item.toJson()).toList(),
       'amount': amount,
       'quantity': quantity,
+      'address': address,
+      'protectionFee': protectionFee,
+      'discountAmount': discountAmount,
     };
   }
 
@@ -43,6 +55,9 @@ class Transactions {
     List<TransactionList>? transactionList,
     num? amount,
     int? quantity,
+    String? address,
+    num? protectionFee,
+    num? discountAmount,
   }) {
     return Transactions(
       userId: userId ?? this.userId,
@@ -50,6 +65,9 @@ class Transactions {
       transactionList: transactionList ?? this.transactionList,
       amount: amount ?? this.amount,
       quantity: quantity ?? this.quantity,
+      address: address ?? this.address,
+      protectionFee: protectionFee ?? this.protectionFee,
+      discountAmount: discountAmount ?? this.discountAmount,
     );
   }
 }

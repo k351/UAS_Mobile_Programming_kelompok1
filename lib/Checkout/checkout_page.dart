@@ -18,6 +18,7 @@ import 'package:uas_flutter/history/models/transaction.dart';
 import 'package:uas_flutter/history/models/transaction_list.dart';
 import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'package:uas_flutter/products/services/productdatabaseservices.dart';
+import 'package:uas_flutter/settings/my_address_page.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 
@@ -37,8 +38,13 @@ class PaymentMethod {
   PaymentMethod(this.methodName, this.icon);
 }
 
-Future<void> makePayment(BuildContext context, double totalBelanja,
-    List<Map<String, dynamic>> cartItems) async {
+Future<void> makePayment(
+    BuildContext context,
+    double totalBelanja,
+    List<Map<String, dynamic>> cartItems,
+    String selectedAddress,
+    num discountAmount,
+    num protectionFee) async {
   try {
     // Fetch user's balance
     double saldoUser = await FirebaseTopup.getSaldoFromFirestore();
@@ -74,6 +80,9 @@ Future<void> makePayment(BuildContext context, double totalBelanja,
       date: DateTime.now().toString(),
       amount: totalBelanja,
       quantity: cartItems.length,
+      address: selectedAddress,
+      discountAmount: discountAmount,
+      protectionFee: protectionFee,
       transactionList: cartItems.map((item) {
         return TransactionList(
           productId: item['productId'],
@@ -156,9 +165,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
     super.initState();
     final addressProvider = context.read<AddressProvider>();
     final userId = FirebaseAuth.instance.currentUser?.uid;
+    final checkoutProvider =
+        Provider.of<CheckoutProvider>(context, listen: false);
+
     if (userId != null) {
       addressProvider.fetchAddressesByUserId(userId);
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkoutProvider.resetCheckout();
+    });
   }
 
   void _showCouponBottomSheet(BuildContext context) {
@@ -253,9 +268,37 @@ class _CheckoutPageState extends State<CheckoutPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
               child: addressProvider.addresses.isEmpty
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator(), // Show loading when addresses are empty
+                  ? InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(
+                            context, MyAddressesPage.routeName);
+                      },
+                      child: const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.location_on, // Icon related to address
+                              size: 30,
+                              color: AppConstants
+                                  .greyColor3, // Use your specific color constant
+                            ),
+                            SizedBox(width: 10),
+                            const Text(
+                              "Alamat user kosong",
+                              style: TextStyle(
+                                fontFamily: AppConstants
+                                    .fontInterMedium, // Use the desired font family
+                                fontWeight: FontWeight.bold,
+                                color: AppConstants
+                                    .greyColor3, // Adjust to the correct color
+                                fontSize:
+                                    20, // Adjust the size as per your requirement
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     )
                   : GestureDetector(
                       onTap: () {
@@ -820,33 +863,81 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     backgroundColor: AppConstants.clrBlue,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: () {
-                    if (selectedPaymentMethod == null) {
-                      // Show a warning to the user
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Pilih Metode Pembayaran'),
-                            content: const Text(
-                                'Silakan pilih metode pembayaran sebelum melanjutkan.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ],
+                  onPressed: addressProvider.addresses.isEmpty
+                      ? () {
+                          // Tampilkan Snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Isi dulu alamat sebelum melanjutkan.'),
+                            ),
                           );
+                        }
+                      : () {
+                          if (selectedPaymentMethod == null) {
+                            // Show a warning to the user
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Pilih Metode Pembayaran'),
+                                  content: const Text(
+                                      'Silakan pilih metode pembayaran sebelum melanjutkan.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else if (checkoutProvider.selectedAddress == null) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Pilih Alamat Anda'),
+                                  content: const Text(
+                                      'Silakan pilih alamat pengiriman anda sebelum melanjutkan.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            final address = addressProvider.addresses
+                                .firstWhere((address) =>
+                                    address.fullAddress ==
+                                    checkoutProvider.selectedAddress);
+
+                            String result =
+                                '${address.fullAddress}, ${address.postalCode}';
+
+                            final protectionFee =
+                                checkoutProvider.isProtectionChecked
+                                    ? checkoutProvider.protectionFee
+                                    : 0;
+                            // Proceed with the payment
+                            makePayment(
+                              context,
+                              totalBelanja,
+                              checkedItems,
+                              result,
+                              checkoutProvider.discountValue,
+                              protectionFee,
+                            );
+                            Navigator.pushNamed(context, Myhomepage.routeName);
+                          }
                         },
-                      );
-                    } else {
-                      // Proceed with the payment
-                      makePayment(context, totalBelanja, checkedItems);
-                      Navigator.pushNamed(context, Myhomepage.routeName);
-                    }
-                  },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

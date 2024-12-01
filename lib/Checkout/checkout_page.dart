@@ -11,7 +11,6 @@ import 'package:uas_flutter/Checkout/productitem.dart';
 import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
 import 'package:uas_flutter/Checkout/toolbar.dart';
 import 'package:uas_flutter/Checkout/widgets/address_card.dart';
-import 'package:uas_flutter/Checkout/widgets/paymentmethod_section.dart';
 import 'package:uas_flutter/Checkout/widgets/protectionitemwidget.dart';
 import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 import 'package:uas_flutter/Home/home_page.dart';
@@ -197,49 +196,53 @@ class _CheckoutPageState extends State<CheckoutPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Metode Pembayaran Lainnya',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: paymentMethods.length - 2,
-                separatorBuilder: (context, index) =>
-                    const Divider(color: Colors.grey),
-                itemBuilder: (context, index) {
-                  PaymentMethod method = paymentMethods[index + 2];
-                  return ListTile(
-                    leading: Icon(method.icon, color: AppConstants.clrBlue),
-                    title: Text(method.methodName),
-                    trailing: Radio<String>(
-                      value: method.methodName,
-                      groupValue: selectedPaymentMethod,
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedPaymentMethod = value;
-                        });
-                        Navigator.pop(context);
-                      },
-                    ),
-                    onTap: () {
-                      setState(() {
-                        selectedPaymentMethod = method.methodName;
-                      });
-                      Navigator.pop(context);
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Metode Pembayaran Lainnya',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: paymentMethods.length - 2,
+                    separatorBuilder: (context, index) =>
+                        const Divider(color: Colors.grey),
+                    itemBuilder: (context, index) {
+                      PaymentMethod method = paymentMethods[index + 2];
+                      return ListTile(
+                        leading: Icon(method.icon, color: AppConstants.clrBlue),
+                        title: Text(method.methodName),
+                        trailing: Radio<String>(
+                          value: method.methodName,
+                          groupValue: selectedPaymentMethod,
+                          onChanged: (String? value) {
+                            setState(() {
+                              selectedPaymentMethod = value;
+                            });
+                            Navigator.pop(context);
+                          },
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedPaymentMethod = method.methodName;
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
                     },
-                  );
-                },
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -594,18 +597,102 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
             const Divider(color: Colors.grey, height: 1),
-            // Payment Method Section
-            PaymentMethodSection(
-              showAllMethods: showAllMethods,
-              paymentMethods: paymentMethods,
-              selectedPaymentMethod: selectedPaymentMethod,
-              onMethodSelected: (value) {
-                setState(() {
-                  selectedPaymentMethod = value;
-                });
-              },
+          // Payment Method Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Pilih Metode Pembayaran',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade200,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        )
+                      ],
+                    ),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: showAllMethods ? paymentMethods.length : 2,
+                      separatorBuilder: (context, index) => Divider(
+                        color: Colors.grey.shade300,
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      itemBuilder: (context, index) {
+                        PaymentMethod method = paymentMethods[index];
+                        return ListTile(
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          leading: CircleAvatar(
+                            radius: 28,
+                            backgroundColor: Colors.blue.shade50,
+                            child: Icon(
+                              method.icon,
+                              color: AppConstants.clrBlue,
+                              size: 32,
+                            ),
+                          ),
+                          title: Text(
+                            method.methodName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          trailing: Radio<String>(
+                            value: method.methodName,
+                            groupValue: selectedPaymentMethod,
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedPaymentMethod = value;
+                              });
+                            },
+                          ),
+                          onTap: () {
+                            setState(() {
+                              selectedPaymentMethod = method.methodName;
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  // Show More/Close Button
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          showAllMethods = !showAllMethods;
+                        });
+                      },
+                      child: Text(
+                        showAllMethods ? 'Tutup' : 'Lihat Lebih Banyak',
+                        style: const TextStyle(
+                          color: AppConstants.clrBlue,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-
             const CustomDivider(),
 
             // Promo Section

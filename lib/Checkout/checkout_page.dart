@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
-import 'package:uas_flutter/Checkout/address_card.dart';
 import 'package:uas_flutter/Checkout/coupon_page.dart';
-import 'package:uas_flutter/Checkout/custom_divider.dart';
+import 'package:uas_flutter/Checkout/payment_method.dart';
+import 'package:uas_flutter/Checkout/widgets/custom_divider.dart';
+import 'package:uas_flutter/Checkout/mapview.dart';
 import 'package:uas_flutter/Checkout/productitem.dart';
 import 'package:uas_flutter/Checkout/providers/checkoutprovider.dart';
 import 'package:uas_flutter/Checkout/toolbar.dart';
+import 'package:uas_flutter/Checkout/widgets/address_card.dart';
+import 'package:uas_flutter/Checkout/widgets/paymentmethod_section.dart';
+import 'package:uas_flutter/Checkout/widgets/protectionitemwidget.dart';
 import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 import 'package:uas_flutter/Home/home_page.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
@@ -29,13 +33,6 @@ class CheckoutPage extends StatefulWidget {
   @override
   // ignore: library_private_types_in_public_api
   _CheckoutPageState createState() => _CheckoutPageState();
-}
-
-class PaymentMethod {
-  final String methodName;
-  final IconData icon;
-
-  PaymentMethod(this.methodName, this.icon);
 }
 
 Future<void> makePayment(
@@ -319,17 +316,52 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const SizedBox(height: 24),
-                                    const Text(
-                                      'Pilih Alamat Pengiriman',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppConstants.clrBlue,
-                                      ),
+                                    const SizedBox(height: 28),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          'Pilih Alamat Pengiriman',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppConstants.clrBlue,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.location_on_outlined,
+                                            color: AppConstants.clrBlue,
+                                          ),
+                                          onPressed: () {
+                                            // When the location icon is pressed, open the map
+                                            final selectedAddress =
+                                                checkoutProvider
+                                                    .selectedAddress;
+                                            if (selectedAddress?.isNotEmpty ??
+                                                false) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) => MapView(
+                                                      address: selectedAddress),
+                                                ),
+                                              );
+                                            } else {
+                                              // Optionally show a warning if no address is selected
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                    content: Text(
+                                                        'Please select an address first')),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 16),
-                                    // List of addresses
                                     Expanded(
                                       child: ListView.builder(
                                         itemCount:
@@ -340,12 +372,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                           return AddressCard(
                                             address: address,
                                             onTap: () {
-                                              // Set the selected address in the provider
                                               checkoutProvider
                                                   .setSelectedAddress(
                                                       address.fullAddress);
-                                              Navigator.pop(
-                                                  context); // Close the bottom sheet after selection
                                             },
                                           );
                                         },
@@ -454,44 +483,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
 
             const CustomDivider(),
-            // GestureDetector(
-            //   onTap: () {},
-            //   child: Container(
-            //     padding:
-            //         const EdgeInsets.only(top: 15, left: 15, bottom: 15),
-            //     decoration: BoxDecoration(
-            //       color: const Color.fromARGB(255, 125, 176, 253),
-            //       borderRadius: BorderRadius.circular(8),
-            //       border: Border.all(color: Colors.grey.shade300),
-            //     ),
-            //     child: const Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       children: [
-            //         Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           children: [
-            //             Row(
-            //               children: [
-            //                 Text(
-            //                   'Pilih Opsi Pengiriman',
-            //                   style: TextStyle(
-            //                       fontWeight: FontWeight.bold,
-            //                       fontSize: 15,
-            //                       color: Colors.white),
-            //                 )
-            //               ],
-            //             ),
-            //           ],
-            //         ),
-            //         Icon(
-            //           Icons.arrow_forward_ios,
-            //           size: 18,
-            //           color: Colors.white,
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // )
+
             // Item Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -508,14 +500,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         padding: const EdgeInsets.all(8),
-                        child: Icon(
+                        child: const Icon(
                           Icons.shopping_cart_outlined,
                           color: AppConstants.clrBlue,
                           size: 24,
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Text(
+                      const Text(
                         'CartiShop',
                         style: TextStyle(
                           fontSize: 20,
@@ -576,7 +568,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               ),
                               Text(
                                 '${checkedItems.length} Item',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black87,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -589,188 +581,29 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
 
                   // Protection Option
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isChecked
-                          ? AppConstants.clrBlue.withOpacity(0.05)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isChecked
-                            ? AppConstants.clrBlue.withOpacity(0.3)
-                            : Colors.grey.shade200,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: isChecked
-                                ? AppConstants.clrBlue.withOpacity(0.1)
-                                : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.shield_moon_outlined,
-                            color:
-                                isChecked ? AppConstants.clrBlue : Colors.grey,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Proteksi Kerusakan',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isChecked
-                                      ? Colors.black87
-                                      : Colors.black54,
-                                ),
-                              ),
-                              Text(
-                                'Lindungi barang anda',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: isChecked
-                                      ? Colors.black54
-                                      : Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          'Rp4.500',
-                          style: TextStyle(
-                            color: isChecked
-                                ? Colors.black87
-                                : Colors.grey.shade700,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Checkbox(
-                          value: isChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              isChecked = value ?? false;
-                            });
-                            checkoutProvider.toggleProtection(isChecked);
-                          },
-                          activeColor: AppConstants.clrBlue,
-                          checkColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  ProtectionItemWidget(
+                    isChecked: isChecked,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        isChecked = value ?? false;
+                      });
+                      checkoutProvider.toggleProtection(isChecked);
+                    },
+                  )
                 ],
               ),
             ),
             const Divider(color: Colors.grey, height: 1),
             // Payment Method Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Pilih Metode Pembayaran',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade200,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        )
-                      ],
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: showAllMethods ? paymentMethods.length : 2,
-                      separatorBuilder: (context, index) => Divider(
-                        color: Colors.grey.shade300,
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
-                      ),
-                      itemBuilder: (context, index) {
-                        PaymentMethod method = paymentMethods[index];
-                        return ListTile(
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          leading: CircleAvatar(
-                            radius: 28,
-                            backgroundColor: Colors.blue.shade50,
-                            child: Icon(
-                              method.icon,
-                              color: AppConstants.clrBlue,
-                              size: 32,
-                            ),
-                          ),
-                          title: Text(
-                            method.methodName,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          trailing: Radio<String>(
-                            value: method.methodName,
-                            groupValue: selectedPaymentMethod,
-                            onChanged: (String? value) {
-                              setState(() {
-                                selectedPaymentMethod = value;
-                              });
-                            },
-                          ),
-                          onTap: () {
-                            setState(() {
-                              selectedPaymentMethod = method.methodName;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  // Show More/Close Button
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          showAllMethods = !showAllMethods;
-                        });
-                      },
-                      child: Text(
-                        showAllMethods ? 'Tutup' : 'Lihat Lebih Banyak',
-                        style: const TextStyle(
-                          color: AppConstants.clrBlue,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            PaymentMethodSection(
+              showAllMethods: showAllMethods,
+              paymentMethods: paymentMethods,
+              selectedPaymentMethod: selectedPaymentMethod,
+              onMethodSelected: (value) {
+                setState(() {
+                  selectedPaymentMethod = value;
+                });
+              },
             ),
 
             const CustomDivider(),
@@ -874,7 +707,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
 
             const CustomDivider(),
-            // Summary Section
             // Summary Section
             Padding(
               padding: const EdgeInsets.all(15),

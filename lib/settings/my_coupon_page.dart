@@ -11,7 +11,7 @@ class MyCouponsPage extends StatelessWidget {
     SizeConfig.init(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'My Coupons',
           style: TextStyle(
             fontFamily: AppConstants.fontInterMedium,

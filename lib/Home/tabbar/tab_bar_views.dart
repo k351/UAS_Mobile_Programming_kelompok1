@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
 import 'package:uas_flutter/constants.dart';
@@ -13,17 +14,26 @@ import 'package:provider/provider.dart';
 class ItemTabs extends StatelessWidget {
   final Product product;
   final String productId;
+  bool _isProcessing = false;
 
-  const ItemTabs({super.key, required this.product, required this.productId});
+  ItemTabs({super.key, required this.product, required this.productId});
 
   Future<void> addCartItemToCart(BuildContext context) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
-      await cartDatabaseService.addCartItemToCart(userId, productId, 1);
+      final cartProvider = Provider.of<Cartprovider>(context, listen: false);
+      final message =
+          await cartDatabaseService.addCartItemToCart(userId, productId, 1);
+      if (message != "Stock limit Reached") {
+        cartProvider.increaseCartQuantity(1);
+      }
+
       SnackbarUtils.showSnackbar(
         context,
-        'Item added to cart',
+        message,
       );
     } catch (e) {
       SnackbarUtils.showSnackbar(
@@ -31,6 +41,8 @@ class ItemTabs extends StatelessWidget {
         'Failed to add item to cart',
         backgroundColor: AppConstants.clrRed,
       );
+    } finally {
+      _isProcessing = false;
     }
   }
 

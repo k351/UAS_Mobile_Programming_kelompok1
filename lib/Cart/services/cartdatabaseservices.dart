@@ -187,32 +187,38 @@ class CartDatabaseService {
     }
   }
 
-  Future<void> addCartItemToCart(
+  Future<String> addCartItemToCart(
       String userId, String productId, int quantity) async {
     try {
       Product? product =
           await ProductDatabaseService().fetchProductById(productId);
+
       if (product != null) {
         Map<String, dynamic> cart = await fetchCartByUserId(userId, true);
+
         List<Map<String, dynamic>> cartItems =
             await fetchCartItemsbyCartId(cart['id'], true);
+
         List<Map<String, dynamic>> matchingCartItems = cartItems.where((item) {
           CartItem cartItem = item['cartItem'];
           return cartItem.productId == productId;
         }).toList();
+
         if (matchingCartItems.isNotEmpty) {
           Map<String, dynamic> productExistsAtCart = matchingCartItems.first;
           String existingCartItemId = productExistsAtCart['id'];
           CartItem existingCartItem = productExistsAtCart['cartItem'];
           int newQuantity = existingCartItem.cartQuantity + quantity;
           int availableQuantity = product.quantity;
+
           if (newQuantity > availableQuantity) {
-            newQuantity = availableQuantity;
-            print('Quantity limited to available stock: $availableQuantity');
+            return ('Stock limit Reached');
+          } else {
+            await _cartItemsRef
+                .doc(existingCartItemId)
+                .update({'cartQuantity': newQuantity});
+            return ('Updated cart item');
           }
-          await _cartItemsRef
-              .doc(existingCartItemId)
-              .update({'cartQuantity': newQuantity});
         } else {
           String newCartItemId = _cartItemsRef.doc().id;
           CartItem newCartItem = CartItem(
@@ -229,6 +235,7 @@ class CartDatabaseService {
               .update({
             'cartList': FieldValue.arrayUnion([newCartItemId]),
           });
+          return ('Added item to cart');
         }
       } else {
         throw Exception("Product not found.");

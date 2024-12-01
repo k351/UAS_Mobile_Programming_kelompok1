@@ -96,6 +96,18 @@ class Cartprovider extends ChangeNotifier {
     }
   }
 
+  void removeItems(List<String> ids) {
+    _cartItems.removeWhere((item) {
+      if (ids.contains(item['id'])) {
+        _cartQuantity -= item['cartQuantity'] as int ?? 0;
+        return true;
+      }
+      return false;
+    });
+    calculateTotal();
+    notifyListeners();
+  }
+
   void updateScreen() {
     notifyListeners();
   }

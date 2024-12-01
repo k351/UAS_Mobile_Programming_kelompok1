@@ -22,11 +22,15 @@ class ItemTabs extends StatelessWidget {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
       final cartProvider = Provider.of<Cartprovider>(context, listen: false);
-      await cartDatabaseService.addCartItemToCart(userId, productId, 1);
-      cartProvider.increaseCartQuantity(1);
+      final message =
+          await cartDatabaseService.addCartItemToCart(userId, productId, 1);
+      if (message != "Stock limit Reached") {
+        cartProvider.increaseCartQuantity(1);
+      }
+
       SnackbarUtils.showSnackbar(
         context,
-        'Item added to cart',
+        message,
       );
     } catch (e) {
       SnackbarUtils.showSnackbar(

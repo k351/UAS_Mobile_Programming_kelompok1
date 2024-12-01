@@ -10,13 +10,14 @@ class TransactionProvider with ChangeNotifier {
   List<Transactions> get transactions => _transactions;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchTransactions() async {
+  Future<void> fetchTransactions(userId) async {
     if (_transactions.isEmpty) {
       _isLoading = true;
       notifyListeners();
 
       try {
-        _transactions = await _transactionService.fetchTransactions();
+        _transactions = await _transactionService.fetchTransactions(userId);
+        print(_transactions);
       } catch (e) {
         debugPrint('Error fetching transactions: $e');
       } finally {

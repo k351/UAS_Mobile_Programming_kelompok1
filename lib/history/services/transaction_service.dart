@@ -12,6 +12,9 @@ class TransactionService {
         'date': transaction.date,
         'amount': transaction.amount,
         'quantity': transaction.quantity,
+        'address': transaction.address,
+        'discountAmount': transaction.discountAmount,
+        'protectionFee': transaction.protectionFee,
         'transactionList': transaction.transactionList
             .map((item) => {
                   'productId': item.productId,
@@ -27,9 +30,12 @@ class TransactionService {
     }
   }
 
-  Future<List<Transactions>> fetchTransactions() async {
+  Future<List<Transactions>> fetchTransactions(userId) async {
     try {
-      final querySnapshot = await _firestore.collection('transactions').get();
+      final querySnapshot = await _firestore
+          .collection('transactions')
+          .where('userId', isEqualTo: userId) // Filter by userId
+          .get();
 
       // Debug: Print jumlah dokumen
       print('Jumlah dokumen: ${querySnapshot.docs.length}');
@@ -44,6 +50,9 @@ class TransactionService {
           date: (data['date']),
           amount: (data['amount'] as num),
           quantity: (data['quantity'] as int),
+          address: (data['address'] as String),
+          discountAmount: (data['discountAmount'] as num),
+          protectionFee: (data['protectionFee'] as num),
           transactionList: data['transactionList'] != null
               ? (data['transactionList'] as List<dynamic>).map((item) {
                   return TransactionList(

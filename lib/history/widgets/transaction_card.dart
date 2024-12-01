@@ -80,7 +80,7 @@ class TransactionCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${transaction.quantity} item(s)',
+                          transaction.transactionList.first.title,
                           style: TextStyle(
                             color: Colors.grey[800],
                             fontSize: 16,

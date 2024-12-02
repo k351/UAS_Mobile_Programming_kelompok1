@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class CheckoutProvider with ChangeNotifier {
   bool isProtectionChecked = false;
-  double protectionFee = 4500.0; // The cost of protection
-  bool _isCouponApplied = false; // Status kupon
+  double protectionFee = 4500.0; 
+  bool _isCouponApplied = false; 
   num _discountValue = 0.0;
 
   String? _selectedAddress;
@@ -17,7 +17,7 @@ class CheckoutProvider with ChangeNotifier {
   // Method to toggle protection option
   void toggleProtection(bool value) {
     isProtectionChecked = value;
-    notifyListeners(); // To update UI when protection is checked/unchecked
+    notifyListeners();
   }
 
   // Method to apply a discount
@@ -25,13 +25,6 @@ class CheckoutProvider with ChangeNotifier {
     _appliedCouponCode = couponCode;
     _discountValue = discount;
     _isCouponApplied = true;
-    notifyListeners();
-  }
-
-  void resetCoupon() {
-    _isCouponApplied = false;
-    _discountValue = 0.0;
-    _appliedCouponCode = null;
     notifyListeners();
   }
 
@@ -55,6 +48,7 @@ class CheckoutProvider with ChangeNotifier {
     notifyListeners(); 
   }
 
+  // R
   void resetCheckout() {
     isProtectionChecked = false; 
     _isCouponApplied = false; 

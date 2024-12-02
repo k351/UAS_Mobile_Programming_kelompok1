@@ -21,7 +21,7 @@ class _MapViewState extends State<MapView> {
     if (widget.address != null && widget.address!.isNotEmpty) {
       _fetchCoordinates(widget.address!);
     } else {
-      _coordinates = LatLng(-6.2088, 106.8456);
+      _coordinates = const LatLng(-6.2088, 106.8456);
     }
   }
 
@@ -39,7 +39,7 @@ class _MapViewState extends State<MapView> {
       );
       // Fallback to a default location (e.g., Jakarta)
       setState(() {
-        _coordinates = LatLng(-6.2088, 106.8456); // Jakarta coordinates
+        _coordinates = const LatLng(-6.2088, 106.8456); // Jakarta coordinates
       });
     }
   }
@@ -55,7 +55,8 @@ class _MapViewState extends State<MapView> {
           : FlutterMap(
               options: MapOptions(
                 initialCenter: _coordinates ??
-                    LatLng(-6.2088, 106.8456), // Default to Jakarta if null
+                    const LatLng(
+                        -6.2088, 106.8456), // Default to Jakarta if null
                 initialZoom: 15.0,
               ),
               children: [
@@ -69,7 +70,7 @@ class _MapViewState extends State<MapView> {
                       width: 80.0,
                       height: 80.0,
                       point: _coordinates ??
-                          LatLng(
+                          const LatLng(
                               -6.2088, 106.8456), // Default to Jakarta if null
                       child: const Icon(
                         Icons.location_on,

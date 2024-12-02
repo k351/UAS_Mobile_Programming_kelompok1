@@ -18,16 +18,21 @@ class ItemTabs extends StatelessWidget {
 
   ItemTabs({super.key, required this.product, required this.productId});
 
+  // Fungsi menambahkan item ke cart
   Future<void> addCartItemToCart(BuildContext context) async {
+    // Mengecek apakah fungsi ini udah dipanggil dan selesai sebelumnya
     if (_isProcessing) return;
     _isProcessing = true;
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       final cartDatabaseService = CartDatabaseService();
       final cartProvider = Provider.of<Cartprovider>(context, listen: false);
+      // Memasukan item atau menaikan quantity ke database
       final message =
           await cartDatabaseService.addCartItemToCart(userId, productId, 1);
-      if (message != "Stock limit Reached") {
+      //Menaikan counter apabila batas product belom tercapai
+      if (message != "Stock limit Reached" ||
+          message.startsWith("Updated cart until stock limit")) {
         cartProvider.increaseCartQuantity(1);
       }
 

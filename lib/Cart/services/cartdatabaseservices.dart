@@ -244,15 +244,20 @@ class CartDatabaseService {
           Map<String, dynamic> productExistsAtCart = matchingCartItems.first;
           String existingCartItemId = productExistsAtCart['id'];
           CartItem existingCartItem = productExistsAtCart['cartItem'];
+          if (existingCartItem.cartQuantity == product.quantity) {
+            return ('Stock limit Reached');
+          }
           int newQuantity = existingCartItem.cartQuantity + quantity;
 
           // Mengecek apakah quantity baru lebih banyak dari sctock tersedia
           if (newQuantity > product.quantity) {
+            final newquantitadded =
+                product.quantity - existingCartItem.cartQuantity;
             newQuantity = product.quantity;
             await _cartItemsRef
                 .doc(existingCartItemId)
                 .update({'cartQuantity': newQuantity});
-            return ('Updated cart until stock limit');
+            return ('Updated cart until stock limit ${newquantitadded}');
           } else {
             await _cartItemsRef
                 .doc(existingCartItemId)

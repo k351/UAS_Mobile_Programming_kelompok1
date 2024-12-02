@@ -1,13 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uas_flutter/products/models/product.dart';
 
+//String berisi referensi ke product collection di firebase
 const String PRODUCT_COLLECTION_REF = "products";
 
 class ProductDatabaseService {
+  // Instance Firebase Firestore untuk berkomunikasi dengan database Firestore
   final _firestore = FirebaseFirestore.instance;
+  // Referensi koleksi untuk product di Firestore
   late final CollectionReference<Product> _productsRef;
 
+  // Konstruktor untuk menginisialisasi referensi koleksi dengan konverter
   ProductDatabaseService() {
+    // Koleksi untuk product dengan konverter JSON ke model product
     _productsRef = _firestore
         .collection(PRODUCT_COLLECTION_REF)
         .withConverter<Product>(
@@ -15,7 +20,7 @@ class ProductDatabaseService {
           toFirestore: (product, _) => product.toJson(),
         );
   }
-
+  // Mengambil semua data product dari Firestore
   Future<List<Map<String, dynamic>>> fetchProducts(
       [bool withId = false]) async {
     try {
@@ -40,6 +45,7 @@ class ProductDatabaseService {
     }
   }
 
+  // Mengambil product berdasarkan id
   Future<Product?> fetchProductById(String productId) async {
     try {
       DocumentSnapshot<Product> doc = await _productsRef.doc(productId).get();
@@ -49,6 +55,7 @@ class ProductDatabaseService {
     }
   }
 
+  // Mengambil product berdasarkan title
   Future<List<Map<String, dynamic>>> fetchProductByTitle(String title) async {
     try {
       QuerySnapshot<Product> snapshot =
@@ -64,6 +71,7 @@ class ProductDatabaseService {
     }
   }
 
+  // Mengambil product berdasarkan category
   Future<List<Map<String, dynamic>>> fetchProductsByCategory(
       String category) async {
     try {
@@ -80,12 +88,13 @@ class ProductDatabaseService {
     }
   }
 
+  // Mengurangi jumlah product berdasarkan id
   Future<void> decreaseProductQuantity(
       String productId, int quantityToDecrease) async {
     try {
       // Fetch the product document by ID
       DocumentSnapshot<Product> doc = await _productsRef.doc(productId).get();
-    
+
       if (doc.exists) {
         Product product = doc.data()!;
 

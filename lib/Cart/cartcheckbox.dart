@@ -26,7 +26,7 @@ class _CartcheckboxState extends State<Cartcheckbox> {
     }
 
     return Container(
-      margin: EdgeInsets.only(right: 5),
+      margin: const EdgeInsets.only(right: 5),
       child: IconButton(
         onPressed: toggleCheck,
         icon: Icon(isChecked ? Icons.check_box : Icons.check_box_outline_blank),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uas_flutter/Cart/CartPage.dart';
+import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Home/tabbar/tab_bar_views.dart';

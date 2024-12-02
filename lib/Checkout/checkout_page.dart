@@ -597,7 +597,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
             const Divider(color: Colors.grey, height: 1),
-          // Payment Method Section
+            // Payment Method Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(

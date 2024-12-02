@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uas_flutter/Cart/CartPage.dart';
+import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/history/history_page.dart';

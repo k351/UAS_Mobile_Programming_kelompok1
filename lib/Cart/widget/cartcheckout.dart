@@ -6,6 +6,7 @@ import 'package:uas_flutter/Checkout/checkout_page.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
 
+//widget checkout dan perhitungan total cart
 class Cartcheckout extends StatefulWidget {
   const Cartcheckout({super.key});
 
@@ -14,15 +15,12 @@ class Cartcheckout extends StatefulWidget {
 }
 
 class CartcheckoutState extends State<Cartcheckout> {
+  //inisiasi database service cart
   final CartDatabaseService cartDatabaseService = CartDatabaseService();
-  num total = 0;
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
+    //pemanggilan cart provider
     final cartProvider = Provider.of<Cartprovider>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -43,6 +41,7 @@ class CartcheckoutState extends State<Cartcheckout> {
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
+                  //total cart dari provider
                   formatCurrency(cartProvider.total),
                   style: const TextStyle(
                       color: Colors.grey,
@@ -52,8 +51,10 @@ class CartcheckoutState extends State<Cartcheckout> {
               ],
             ),
           ),
+          //tombol checkout
           InkWell(
             onTap: () {
+              //Pengecekan apakah ada item yang akan di checkout
               if (cartProvider.checkedItems.isNotEmpty) {
                 Navigator.pushNamed(
                   context,

@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uas_flutter/Cart/CartPage.dart';
+import 'package:uas_flutter/Cart/cartpage.dart';
 import 'package:uas_flutter/auth/login.dart';
 import 'package:uas_flutter/auth/providers/user_provider.dart';
+import 'package:uas_flutter/history/history_page.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/settings/my_address_page.dart';
-import 'package:uas_flutter/settings/my_coupon_page.dart';
 import 'package:uas_flutter/settings/notification/notification_page.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/utils/size_config.dart';
@@ -79,6 +79,9 @@ class SettingsPageState extends State<SettingsPage> {
             backgroundColor: AppConstants.mainColor,
             expandedHeight: getProportionateScreenHeight(90),
             pinned: true,
+            iconTheme: const IconThemeData(
+              color: Colors.white, // Change back arrow color to white
+            ),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
@@ -118,18 +121,16 @@ class SettingsPageState extends State<SettingsPage> {
                           'Set shopping delivery address'),
                       _buildSettingsItem(Icons.shopping_cart, 'My Cart',
                           'Add, remove products and move to checkout'),
-                      _buildSettingsItem(Icons.shopping_bag, 'My Orders',
+                      _buildSettingsItem(
+                          Icons.shopping_bag,
+                          'My Orders And History',
                           'In-progress and Completed Orders'),
                       _buildSettingsItem(
                           Icons.account_balance,
                           'Payment Methods',
                           'Choose payment methods for cheking out'),
-                      _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
-                          'List of all the discounted coupons'),
                       _buildSettingsItem(Icons.notifications, 'Notifications',
                           'Set any kind of notification message'),
-                      _buildSettingsItem(Icons.privacy_tip, 'Account Privacy',
-                          'Manage data usage and connected accounts'),
                       SizedBox(height: getProportionateScreenHeight(20)),
                       Text(
                         'App Settings',
@@ -253,14 +254,14 @@ class SettingsPageState extends State<SettingsPage> {
                   ),
                   Text(
                     provider.profile?.email ?? 'No Email',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppConstants.clrBackground,
                       fontFamily: AppConstants.fontInterRegular,
                     ),
                   ),
                   Text(
                     provider.profile?.phone ?? 'No Number',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppConstants.clrBackground,
                       fontFamily: AppConstants.fontInterRegular,
                     ),
@@ -313,8 +314,8 @@ class SettingsPageState extends State<SettingsPage> {
         if (title == 'Notifications') {
           Navigator.pushNamed(context, NotificationPage.routeName);
         }
-        if (title == 'My Coupons') {
-          Navigator.pushNamed(context, MyCouponsPage.routeName);
+        if (title == 'My Orders And History') {
+          Navigator.pushNamed(context, HistoryPage.routeName);
         }
         // Tambahkan navigasi lain jika diperlukan
       },
@@ -382,10 +383,10 @@ class SettingsPageState extends State<SettingsPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text(
+              child: const Text(
                 "Cancel",
                 style: TextStyle(
-                  color: AppConstants.mainColor,
+                  color: AppConstants.clrBlack,
                   fontFamily: AppConstants.fontInterMedium,
                 ),
               ),
@@ -422,8 +423,8 @@ class SettingsPageState extends State<SettingsPage> {
               child: const Text(
                 "Logout",
                 style: TextStyle(
-                  fontFamily: AppConstants.fontInterMedium,
-                ),
+                    fontFamily: AppConstants.fontInterMedium,
+                    color: AppConstants.clrBackground),
               ),
             ),
           ],

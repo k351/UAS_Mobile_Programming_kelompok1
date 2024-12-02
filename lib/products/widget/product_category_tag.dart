@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 
+// Class untuk tag dari category
 class ProductCategoryTag extends StatelessWidget {
   final String category;
 

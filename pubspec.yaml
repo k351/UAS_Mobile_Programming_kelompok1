@@ -43,6 +43,10 @@ dependencies:
   firebase_database: ^11.1.4
   firebase_storage: ^12.3.4
   intl: ^0.18.0
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  geocoding: ^3.0.0
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:

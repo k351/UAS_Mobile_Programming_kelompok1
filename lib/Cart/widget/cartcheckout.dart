@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Checkout/checkout_page.dart';
+import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
 
+//widget checkout dan perhitungan total cart
 class Cartcheckout extends StatefulWidget {
   const Cartcheckout({super.key});
 
@@ -13,16 +15,12 @@ class Cartcheckout extends StatefulWidget {
 }
 
 class CartcheckoutState extends State<Cartcheckout> {
-  final CartDatabaseService cartDatabaseService =
-      CartDatabaseService();
-  num total = 0;
-  @override
-  void initState() {
-    super.initState();
-  }
+  //inisiasi database service cart
+  final CartDatabaseService cartDatabaseService = CartDatabaseService();
 
   @override
   Widget build(BuildContext context) {
+    //pemanggilan cart provider
     final cartProvider = Provider.of<Cartprovider>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -30,15 +28,20 @@ class CartcheckoutState extends State<Cartcheckout> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            margin: EdgeInsets.only(left: 30),
+            margin: const EdgeInsets.only(left: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
                   'Total',
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: TextStyle(
+                      color: AppConstants.greyColor3,
+                      fontSize: 14,
+                      fontFamily: AppConstants.fontInterMedium,
+                      fontWeight: FontWeight.bold),
                 ),
                 Text(
+                  //total cart dari provider
                   formatCurrency(cartProvider.total),
                   style: const TextStyle(
                       color: Colors.grey,
@@ -48,8 +51,10 @@ class CartcheckoutState extends State<Cartcheckout> {
               ],
             ),
           ),
+          //tombol checkout
           InkWell(
             onTap: () {
+              //Pengecekan apakah ada item yang akan di checkout
               if (cartProvider.checkedItems.isNotEmpty) {
                 Navigator.pushNamed(
                   context,
@@ -62,12 +67,12 @@ class CartcheckoutState extends State<Cartcheckout> {
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.blue,
+                color: AppConstants.clrBlue,
               ),
               child: const Text(
                 "Checkout",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppConstants.clrBackground,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/notification/email_notif.dart';
-import 'package:uas_flutter/settings/notification/notification_page.dart';
 import 'package:uas_flutter/settings/notification/push_notif.dart';
-import 'package:uas_flutter/utils/size_config.dart';
-import 'package:uas_flutter/settings/provider/edit_profile_provider.dart';
-import 'package:provider/provider.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -22,7 +18,7 @@ class NotificationPageState extends State<NotificationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Notifikasi',
+          'Notification',
           style: TextStyle(
             fontFamily: AppConstants.fontInterMedium,
             fontWeight: FontWeight.bold,
@@ -39,11 +35,11 @@ class NotificationPageState extends State<NotificationPage> {
       body: ListView(
         children: [
           // Deskripsi halaman
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'Set how you receive shopping and activity notifications in this application.',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontFamily: AppConstants.fontInterRegular,
                 color: AppConstants.greyColor5,

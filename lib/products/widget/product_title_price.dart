@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
 
+// Class untuk title produk
 class ProductTitlePrice extends StatelessWidget {
   final String title;
   final double price;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 
+// Class untuk rating dan stock
 class ProductRatingStock extends StatelessWidget {
   final double rating;
   final int stock;

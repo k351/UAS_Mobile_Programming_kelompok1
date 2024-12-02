@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/providers/cartprovider.dart';
 import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 
+//widget checkbox pada setiap item cart
 class Cartcheckbox extends StatefulWidget {
   final String id;
   const Cartcheckbox({
@@ -17,18 +18,25 @@ class Cartcheckbox extends StatefulWidget {
 class _CartcheckboxState extends State<Cartcheckbox> {
   @override
   Widget build(BuildContext context) {
+    //Pemanggilan provider
     final cartProvider = Provider.of<Cartprovider>(context);
+    //Boolean pengecek apakah checkbox menyala atau mati
     final isChecked = cartProvider.getCheckStatusById(widget.id);
+
+    //fungsi menyala matikan checkbox
     void toggleCheck() {
       cartProvider.check(widget.id, !isChecked);
-      final cartDatabaseService = CartDatabaseService();
+      final CartDatabaseService cartDatabaseService = CartDatabaseService();
       cartDatabaseService.updateCheckStatus(widget.id, !isChecked);
     }
 
     return Container(
-      margin: EdgeInsets.only(right: 5),
+      margin: const EdgeInsets.only(right: 5),
+      //Icon checkbox
       child: IconButton(
+        //Pemanggilan fungsi untuk mengangti state checkbox
         onPressed: toggleCheck,
+        //Pengecekan checkbox menyala atau mati
         icon: Icon(isChecked ? Icons.check_box : Icons.check_box_outline_blank),
       ),
     );

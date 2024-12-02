@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
@@ -6,6 +7,7 @@ import 'package:uas_flutter/history/providers/transaction_provider.dart';
 import 'widgets/transaction_list.dart';
 import 'widgets/empty_transactions.dart';
 
+/// Class utama untuk halaman riwayat
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
   static String routeName = 'history';
@@ -18,25 +20,28 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
+    // Mendapatkan ID pengguna yang sedang login
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    // Melakukan fetch data transaksi secara asinkron di awal
     Future.microtask(() {
       Provider.of<TransactionProvider>(context, listen: false)
-          .fetchTransactions();
+          .fetchTransactions(userId); // Memuat data transaksi pengguna dari Firebase
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppConstants.clrBackground,
+      backgroundColor: AppConstants.clrBackground, // Warna latar belakang
       appBar: AppBar(
         elevation: 0,
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
           'Purchase History',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            fontFamily: AppConstants.fontInterMedium,
             color: AppConstants.clrBlackFont,
           ),
         ),
@@ -52,6 +57,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     );
         },
       ),
+      // Navigasi bawah
       bottomNavigationBar: NavigasiBar(
         selectedIndex: 1,
         onTap: (index) {

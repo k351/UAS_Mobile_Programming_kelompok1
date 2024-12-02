@@ -91,6 +91,34 @@ class AddressProvider with ChangeNotifier {
     }
   }
 
+  Future<void> fetchAddresses() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('addresses')
+          .get();
+
+      _addresses = snapshot.docs.map((doc) {
+        return AddressModel(
+          id: doc.id,
+          userId: doc['userId'] ?? '',
+          recipientName: doc['recipientName'] ?? '',
+          fullAddress: doc['fullAddress'] ?? '',
+          postalCode: doc['postalCode'] ?? '',
+          addressLabel: doc['addressLabel'] ?? '',
+        );
+      }).toList();
+
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching addresses: $e");
+    }
+  }
+
   /// Reset state after logout
   void resetState() {
     _addresses = [];

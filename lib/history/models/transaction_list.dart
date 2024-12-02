@@ -1,10 +1,22 @@
+/// Class [TransactionList] merepresentasikan detail dari setiap item dalam transaksi.
+/// Berisi informasi produk seperti ID, nama, gambar, harga, dan kuantitas.
 class TransactionList {
+  // ID produk dalam transaksi
   final String productId;
+  
+  // Nama atau judul produk
   final String title;
+
+  // URL atau path gambar produk
   final String image;
+
+  // Harga satuan produk
   final num price;
+
+  // Jumlah produk yang dibeli
   final int quantity;
 
+  /// Konstruktor utama untuk [TransactionList].
   TransactionList({
     required this.productId,
     required this.title,
@@ -13,6 +25,7 @@ class TransactionList {
     required this.quantity,
   });
 
+  /// Factory constructor untuk membuat instance [TransactionList] dari data JSON.
   factory TransactionList.fromJson(Map<String, dynamic> json) {
     return TransactionList(
       productId: json['productId'] as String,
@@ -23,6 +36,7 @@ class TransactionList {
     );
   }
 
+  /// Mengonversi instance [TransactionList] ke dalam bentuk JSON.
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
@@ -33,6 +47,7 @@ class TransactionList {
     };
   }
 
+  /// Membuat salinan baru dari [TransactionList] dengan properti yang dapat diubah.
   TransactionList copyWith({
     String? transactionListId,
     String? productId,

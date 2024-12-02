@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 
+//Widget appbar pada cart
 class Cartappbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white60,
-      padding: EdgeInsets.all(25),
+      padding: const EdgeInsets.all(25),
       child: Row(
         children: [
+          //Tombol back atau keluar dari cart
           InkWell(
               onTap: () {
                 Navigator.pop(context);
@@ -16,7 +19,7 @@ class Cartappbar extends StatelessWidget {
               child: const Icon(
                 Icons.arrow_back,
                 size: 30,
-                color: Colors.grey,
+                color: AppConstants.greyColor3,
               )),
           const Padding(
             padding: EdgeInsets.only(left: 30),
@@ -25,10 +28,11 @@ class Cartappbar extends StatelessWidget {
               style: TextStyle(
                   fontSize: 23,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey),
+                  color: AppConstants.greyColor3),
             ),
           ),
           const Spacer(),
+          // tombol yang menuju setting di cart
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, SettingsPage.routeName);
@@ -36,7 +40,7 @@ class Cartappbar extends StatelessWidget {
             child: const Icon(
               Icons.settings,
               size: 23,
-              color: Colors.grey,
+              color: AppConstants.greyColor3,
             ),
           ),
         ],

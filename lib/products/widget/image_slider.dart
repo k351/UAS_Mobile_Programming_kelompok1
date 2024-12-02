@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:uas_flutter/constants.dart';
 
+
+// Class untuk image
 class ImageSlider extends StatefulWidget {
   final Function(int) onChange;
   final String image;
@@ -18,7 +19,7 @@ class ImageSlider extends StatefulWidget {
 
 class _ImageSliderState extends State<ImageSlider> {
   late PageController _pageController;
-  int _currentPage = 0;
+  int currentPage = 0;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _ImageSliderState extends State<ImageSlider> {
           if (index <= 5) {
             widget.onChange(index);
             setState(() {
-              _currentPage = index;
+              currentPage = index;
             });
           }
         },

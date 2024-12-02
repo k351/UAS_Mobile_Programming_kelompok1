@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Class [AppConstants] untuk mendefinisikan konstan yang digunakan pada apps
 class AppConstants {
   static const Color clrBackground = Color(0xFFFFFFFF);
   static const Color clrAppBar = Color(0xffFFFFFF);
@@ -51,6 +52,4 @@ class AppConstants {
   static const String rootImage = "assets/";
 
   static const String imgAppLogo = "${rootImage}logos/cartify.svg";
-  static const String imgGoogle = "${rootImage}login/google.svg";
-  static const String imgFacebook = "${rootImage}login/facebook.svg";
 }

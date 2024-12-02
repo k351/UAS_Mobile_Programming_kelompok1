@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uas_flutter/Cart/cartpage.dart';
+import 'package:uas_flutter/Cart/providers/cartprovider.dart';
+import 'package:uas_flutter/Cart/services/cartdatabaseservices.dart';
 import 'package:uas_flutter/Home/Providers/saldoprovider.dart';
 import 'package:uas_flutter/Home/services/firebase_topup.dart';
 import 'package:uas_flutter/Home/tabbar/product_tabbar.dart';
@@ -30,6 +32,7 @@ class _MyhomepageState extends State<Myhomepage>
   late TabController _tabController;
   late PageController _pageController;
   final TextEditingController _searchController = TextEditingController();
+  final CartDatabaseService cartDatabaseService = CartDatabaseService();
   late Timer timer; // timer
   int _currentPage = 0; // gambar
   List<String> carousel = [];
@@ -45,6 +48,7 @@ class _MyhomepageState extends State<Myhomepage>
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final wishlistProvider =
         Provider.of<WishlistProvider>(context, listen: false);
+    _fetchCartItems();
     wishlistProvider.fetchWishlist(userId);
     // Gambar pindah pindah
     timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
@@ -73,6 +77,17 @@ class _MyhomepageState extends State<Myhomepage>
     _tabController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchCartItems() async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      List<Map<String, dynamic>> items =
+          await cartDatabaseService.initializeCartItems(userId);
+      final cartProvider = Provider.of<Cartprovider>(context, listen: false);
+      cartProvider.setCartItems(items);
+      cartProvider.calculateTotal();
+    }
   }
 
   // user saldo firebase
@@ -121,29 +136,46 @@ class _MyhomepageState extends State<Myhomepage>
           children: [
             // Bagian atas untuk search dan ikon
             Container(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.only(left: 15, top: 4, bottom: 6),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Container(
                       height: getProportionateScreenHeight(42),
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
                       decoration: BoxDecoration(
-                        color: AppConstants.clrGreyBg.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: TextField(
                         controller: _searchController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'Search products...',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 15,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: const Icon(
+                              Icons.search,
+                              color: AppConstants.clrBlue,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SearchResultsPage(
+                                    isiSearch: _searchController.text,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           border: InputBorder.none,
-                          prefixIcon: Icon(Icons.search,
-                              color: AppConstants.greyColor4),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 15,
+                          ),
                         ),
-                        style: TextStyle(
-                            fontSize: getProportionateScreenWidth(16),
-                            fontFamily: AppConstants.fontInterRegular),
                         onSubmitted: (search) {
                           Navigator.push(
                             context,
@@ -158,14 +190,50 @@ class _MyhomepageState extends State<Myhomepage>
                     ),
                   ),
                   SizedBox(width: getProportionateScreenWidth(10)),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () =>
-                            Navigator.pushNamed(context, Cartpage.routeName),
-                        child: const Icon(Icons.shopping_cart_sharp),
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15.0),
+                    child: Stack(
+                      clipBehavior: Clip
+                          .none, // This allows the badge to overflow the stack
+                      children: [
+                        InkWell(
+                          onTap: () =>
+                              Navigator.pushNamed(context, Cartpage.routeName),
+                          child: const Icon(Icons.shopping_cart_sharp,
+                              color: Colors.black),
+                        ),
+                        // Badge Counter
+                        Positioned(
+                          top: -5, // Move up
+                          right: -5, // Move right
+                          child: Consumer<Cartprovider>(
+                            builder: (context, cartProvider, child) {
+                              final cartItemCount = cartProvider.cartQuantity;
+                              if (cartItemCount > 0) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppConstants.clrBlue,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    '$cartItemCount',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              }
+                              return const SizedBox();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

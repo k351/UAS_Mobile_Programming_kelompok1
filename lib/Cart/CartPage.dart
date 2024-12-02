@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:uas_flutter/Cart/cartappbar.dart';
-import 'package:uas_flutter/Cart/cartitemlist.dart';
-import 'package:uas_flutter/Cart/cartcheckout.dart';
+import 'package:uas_flutter/Cart/widget/cartappbar.dart';
+import 'package:uas_flutter/Cart/widget/cartitemlist.dart';
+import 'package:uas_flutter/Cart/widget/cartcheckout.dart';
 
+//halaman cart page
 class Cartpage extends StatelessWidget {
+  //route name dari cart page
   static const String routeName = "/Cartpage";
   Cartpage({super.key});
 
@@ -13,7 +15,9 @@ class Cartpage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            //pemanggilan appbar
             Cartappbar(),
+            //pemanggilan itemlist di expanded agar menyesuaikan layar user
             Expanded(
               child: Container(
                 padding: const EdgeInsets.only(top: 15),
@@ -27,6 +31,7 @@ class Cartpage extends StatelessWidget {
                 child: Cartitemlist(),
               ),
             ),
+            //pemanggilan checkout
             Cartcheckout(),
           ],
         ),

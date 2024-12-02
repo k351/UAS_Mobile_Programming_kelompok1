@@ -6,9 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/products/models/product.dart';
 import 'package:uas_flutter/bottom_navigator.dart';
-import 'package:uas_flutter/products/product_detail_screen.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
-import 'package:uas_flutter/utils/size_config.dart';
 
 class WishlistPage extends StatefulWidget {
   static const String routeName = '/wishlist';

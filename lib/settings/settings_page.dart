@@ -7,7 +7,6 @@ import 'package:uas_flutter/auth/providers/user_provider.dart';
 import 'package:uas_flutter/history/history_page.dart';
 import 'package:uas_flutter/settings/edit_profile.dart';
 import 'package:uas_flutter/settings/my_address_page.dart';
-import 'package:uas_flutter/settings/my_coupon_page.dart';
 import 'package:uas_flutter/settings/notification/notification_page.dart';
 import 'package:uas_flutter/settings/provider/address_provider.dart';
 import 'package:uas_flutter/utils/size_config.dart';
@@ -130,8 +129,6 @@ class SettingsPageState extends State<SettingsPage> {
                           Icons.account_balance,
                           'Payment Methods',
                           'Choose payment methods for cheking out'),
-                      _buildSettingsItem(Icons.card_giftcard, 'My Coupons',
-                          'List of all the discounted coupons'),
                       _buildSettingsItem(Icons.notifications, 'Notifications',
                           'Set any kind of notification message'),
                       SizedBox(height: getProportionateScreenHeight(20)),
@@ -316,9 +313,6 @@ class SettingsPageState extends State<SettingsPage> {
         }
         if (title == 'Notifications') {
           Navigator.pushNamed(context, NotificationPage.routeName);
-        }
-        if (title == 'My Coupons') {
-          Navigator.pushNamed(context, MyCouponsPage.routeName);
         }
         if (title == 'My Orders And History') {
           Navigator.pushNamed(context, HistoryPage.routeName);

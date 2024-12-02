@@ -2,11 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uas_flutter/history/models/transaction.dart';
 import 'package:uas_flutter/history/models/transaction_list.dart';
 
+/// [TransactionService] adalah layanan untuk mengelola operasi terkait transaksi
+/// di Firestore, seperti menambahkan transaksi dan mengambil data transaksi pengguna.
 class TransactionService {
+  // Instance Firestore untuk interaksi dengan database.
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Menambahkan transaksi baru ke koleksi `transactions` di Firestore.
+  /// [transaction] adalah objek [Transactions] yang akan disimpan.
   Future<void> addTransaction(Transactions transaction) async {
     try {
+      // Menambahkan dokumen baru ke koleksi `transactions`.
       await _firestore.collection('transactions').add({
         'userId': transaction.userId,
         'date': transaction.date,
@@ -23,13 +29,16 @@ class TransactionService {
                   'price': item.price,
                   'quantity': item.quantity,
                 })
-            .toList(),
+            .toList(), // Konversi setiap item dalam transactionList ke Map
       });
     } catch (e) {
+      // Melempar exception jika ada kesalahan saat menambahkan transaksi.
       throw Exception('Failed to add transaction: $e');
     }
   }
 
+  /// Mengambil semua transaksi dari Firestore untuk pengguna tertentu berdasarkan [userId].
+  /// Mengembalikan daftar [Transactions] yang terkait dengan [userId].
   Future<List<Transactions>> fetchTransactions(userId) async {
     try {
       final querySnapshot = await _firestore
@@ -37,14 +46,17 @@ class TransactionService {
           .where('userId', isEqualTo: userId) // Filter by userId
           .get();
 
-      // Debug: Print jumlah dokumen
+      // Debugging: Cetak jumlah dokumen yang ditemukan.
       print('Jumlah dokumen: ${querySnapshot.docs.length}');
 
+      // Mapping hasil query menjadi daftar [Transactions].
       return querySnapshot.docs.map((doc) {
-        // Debug: Print data mentah setiap dokumen
+        // Data mentah dari dokumen Firestore.
         final data = doc.data();
+        // Debugging: Cetak data mentah dokumen untuk inspeksi.
         print('Data dokumen: $data');
 
+        // Membuat instance [Transactions] berdasarkan data dokumen.
         return Transactions(
           userId: (data['userId'] as String?) ?? '',
           date: (data['date']),

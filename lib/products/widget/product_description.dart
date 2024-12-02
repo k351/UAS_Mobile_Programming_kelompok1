@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Class untuk deskripsi produk
 class ProductDescription extends StatelessWidget {
   final String description;
 

@@ -17,6 +17,7 @@ import 'package:uas_flutter/settings/notification/push_notif.dart';
 import 'package:uas_flutter/settings/settings_page.dart';
 import 'package:uas_flutter/Cart/cartpage.dart';
 
+// Definisikan peta rute aplikasi
 final Map<String, WidgetBuilder> routes = {
   LoginScreen.routeName: (context) => const LoginScreen(),
   SignUpScreen.routeName: (context) => const SignUpScreen(),

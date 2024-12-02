@@ -5,6 +5,7 @@ import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/utils/size_config.dart';
 import 'package:uas_flutter/utils/snackbar.dart';
 
+// Halaman untuk mengatur ulang password pengguna
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
   static String routeName = "/forgotPasswordScreen";
@@ -14,7 +15,9 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  // Kontroler untuk input email pengguna
   final TextEditingController emailController = TextEditingController();
+  // Instansiasi objek FirebaseAuth untuk menangani autentikasi
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -23,6 +26,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
+  // Fungsi untuk mengirim email reset password
   Future<void> resetPassword() async {
     try {
       await _auth.sendPasswordResetEmail(email: emailController.text);
@@ -42,6 +46,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Inisialisasi konfigurasi ukuran layar
     SizeConfig.init(context);
 
     return Scaffold(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Class [AppConstants] untuk mendefinisikan konstan yang digunakan pada apps
 class AppConstants {
   static const Color clrBackground = Color(0xFFFFFFFF);
   static const Color clrAppBar = Color(0xffFFFFFF);

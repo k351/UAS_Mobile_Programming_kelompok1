@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/Wishlist/providers/wishlist_provider.dart';
 import 'package:provider/provider.dart';
  
+// Class untuk detail produk
 class DetailAppBar extends StatelessWidget {
   final String productId;
   const DetailAppBar({super.key, required this.productId});

@@ -3,9 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uas_flutter/auth/model/auth_model.dart';
 
 class AuthService {
+  // Instance dari FirebaseAuth untuk menangani autentikasi pengguna.
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  // Instance dari FirebaseFirestore untuk menyimpan dan mengambil data pengguna.
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
+  // Fungsi untuk melakukan registrasi pengguna baru (sign-up).
   Future<AuthModel> signUp(
     String username,
     String email,
@@ -14,14 +18,14 @@ class AuthService {
     String password,
   ) async {
     try {
-      // Buat pengguna baru dengan email dan password
+      // Membuat pengguna baru dengan email dan password menggunakan Firebase Auth.
       UserCredential userCredential =
           await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Buat instance AuthModel dengan semua data pengguna
+      // Membuat instance AuthModel dengan data pengguna yang diberikan.
       AuthModel authModel = AuthModel(
         name: username,
         email: email,
@@ -29,7 +33,7 @@ class AuthService {
         phone: phoneNumber,
       );
 
-      // Simpan data ke Firestore
+      // Menyimpan data pengguna di Firestore pada koleksi "users".
       await firebaseFirestore
           .collection("users")
           .doc(userCredential.user!.uid)
@@ -41,6 +45,7 @@ class AuthService {
         "saldo": 0,
       });
 
+      // Membuat koleksi "carts" untuk pengguna yang baru dibuat, dengan daftar keranjang kosong.
       await firebaseFirestore.collection("carts").doc().set({
         "userId": userCredential.user!.uid,
         "cartList": [],
@@ -58,6 +63,7 @@ class AuthService {
     }
   }
 
+  // Fungsi untuk mengambil data pengguna yang sedang login.
   Future<AuthModel> getUserData() async {
     try {
       var userDoc = await firebaseFirestore
@@ -76,6 +82,7 @@ class AuthService {
     }
   }
 
+  // Fungsi untuk melakukan login pengguna.
   Future<void> login(String email, String password) async {
     try {
       await firebaseAuth.signInWithEmailAndPassword(

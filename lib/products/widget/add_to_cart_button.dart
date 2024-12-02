@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/utils/size_config.dart';
 
+// Class untuk button menambahkan cart
 class AddToCartButton extends StatelessWidget {
   final VoidCallback onPressed;
 

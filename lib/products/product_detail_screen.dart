@@ -32,6 +32,7 @@ class _DetailScreenState extends State<DetailScreen> {
   bool _isProcessing = false;
   final CartDatabaseService cartDatabaseService = CartDatabaseService();
 
+  // Fungsi future untuk menambahkan item ke cart
   Future<void> addCartItemToCart(BuildContext context) async {
     if (_isProcessing) return;
     _isProcessing = true;

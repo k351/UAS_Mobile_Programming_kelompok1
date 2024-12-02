@@ -18,7 +18,7 @@ class SocialLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap, // Menangani ketukan pada tombol.
       child: Container(
         width: getProportionateScreenWidth(350),
         padding: const EdgeInsets.all(15),

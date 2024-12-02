@@ -3,16 +3,22 @@ import 'package:uas_flutter/history/models/transaction.dart';
 import 'package:uas_flutter/constants.dart';
 import 'package:uas_flutter/utils/currency_formatter.dart';
 import 'package:uas_flutter/utils/date_formatter.dart';
-import 'package:uas_flutter/utils/size_config.dart'; // Add the import for DateFormatter
+import 'package:uas_flutter/utils/size_config.dart';
 
+/// Halaman untuk menampilkan detail transaksi.
+/// Menampilkan informasi seperti tanggal transaksi, alamat lengkap,
+/// daftar item yang dibeli, serta rincian total pembayaran, diskon, dan biaya tambahan.
 class HistoryDetailPage extends StatelessWidget {
+  /// Menerima objek transaksi untuk ditampilkan pada halaman ini.
   final Transactions transaction;
 
+  /// Konstruktor yang menerima parameter `transaction`.
   const HistoryDetailPage({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Latar belakang halaman berwarna putih
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
@@ -28,6 +34,7 @@ class HistoryDetailPage extends StatelessWidget {
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: AppConstants.clrBlack),
       ),
+      // Body halaman
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,7 +66,7 @@ class HistoryDetailPage extends StatelessWidget {
                     ),
                     Text(
                       DateFormatter.formatDate(
-                          DateTime.parse(transaction.date)),
+                          DateTime.parse(transaction.date)), // Menampilkan tanggal transaksi
                       style: const TextStyle(
                         fontSize: 16,
                         color: AppConstants.clrBlack,
@@ -93,7 +100,7 @@ class HistoryDetailPage extends StatelessWidget {
             ),
           ),
 
-          // Items List
+          // Daftar item yang dibeli
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -197,7 +204,7 @@ class HistoryDetailPage extends StatelessWidget {
             ),
           ),
 
-          // Total Summary
+          // Rincian total transaksi
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             decoration: BoxDecoration(

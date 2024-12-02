@@ -281,7 +281,7 @@ class _CouponPageState extends State<CouponPage>
                                           ),
                                         ),
                                         if (isSelected)
-                                          Icon(
+                                          const Icon(
                                             Icons.check_circle,
                                             color: Colors.white,
                                             size: 28,

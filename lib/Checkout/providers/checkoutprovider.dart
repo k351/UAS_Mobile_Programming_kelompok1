@@ -52,14 +52,14 @@ class CheckoutProvider with ChangeNotifier {
 
   void setSelectedAddress(String address) {
     _selectedAddress = address;
-    notifyListeners(); // To update UI when the selected address changes
+    notifyListeners(); 
   }
 
   void resetCheckout() {
-    isProtectionChecked = false; // Reset protection option
-    _isCouponApplied = false; // Reset coupon applied status
-    _discountValue = 0.0; // Reset discount value
-    _appliedCouponCode = null; // Reset applied coupon code
-    notifyListeners(); // To update UI when all values are reset
+    isProtectionChecked = false; 
+    _isCouponApplied = false; 
+    _discountValue = 0.0; 
+    _appliedCouponCode = null; 
+    notifyListeners(); 
   }
 }

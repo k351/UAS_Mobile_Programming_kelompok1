@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// Kelas `SizeConfig` digunakan untuk mengatur konfigurasi ukuran layar aplikasi.
+/// Kelas ini menyediakan cara dinamis untuk menghitung ukuran elemen UI berdasarkan
+/// ukuran layar perangkat, sehingga membuat desain lebih responsif.
 class SizeConfig {
   static MediaQueryData _mediaQueryData = const MediaQueryData();
   static double screenWidth = 0;

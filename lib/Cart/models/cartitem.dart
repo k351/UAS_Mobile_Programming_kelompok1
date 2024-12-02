@@ -1,9 +1,10 @@
 class CartItem {
-  final String cartId;
-  final String productId;
-  final int cartQuantity;
-  final bool check;
+  final String cartId; // ID keranjang
+  final String productId; // ID produk
+  final int cartQuantity; // Jumlah item di keranjang
+  final bool check; // Status apakah item telah dipilih untuk checkout
 
+// Konstruktor untuk menginisialisasi item cart
   CartItem({
     required this.cartId,
     required this.productId,
@@ -11,6 +12,7 @@ class CartItem {
     required this.check,
   });
 
+  // Mengonversi data JSON ke objek CartItem
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
       cartId: json['cartId'] as String,
@@ -20,6 +22,7 @@ class CartItem {
     );
   }
 
+  // Mengonversi objek CartItem menjadi Map untuk JSON
   Map<String, dynamic> toJson() {
     return {
       'cartId': cartId,
@@ -29,6 +32,7 @@ class CartItem {
     };
   }
 
+  // Membuat salinan objek CartItem dengan nilai yang diubah
   CartItem copyWith({
     String? cartId,
     String? productId,
@@ -36,7 +40,7 @@ class CartItem {
     bool? check,
   }) {
     return CartItem(
-      cartId: cartId ?? this.cartId,
+      cartId: cartId ?? this.cartId, // Gunakan nilai baru atau tetap yang lama
       productId: productId ?? this.productId,
       cartQuantity: cartQuantity ?? this.cartQuantity,
       check: check ?? this.check,

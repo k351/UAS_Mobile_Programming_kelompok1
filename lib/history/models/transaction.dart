@@ -1,15 +1,34 @@
 import 'package:uas_flutter/history/models/transaction_list.dart';
 
+/// Class [Transactions] merepresentasikan transaksi secara keseluruhan.
+/// Berisi informasi tentang pengguna, tanggal, daftar transaksi, jumlah total,
+/// kuantitas barang, biaya perlindungan, diskon, dan alamat pengiriman.
 class Transactions {
+  // ID pengguna yang melakukan transaksi
   final String userId;
+
+  // Tanggal transaksi dilakukan
   final String date;
+
+  // Daftar item transaksi yang dikelola melalui model [TransactionList]
   final List<TransactionList> transactionList;
+
+  // Jumlah total pembayaran transaksi
   final num amount;
+
+  // Total jumlah barang dalam transaksi
   final int quantity;
+
+  // Biaya tambahan untuk perlindungan (opsional)
   final num protectionFee;
+
+  // Jumlah diskon yang diberikan (opsional)
   final num discountAmount;
+
+  // Alamat tujuan pengiriman barang
   final String address;
 
+  /// Konstruktor utama untuk [Transactions].
   Transactions({
     required this.userId,
     required this.date,
@@ -21,6 +40,8 @@ class Transactions {
     required this.discountAmount,
   });
 
+  /// Factory constructor untuk membuat instance [Transactions] dari data JSON.
+  /// Mengonversi setiap elemen [TransactionList] juga dari JSON.
   factory Transactions.fromJson(Map<String, dynamic> json) {
     return Transactions(
       userId: json['userId'] as String,
@@ -36,6 +57,8 @@ class Transactions {
     );
   }
 
+  /// Mengonversi instance [Transactions] ke dalam bentuk JSON.
+  /// Berguna untuk penyimpanan atau pengiriman data.
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
@@ -49,6 +72,7 @@ class Transactions {
     };
   }
 
+  /// Membuat salinan baru dari [Transactions] dengan properti yang dapat diubah.
   Transactions copyWith({
     String? userId,
     String? date,

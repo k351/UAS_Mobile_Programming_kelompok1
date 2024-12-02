@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 
+
+// Class untuk image
 class ImageSlider extends StatefulWidget {
   final Function(int) onChange;
   final String image;

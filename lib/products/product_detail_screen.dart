@@ -32,7 +32,9 @@ class _DetailScreenState extends State<DetailScreen> {
   bool _isProcessing = false;
   final CartDatabaseService cartDatabaseService = CartDatabaseService();
 
+  // Fungsi future untuk menambahkan item ke cart
   Future<void> addCartItemToCart(BuildContext context) async {
+    // Mengecek apakah fungsi ini udah dipanggil dan selesai sebelumnya
     if (_isProcessing) return;
     _isProcessing = true;
     try {
@@ -40,16 +42,21 @@ class _DetailScreenState extends State<DetailScreen> {
       final cartDatabaseService = CartDatabaseService();
       final cartProvider = Provider.of<Cartprovider>(context, listen: false);
 
+      // Memasukan item atau menaikan quantity ke database
       final message = await cartDatabaseService.addCartItemToCart(
           userId, widget.productId, quantity);
-      if (message != "Stock limit Reached") {
-        cartProvider.increaseCartQuantity(quantity);
+      //Menaikan counter apabila batas product belom tercapai
+      if (message != "Stock limit Reached" ||
+          message.startsWith("Updated cart until stock limit")) {
+        if (message.startsWith("Updated cart until stock limit")) {
+          int quantityadded = int.parse(message.split(' ').last);
+          cartProvider.increaseCartQuantity(quantityadded);
+        } else {
+          cartProvider.increaseCartQuantity(1);
+        }
       }
-
-      print('Item added to cart successfully');
       SnackbarUtils.showSnackbar(context, message);
     } catch (e) {
-      print('Failed to add item to cart: $e');
       SnackbarUtils.showSnackbar(context, 'Failed to add item to cart',
           backgroundColor: AppConstants.clrRed);
     } finally {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uas_flutter/constants.dart';
 
+/// Class utility untuk menampilkan Snackbar secara konsisten
 class SnackbarUtils {
   static void showSnackbar(BuildContext context, String message,
       {Color backgroundColor = AppConstants.clrBlue,
